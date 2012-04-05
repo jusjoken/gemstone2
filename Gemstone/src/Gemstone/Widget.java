@@ -5,7 +5,6 @@
 package Gemstone;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.apache.log4j.Logger;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class Widget {
     static private final Logger LOG = Logger.getLogger(Widget.class);

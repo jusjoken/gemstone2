@@ -11,6 +11,12 @@ import sagex.api.ShowAPI;
 import sagex.api.PlaylistAPI;
 import sagex.api.Utility;
 
+/**
+ *
+ * @author SBANTA
+ * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
+ */
 
 public class airing
 {

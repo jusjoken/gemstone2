@@ -35,6 +35,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
  * @author JUSJOKEN
  * - 10/09/2011 - added LOG4J setup and Main method for testing, and StringNumberFormat
  * - 10/10/2011 - added some generic functions
+ * - 04/04/2012 - updated for Gemstone
  */
 public class util {
 

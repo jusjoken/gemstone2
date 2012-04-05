@@ -10,6 +10,7 @@ import sagex.UIContext;
 /**
  *
  * @author SBANTA
+ * - 04/04/2012 - updated for Gemstone
  */
 public class AutoPlaylist {
 

@@ -20,6 +20,7 @@ import sagex.phoenix.vfs.IMediaResource;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  * Get a new Object of this class in the STV
  * The default will be poster for either TV Series or Movie dependent on the passed in MediaObject
  * From the STV call setFanartType to another type which will load up the available fanart

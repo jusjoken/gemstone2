@@ -33,6 +33,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class ImageCache {
 //    public ImageCache(){

@@ -11,6 +11,7 @@ import sagex.phoenix.factory.ConfigurableOption;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class ConfigOption extends ConfigurableOption {
 

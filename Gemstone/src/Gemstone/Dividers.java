@@ -6,7 +6,6 @@
 package Gemstone;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
 
@@ -15,6 +14,7 @@ import org.apache.log4j.Logger;
  * @author SBANTA
  * @author JUSJOKEN
  * - 9/29/2011 - minor code flow updating, log message changes for testing
+ * - 04/04/2012 - updated for Gemstone
  */
 public class Dividers {
 

@@ -13,6 +13,7 @@ import java.lang.reflect.Field;
 /**
  *
  * @author SBANTA
+ * - 04/04/2012 - updated for Gemstone
  */
 public class ClassFromString {
 

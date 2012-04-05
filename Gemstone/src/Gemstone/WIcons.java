@@ -12,6 +12,7 @@ import sagex.UIContext;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class WIcons {
 

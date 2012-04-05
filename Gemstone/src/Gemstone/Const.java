@@ -8,6 +8,7 @@ package Gemstone;
  *
  * @author jusjoken
  * - 10/10/2011 - class for all general Constants
+ * - 04/04/2012 - updated for Gemstone
  */
 public class Const {
 

@@ -17,6 +17,7 @@ import sagex.phoenix.vfs.views.ViewFactory;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class SourceUI {
     static private final Logger LOG = Logger.getLogger(SourceUI.class);

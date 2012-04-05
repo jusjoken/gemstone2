@@ -17,6 +17,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
  * @author SBANTA
  * @author JUSJOKEN
  * - 10/01/2011 - added logging and changes to Category Filters
+ * - 04/04/2012 - updated for Gemstone
  */
 public class MetadataCalls {
 

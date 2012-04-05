@@ -23,6 +23,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
  *
  * @author jusjoken
  * - 10/10/2011 - class for all Flow related calls - for 4.x this will be replaced with a Flow class to encapsulate Flow as an object
+ * - 04/04/2012 - updated for Gemstone
  * 
  */
 public class Flow {

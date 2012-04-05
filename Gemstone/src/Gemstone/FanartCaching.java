@@ -9,15 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
-import sagex.UIContext;
 
 /**
  *
  * @author SBANTA
+ * - 04/04/2012 - updated for Gemstone
  */
 public class FanartCaching {
 

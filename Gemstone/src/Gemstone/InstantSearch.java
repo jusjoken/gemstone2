@@ -16,6 +16,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
  * @author SBANTA
  * @author JUSJOKEN
  * - 10/02/2011 - added logging and minor changes
+ * - 04/04/2012 - updated for Gemstone
  */
 public class InstantSearch {
 

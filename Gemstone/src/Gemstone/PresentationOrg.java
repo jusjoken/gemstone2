@@ -15,6 +15,7 @@ import sagex.phoenix.factory.IConfigurable;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class PresentationOrg {
     static private final Logger LOG = Logger.getLogger(PresentationOrg.class);

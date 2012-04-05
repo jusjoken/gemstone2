@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class Import {
     static private final Logger LOG = Logger.getLogger(Import.class);

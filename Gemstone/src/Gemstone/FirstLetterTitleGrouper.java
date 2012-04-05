@@ -9,6 +9,7 @@ import sagex.phoenix.vfs.groups.TitleGrouper;
 /**
  *
  * @author Birch
+ * - 04/04/2012 - updated for Gemstone
  */
 public class FirstLetterTitleGrouper  extends FirstLetterTitleRegexGrouper {
     public FirstLetterTitleGrouper() {

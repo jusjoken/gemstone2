@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class PresentationUI {
     static private final Logger LOG = Logger.getLogger(PresentationUI.class);

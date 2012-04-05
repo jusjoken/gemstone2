@@ -34,6 +34,7 @@ import sagex.phoenix.vfs.IMediaResource;
 /**
  *
  * @author jusjoken
+ * - 04/04/2012 - updated for Gemstone
  */
 public class Source {
     static private final Logger LOG = Logger.getLogger(Source.class);
