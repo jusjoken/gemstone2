@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -24,6 +27,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.TreeSet;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.phoenix.vfs.IMediaResource;
@@ -951,6 +955,28 @@ public class util {
         DecimalFormat df = new DecimalFormat(String.valueOf(zeros));
         return df.format(num);
     }
+
+    public static String MD5(String md5) {
+        try {
+            byte[] bytesOfMessage;  
+            try {
+                bytesOfMessage = md5.getBytes("UTF-8");
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                byte[] array = md.digest(bytesOfMessage); 
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < array.length; ++i) {
+                    sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+                }
+                return sb.toString();
+
+            } catch (UnsupportedEncodingException ex) {
+                java.util.logging.Logger.getLogger(util.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
+        } catch (NoSuchAlgorithmException e) {
+        }
+        return null;
+    }     
     
 }
 

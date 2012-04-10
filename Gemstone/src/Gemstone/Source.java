@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -411,9 +412,12 @@ public class Source {
     //load or build a view from the saved Flow settings
     public static ViewFolder LoadView(String ViewName){
         // if Caching ON - check if it is in the cache and return it is it is - else continue and build/load
+        String md5Key = ViewtoMD5(ViewName);
         if (Flow.GetTrueFalseOption(ViewName, Const.FlowViewCache, Boolean.FALSE)){
-            if (ViewCache.containsKey(ViewName)){
-                return (ViewFolder) ViewCache.get(ViewName);
+            //String md5Key = ViewtoMD5(ViewName);
+            if (md5Key!=null && ViewCache.containsKey(md5Key)){
+                LOG.debug("LoadView: " + ViewName + " Using Cached view for Key '" + md5Key + "'");
+                return (ViewFolder) ViewCache.get(md5Key);
             }
         }
         SourceUI mySource = new SourceUI(ViewName);
@@ -513,7 +517,8 @@ public class Source {
         DescribeViewToLog(view, ViewName);
         // if Caching ON - store this view in the cache for future retrieval
         if (Flow.GetTrueFalseOption(ViewName, Const.FlowViewCache, Boolean.FALSE)){
-            ViewCache.put(ViewName, view);
+            LOG.debug("LoadView: " + ViewName + " Storing Cached view for Key '" + md5Key + "'");
+            ViewCache.put(md5Key, view);
         }
         return view;
     }
@@ -629,6 +634,22 @@ public class Source {
             }
             dl.add(util.repeat(" ", Indent) + " - " + preFormat + " = '" + ci.getOption(opt).getString(SourceUI.OptionNotSet) + "'");
         }
+    }
+    public static String ViewtoMD5(String ViewName){
+        //output the view settings in a md5 hash to create a unique key
+        String s = "";
+        Properties MD5Props = new Properties();
+        String PropLocation = Flow.GetFlowBaseProp(ViewName) +  Const.PropDivider;
+        util.LoadProperties(PropLocation + Const.FlowPathFilters, MD5Props);
+        util.LoadSubProperties(PropLocation + Const.FlowPathFilters, MD5Props);
+        util.LoadProperties(PropLocation + Const.FlowSource, MD5Props);
+        util.LoadSubProperties(PropLocation + Const.FlowSource, MD5Props);
+        util.LoadProperties(PropLocation + Const.FlowSourceUI, MD5Props);
+        util.LoadSubProperties(PropLocation + Const.FlowSourceUI, MD5Props);
+        for (String Prop:MD5Props.stringPropertyNames()){
+            s = s + Prop + "=" + MD5Props.getProperty(Prop) + "|";
+        }
+        return util.MD5(s);
     }
     
     public static ArrayList<String> GetRatings(ViewFolder Folder){
