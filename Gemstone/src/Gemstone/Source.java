@@ -42,6 +42,7 @@ public class Source {
     public static HashMap<String,String> InternalMediaTypeFilters = new HashMap<String,String>();
     public static HashMap<String,String> InternalGroupsList = new HashMap<String,String>();
     public static HashMap<String,String> InternalSortsList = new HashMap<String,String>();
+    public static HashMap<String,ViewFolder> ViewCache = new HashMap<String,ViewFolder>();
     
     //add a SORT or GROUP including the Label to use optionally (internal Label will be used otherwise)
     public static void AddOrganizerType(String OrgName, String OrgType){
@@ -409,6 +410,12 @@ public class Source {
     
     //load or build a view from the saved Flow settings
     public static ViewFolder LoadView(String ViewName){
+        // if Caching ON - check if it is in the cache and return it is it is - else continue and build/load
+        if (Flow.GetTrueFalseOption(ViewName, Const.FlowViewCache, Boolean.FALSE)){
+            if (ViewCache.containsKey(ViewName)){
+                return (ViewFolder) ViewCache.get(ViewName);
+            }
+        }
         SourceUI mySource = new SourceUI(ViewName);
         ViewFolder view = null;
         //check if the flow has a presentation saved
@@ -504,7 +511,21 @@ public class Source {
         }
         LOG.debug("LoadView: View Created as follows....");
         DescribeViewToLog(view, ViewName);
+        // if Caching ON - store this view in the cache for future retrieval
+        if (Flow.GetTrueFalseOption(ViewName, Const.FlowViewCache, Boolean.FALSE)){
+            ViewCache.put(ViewName, view);
+        }
         return view;
+    }
+    
+    public static void ViewCacheRemove(String ViewName){
+        if (ViewCache.containsKey(ViewName)){
+            ViewCache.remove(ViewName);
+        }
+    }
+
+    public static void ViewCacheClear(){
+        ViewCache.clear();
     }
 
     public static Boolean IsLastLevel(ViewFolder view){

@@ -35,6 +35,7 @@ public class Const {
     public static final String FlowTypeDefault = "Cover Flow";
     public static final String FlowSourceNotFound = "Flow Source Not Found";
     public static final String FlowSourceDefaultName = "Default";
+    public static final String FlowViewCache = "FlowViewCache";
     public static final String Weather = "Weather";
     public static final String FlowSourceUI = "SourceUI";
     public static final String FlowPresentation = "FlowPresentation";
