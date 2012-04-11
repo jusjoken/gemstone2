@@ -524,8 +524,9 @@ public class Source {
     }
     
     public static void ViewCacheRemove(String ViewName){
-        if (ViewCache.containsKey(ViewName)){
-            ViewCache.remove(ViewName);
+        String md5Key = ViewtoMD5(ViewName);
+        if (md5Key!=null && ViewCache.containsKey(md5Key)){
+            ViewCache.remove(md5Key);
         }
     }
 
