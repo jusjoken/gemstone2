@@ -14,14 +14,12 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -59,16 +57,12 @@ public class ADMAction {
     private static final String VarTypeStatic = "VarTypeStatic";
     private static final String VarTypeSetProp = "VarTypeSetProp";
     private Boolean AdvancedOnly = Boolean.FALSE;
-    private Boolean DiamondOnly = Boolean.FALSE;
-    private Boolean GemstoneOnly = Boolean.FALSE;
     private Boolean InternalOnly = Boolean.FALSE;
     private static Map<String,ADMAction> ActionList = new LinkedHashMap<String,ADMAction>();
     public static final String WidgetbySymbol = "ExecuteWidget";
     public static final String BrowseVideoFolder = "ExecuteBrowseVideoFolder";
     public static final String StandardMenuAction = "ExecuteStandardMenuAction";
     public static final String TVRecordingView = "ExecuteTVRecordingView";
-    public static final String DiamondDefaultFlows = "ExecuteDiamondDefaultFlow";
-    public static final String DiamondCustomFlows = "ExecuteDiamondCustomFlow";
     public static final String GemstoneFlow = "ExecuteGemstoneFlow";
     public static final String BrowseFileFolderLocal = "ExecuteBrowseFileFolderLocal";
     public static final String BrowseFileFolderServer = "ExecuteBrowseFileFolderServer";
@@ -82,25 +76,22 @@ public class ADMAction {
     public static final String DynamicTVRecordingsList = "admDynamicTVRecordingsList";
     public static final String DynamicVideoPlaylist = "admDynamicVideoPlaylist";
     public static final String DynamicMusicPlaylist = "admDynamicMusicPlaylist";
-    public static final String DynamicDiamondCustomFlows = "admDynamicDiamondCustomFlows";
     public static final String DynamicGemstoneFlows = "admDynamicGemstoneFlows";
     public static final String ActionCategoryShowAll = "admActionCategoryShowAll";
     public static final String ActionCategoryOther = "Other (no category)";
     
 
-    public ADMAction(String Type, Boolean GemstoneOnly, Boolean DiamondOnly, Boolean AdvancedOnly, String ButtonText){
-        this(Type,GemstoneOnly,DiamondOnly,AdvancedOnly,ButtonText,"Action",Blank);
+    public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText){
+        this(Type,AdvancedOnly,ButtonText,"Action",Blank);
     }
 
-    public ADMAction(String Type, Boolean GemstoneOnly, Boolean DiamondOnly, Boolean AdvancedOnly, String ButtonText, String FieldTitle){
-        this(Type,GemstoneOnly,DiamondOnly,AdvancedOnly,ButtonText,FieldTitle,Blank);
+    public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle){
+        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank);
     }
 
-    public ADMAction(String Type, Boolean GemstoneOnly, Boolean DiamondOnly, Boolean AdvancedOnly, String ButtonText, String FieldTitle, String WidgetSymbol){
+    public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle, String WidgetSymbol){
         this.Type = Type;
         this.AdvancedOnly = AdvancedOnly;
-        this.DiamondOnly = DiamondOnly;
-        this.GemstoneOnly = GemstoneOnly;
         this.ButtonText = ButtonText;
         this.FieldTitle = FieldTitle;
         this.WidgetSymbol = WidgetSymbol;
@@ -110,99 +101,77 @@ public class ADMAction {
         //Clear existing Actions if any
         ActionList.clear();
         //Create the Actions for ADM to use
-        ActionList.put(ActionTypeDefault, new ADMAction(ActionTypeDefault,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"None"));
+        ActionList.put(ActionTypeDefault, new ADMAction(ActionTypeDefault,Boolean.FALSE,"None"));
 
-        ActionList.put(WidgetbySymbol, new ADMAction(WidgetbySymbol,Boolean.FALSE,Boolean.FALSE,Boolean.TRUE,"Execute Widget by Symbol", "Action"));
+        ActionList.put(WidgetbySymbol, new ADMAction(WidgetbySymbol,Boolean.TRUE,"Execute Widget by Symbol", "Action"));
 
-        ActionList.put(BrowseVideoFolder, new ADMAction(BrowseVideoFolder,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"Video Browser with specific Folder","Video Browser Folder","OPUS4A-174637"));
+        ActionList.put(BrowseVideoFolder, new ADMAction(BrowseVideoFolder,Boolean.FALSE,"Video Browser with specific Folder","Video Browser Folder","OPUS4A-174637"));
         ActionList.get(BrowseVideoFolder).ActionVariables.add(new ActionVariable(VarTypeGlobal,"gCurrentVideoBrowserFolder", UseAttributeValue));
         ActionList.get(BrowseVideoFolder).ActionCategories.add("Video");
 
 
-        ActionList.put(StandardMenuAction, new ADMAction(StandardMenuAction,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"Execute Standard Sage Menu Action", "Standard Action"));
+        ActionList.put(StandardMenuAction, new ADMAction(StandardMenuAction,Boolean.FALSE,"Execute Standard Sage Menu Action", "Standard Action"));
 
-        ActionList.put(TVRecordingView, new ADMAction(TVRecordingView,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"Launch Specific TV Recordings View", "TV Recordings View","OPUS4A-174116"));
+        ActionList.put(TVRecordingView, new ADMAction(TVRecordingView,Boolean.FALSE,"Launch Specific TV Recordings View", "TV Recordings View","OPUS4A-174116"));
         ActionList.get(TVRecordingView).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ViewFilter", UseAttributeValue));
         ActionList.get(TVRecordingView).ActionCategories.add("TV");
 
-        ActionList.put(DynamicList, new ADMAction(DynamicList,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"Dynamic List Item", "Dynamic List Type"));
+        ActionList.put(DynamicList, new ADMAction(DynamicList,Boolean.FALSE,"Dynamic List Item", "Dynamic List Type"));
 
-        ActionList.put(DynamicTVRecordingsList, new ADMAction(DynamicTVRecordingsList,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"DynamicTVRecordingsList", "DynamicTVRecordingsList"));
+        ActionList.put(DynamicTVRecordingsList, new ADMAction(DynamicTVRecordingsList,Boolean.FALSE,"DynamicTVRecordingsList", "DynamicTVRecordingsList"));
         ActionList.get(DynamicTVRecordingsList).InternalOnly = Boolean.TRUE;
 
-        ActionList.put(DynamicVideoPlaylist, new ADMAction(DynamicVideoPlaylist,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"DynamicVideoPlaylist", "DynamicVideoPlaylist"));
+        ActionList.put(DynamicVideoPlaylist, new ADMAction(DynamicVideoPlaylist,Boolean.FALSE,"DynamicVideoPlaylist", "DynamicVideoPlaylist"));
         ActionList.get(DynamicVideoPlaylist).InternalOnly = Boolean.TRUE;
 
-        ActionList.put(DynamicMusicPlaylist, new ADMAction(DynamicMusicPlaylist,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"DynamicMusicPlaylist", "DynamicMusicPlaylist"));
+        ActionList.put(DynamicMusicPlaylist, new ADMAction(DynamicMusicPlaylist,Boolean.FALSE,"DynamicMusicPlaylist", "DynamicMusicPlaylist"));
         ActionList.get(DynamicMusicPlaylist).InternalOnly = Boolean.TRUE;
 
-        if (ADMDiamond.IsDiamondLegacy()){
-            ActionList.put(DynamicDiamondCustomFlows, new ADMAction(DynamicDiamondCustomFlows,Boolean.FALSE,Boolean.TRUE,Boolean.FALSE,"DynamicDiamondCustomFlows", "DynamicDiamondCustomFlows"));
-            ActionList.get(DynamicDiamondCustomFlows).InternalOnly = Boolean.TRUE;
-        }
-
-        if (ADMgemcalls.Isgemstone()){
-            ActionList.put(DynamicGemstoneFlows, new ADMAction(DynamicGemstoneFlows,Boolean.TRUE,Boolean.FALSE,Boolean.FALSE,"DynamicGemstoneFlows", "DynamicGemstoneFlows"));
-            ActionList.get(DynamicGemstoneFlows).InternalOnly = Boolean.TRUE;
-        }
+        ActionList.put(DynamicGemstoneFlows, new ADMAction(DynamicGemstoneFlows,Boolean.FALSE,"DynamicGemstoneFlows", "DynamicGemstoneFlows"));
+        ActionList.get(DynamicGemstoneFlows).InternalOnly = Boolean.TRUE;
         
-        ActionList.put(LaunchPlayList, new ADMAction(LaunchPlayList,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"LaunchPlayList", "LaunchPlayList","OPUS4A-183733"));
+        ActionList.put(LaunchPlayList, new ADMAction(LaunchPlayList,Boolean.FALSE,"LaunchPlayList", "LaunchPlayList","OPUS4A-183733"));
         ActionList.get(LaunchPlayList).InternalOnly = Boolean.TRUE;
         ActionList.get(LaunchPlayList).ActionVariables.add(new ActionVariable(VarTypeGlobal,"PlaylistItem", UseAttributeObjectValue));
         ActionList.get(LaunchPlayList).ActionVariables.add(new ActionVariable(VarTypeGlobal,"BasePlaylistUnit", UseAttributeValue));
 
-        if (ADMDiamond.IsDiamondLegacy()){
-            ActionList.put(DiamondDefaultFlows, new ADMAction(DiamondDefaultFlows,Boolean.FALSE,Boolean.TRUE,Boolean.FALSE,"Diamond Default Flow", "Diamond Default Flow"));
-            ActionList.get(DiamondDefaultFlows).ActionCategories.add("Video");
-            ActionList.get(DiamondDefaultFlows).ActionCategories.add("Diamond");
-        }
+        ActionList.put(GemstoneFlow, new ADMAction(GemstoneFlow,Boolean.FALSE,"Gemstone Flow", "Gemstone Flow","AOSCS-679216"));
+        ActionList.get(GemstoneFlow).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ViewCell", UseAttributeValue));
+        ActionList.get(GemstoneFlow).ActionCategories.add("Video");
+        ActionList.get(GemstoneFlow).ActionCategories.add("TV");
+        ActionList.get(GemstoneFlow).ActionCategories.add("Gemstone");
 
-        if (ADMDiamond.IsDiamondLegacy()){
-            ActionList.put(DiamondCustomFlows, new ADMAction(DiamondCustomFlows,Boolean.FALSE,Boolean.TRUE,Boolean.FALSE,"Diamond Custom Flow", "Diamond Custom Flow","AOSCS-679216"));
-            ActionList.get(DiamondCustomFlows).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ViewCell", UseAttributeValue));
-            ActionList.get(DiamondCustomFlows).ActionCategories.add("Video");
-            ActionList.get(DiamondCustomFlows).ActionCategories.add("Diamond");
-        }
-
-        if (ADMgemcalls.Isgemstone()){
-            ActionList.put(GemstoneFlow, new ADMAction(GemstoneFlow,Boolean.TRUE,Boolean.TRUE,Boolean.FALSE,"Gemstone Flow", "Gemstone Flow","AOSCS-679216"));
-            ActionList.get(GemstoneFlow).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ViewCell", UseAttributeValue));
-            ActionList.get(GemstoneFlow).ActionCategories.add("Video");
-            ActionList.get(GemstoneFlow).ActionCategories.add("TV");
-            ActionList.get(GemstoneFlow).ActionCategories.add("Gemstone");
-        }
-
-        ActionList.put(BrowseFileFolderLocal, new ADMAction(BrowseFileFolderLocal,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"File Browser: Local","Local File Path","BASE-51703"));
+        ActionList.put(BrowseFileFolderLocal, new ADMAction(BrowseFileFolderLocal,Boolean.FALSE,"File Browser: Local","Local File Path","BASE-51703"));
         ActionList.get(BrowseFileFolderLocal).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
         ActionList.get(BrowseFileFolderLocal).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xLocal"));
         ActionList.get(BrowseFileFolderLocal).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/local", UseAttributeValue));
         ActionList.get(BrowseFileFolderLocal).ActionCategories.add("File Systems");
 
-        ActionList.put(BrowseFileFolderServer, new ADMAction(BrowseFileFolderServer,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"File Browser: Server","Server File Path","BASE-51703"));
+        ActionList.put(BrowseFileFolderServer, new ADMAction(BrowseFileFolderServer,Boolean.FALSE,"File Browser: Server","Server File Path","BASE-51703"));
         ActionList.get(BrowseFileFolderServer).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
         ActionList.get(BrowseFileFolderServer).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xServer"));
         ActionList.get(BrowseFileFolderServer).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/server", UseAttributeValue));
         ActionList.get(BrowseFileFolderServer).ActionCategories.add("File Systems");
 
-        ActionList.put(BrowseFileFolderImports, new ADMAction(BrowseFileFolderImports,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"File Browser: Imports","Imports File Path","BASE-51703"));
+        ActionList.put(BrowseFileFolderImports, new ADMAction(BrowseFileFolderImports,Boolean.FALSE,"File Browser: Imports","Imports File Path","BASE-51703"));
         ActionList.get(BrowseFileFolderImports).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
         ActionList.get(BrowseFileFolderImports).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xImports"));
         ActionList.get(BrowseFileFolderImports).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/imports", UseAttributeValue));
         ActionList.get(BrowseFileFolderImports).ActionCategories.add("File Systems");
 
-        ActionList.put(BrowseFileFolderRecDir, new ADMAction(BrowseFileFolderRecDir,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"File Browser: Recordings","Recording File Path","BASE-51703"));
+        ActionList.put(BrowseFileFolderRecDir, new ADMAction(BrowseFileFolderRecDir,Boolean.FALSE,"File Browser: Recordings","Recording File Path","BASE-51703"));
         ActionList.get(BrowseFileFolderRecDir).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
         ActionList.get(BrowseFileFolderRecDir).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xRecDirs"));
         ActionList.get(BrowseFileFolderRecDir).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/rec_dirs", UseAttributeValue));
         ActionList.get(BrowseFileFolderRecDir).ActionCategories.add("File Systems");
 
-        ActionList.put(BrowseFileFolderNetwork, new ADMAction(BrowseFileFolderNetwork,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"File Browser: Network","Network File Path","BASE-51703"));
+        ActionList.put(BrowseFileFolderNetwork, new ADMAction(BrowseFileFolderNetwork,Boolean.FALSE,"File Browser: Network","Network File Path","BASE-51703"));
         ActionList.get(BrowseFileFolderNetwork).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
         ActionList.get(BrowseFileFolderNetwork).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xNetwork"));
         ActionList.get(BrowseFileFolderNetwork).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/network", UseAttributeValue));
         ActionList.get(BrowseFileFolderNetwork).ActionCategories.add("File Systems");
 
-        ActionList.put(LaunchExternalApplication, new ADMAction(LaunchExternalApplication,Boolean.FALSE,Boolean.FALSE,Boolean.FALSE,"Launch External Application", "Application Settings"));
+        ActionList.put(LaunchExternalApplication, new ADMAction(LaunchExternalApplication,Boolean.FALSE,"Launch External Application", "Application Settings"));
 
         //also load the actions lists - only needs loaded at startup
         //clear the lists
@@ -216,10 +185,6 @@ public class ADMAction {
         LoadStandardActionList();
         LoadDynamicLists();
 
-        if (ADMDiamond.IsDiamondLegacy()){
-            ADMDiamond.LoadDiamondDefaultFlows();
-        }
-
         LoadSageTVRecordingViews();
     }
     
@@ -227,8 +192,6 @@ public class ADMAction {
     public static String GetBrowseVideoFolder(){ return BrowseVideoFolder; }
     public static String GetStandardMenuAction(){ return StandardMenuAction; }
     public static String GetTVRecordingView(){ return TVRecordingView; }
-    public static String GetDiamondCustomFlows(){ return DiamondCustomFlows; }
-    public static String GetDiamondDefaultFlows(){ return DiamondDefaultFlows; }
     public static String GetGemstoneFlow(){ return GemstoneFlow; }
     public static String GetBrowseFileFolderLocal(){ return BrowseFileFolderLocal; }
     public static String GetBrowseFileFolderServer(){ return BrowseFileFolderServer; }
@@ -257,14 +220,6 @@ public class ADMAction {
         return ActionList.get(Type).AdvancedOnly;
     }
     
-    public static Boolean GetDiamondOnly(String Type){
-        return ActionList.get(Type).DiamondOnly;
-    }
-    
-    public static Boolean GetGemstoneOnly(String Type){
-        return ActionList.get(Type).GemstoneOnly;
-    }
-    
     public static Boolean GetInternalOnly(String Type){
         return ActionList.get(Type).InternalOnly;
     }
@@ -282,14 +237,6 @@ public class ADMAction {
                 }
             }else if (GetInternalOnly(Item)){
                 //do not add these types of items as they should not show on any lists
-            }else if (GetDiamondOnly(Item)){
-                if (ADMDiamond.IsDiamond()){
-                    tempList.add(Item);
-                }
-            }else if (GetGemstoneOnly(Item)){
-                if (ADMgemcalls.Isgemstone()){
-                    tempList.add(Item);
-                }
             }else{
                 tempList.add(Item);
             }
@@ -329,10 +276,6 @@ public class ADMAction {
         }else{
             if(tType.equals(TVRecordingView)){
                 return GetSageTVRecordingViewsActionButtonText(tAttribute);
-            }else if(tType.equals(DiamondDefaultFlows)){
-                return GetButtonText(tType) + " - " + GetAttributeButtonText(tType, tAttribute, IgnoreAdvanced);
-            }else if(tType.equals(DiamondCustomFlows)){
-                return GetButtonText(tType) + " - " + GetAttributeButtonText(tType, tAttribute, IgnoreAdvanced);
             }else if(tType.equals(GemstoneFlow)){
                 return GetButtonText(tType) + " - " + GetAttributeButtonText(tType, tAttribute, IgnoreAdvanced);
             }else{
@@ -363,21 +306,13 @@ public class ADMAction {
             }
         }else if(Type.equals(TVRecordingView)){
             return GetSageTVRecordingViewsButtonText(Attribute);
-        }else if(Type.equals(DiamondDefaultFlows)){
-            if (ADMutil.IsAdvancedMode() && !IgnoreAdvanced){
-                return ADMDiamond.DiamondDefaultFlows.get(Attribute).ButtonText + " \n  (" + Attribute + ")";
-            }else{
-                return ADMDiamond.DiamondDefaultFlows.get(Attribute).ButtonText;
-            }
         }else if(Type.equals(DynamicList)){
             return DynamicLists.get(Attribute);
         }else if(Type.equals(LaunchPlayList)){
             //should not be used as this is an internal only item and should not be displayed
             return "Invalid use of this Internal PlayList item";
-        }else if(Type.equals(DiamondCustomFlows)){
-            return ADMDiamond.GetViewName(Attribute);
         }else if(Type.equals(GemstoneFlow)){
-            return ADMgemcalls.GetFlowName(Attribute);
+            return Flow.GetFlowName(Attribute);
         }else if(Type.equals(LaunchExternalApplication)){
             if (Attribute.isEmpty()){
                 return "Configure";
@@ -491,18 +426,10 @@ public class ADMAction {
         DynamicLists.put(DynamicMusicPlaylist, "Music Playlist");
         ActionList.get(DynamicMusicPlaylist).ActionCategories.add("Music");
 
-        if (ADMDiamond.IsDiamondLegacy()){
-            DynamicLists.put(DynamicDiamondCustomFlows, "Diamond Custom Flows");
-            ActionList.get(DynamicDiamondCustomFlows).ActionCategories.add("Diamond");
-            ActionList.get(DynamicDiamondCustomFlows).ActionCategories.add("Video");
-        }
-
-        if (ADMgemcalls.Isgemstone()){
-            DynamicLists.put(DynamicGemstoneFlows, "Gemstone Flows");
-            ActionList.get(DynamicGemstoneFlows).ActionCategories.add("Gemstone");
-            ActionList.get(DynamicGemstoneFlows).ActionCategories.add("Video");
-            ActionList.get(DynamicGemstoneFlows).ActionCategories.add("TV");
-        }
+        DynamicLists.put(DynamicGemstoneFlows, "Gemstone Flows");
+        ActionList.get(DynamicGemstoneFlows).ActionCategories.add("Gemstone");
+        ActionList.get(DynamicGemstoneFlows).ActionCategories.add("Video");
+        ActionList.get(DynamicGemstoneFlows).ActionCategories.add("TV");
     }
     
     public static Collection<String> GetDynamicListItems(String dParent, String Attribute){
@@ -541,18 +468,9 @@ public class ADMAction {
             TempMenuItems = GetPlayList(Boolean.FALSE, dParent);
             System.out.println("ADM: aGetDynamicListItems: Parent '" + dParent + "' Attribute '" + Attribute + "' Items '" + TempMenuItems + "'");
             return TempMenuItems;
-        }else if(Attribute.equals(DynamicDiamondCustomFlows)){
-            Counter = 0;
-            for (String vFlow: ADMDiamond.GetCustomViews()){
-                ItemName = dParent + Counter.toString();
-                ADMMenuNode.CreateTempMenuItem(ItemName, dParent, DiamondCustomFlows, vFlow, GetAttributeButtonText(DiamondCustomFlows, vFlow, Boolean.TRUE), Counter);
-                TempMenuItems.add(ItemName);
-                Counter++;
-            }
-            return TempMenuItems;
         }else if(Attribute.equals(DynamicGemstoneFlows)){
             Counter = 0;
-            for (String vFlow: ADMgemcalls.GetFlows()){
+            for (String vFlow: Flow.GetFlows()){
                 ItemName = dParent + Counter.toString();
                 ADMMenuNode.CreateTempMenuItem(ItemName, dParent, GemstoneFlow, vFlow, GetAttributeButtonText(GemstoneFlow, vFlow, Boolean.TRUE), Counter);
                 TempMenuItems.add(ItemName);
@@ -739,12 +657,8 @@ public class ADMAction {
             return SageTVRecordingViews.keySet();
         }else if(Type.equals(DynamicList)){
             return DynamicLists.keySet();
-        }else if(Type.equals(DiamondDefaultFlows)){
-            return ADMDiamond.DefaultFlow.ListSorted.values();
-        }else if(Type.equals(DiamondCustomFlows)){
-            return ADMDiamond.GetCustomViews();
         }else if(Type.equals(GemstoneFlow)){
-            return ADMgemcalls.GetFlows();
+            return Flow.GetFlows();
         }else{
             return Collections.emptyList();
         }
@@ -756,10 +670,6 @@ public class ADMAction {
         }else if(Type.equals(TVRecordingView)){
             return Boolean.TRUE;
         }else if(Type.equals(DynamicList)){
-            return Boolean.TRUE;
-        }else if(Type.equals(DiamondDefaultFlows)){
-            return Boolean.TRUE;
-        }else if(Type.equals(DiamondCustomFlows)){
             return Boolean.TRUE;
         }else if(Type.equals(GemstoneFlow)){
             return Boolean.TRUE;
@@ -824,7 +734,7 @@ public class ADMAction {
 
     public static void LoadStandardActionList(){
         Properties CustomActionProps = new Properties();
-        String CustomActionPropsPath = ADMutil.GetADMDefaultsLocation() + File.separator + StandardActionListFile;
+        String CustomActionPropsPath = ADMutil.ADMDefaultsLocation() + File.separator + StandardActionListFile;
         //read the properties from the properties file
         try {
             FileInputStream in = new FileInputStream(CustomActionPropsPath);
@@ -859,20 +769,6 @@ public class ADMAction {
             for (String tCustomActionName : CustomActionNames){
                 System.out.println("ADM: aLoadStandardActionList: loading '" + tCustomActionName + "' Custom Menu Action");
                 PropLocation = SageADMCustomActionsPropertyLocation + "/" + tCustomActionName;
-                //check for legacy Diamond only actions
-                Boolean tDiamondOnly = ADMutil.GetPropertyAsBoolean(PropLocation + "/DiamondOnly", Boolean.FALSE);
-                if (!ADMDiamond.IsDiamondLegacy() && tDiamondOnly){
-                    //as Diamond is not installed and this is a DiamondOnly Action - Skip it
-                    System.out.println("ADM: aLoadStandardActionList: Skipping DiamondOnly item '" + tCustomActionName + "'");
-                    continue;
-                }
-                //check for gemstone only actions
-                Boolean tGemstoneOnly = ADMutil.GetPropertyAsBoolean(PropLocation + "/GemstoneOnly", Boolean.FALSE);
-                if (!ADMgemcalls.Isgemstone() && tGemstoneOnly){
-                    //as gemstone is not installed and this is a GemstoneOnly Action - Skip it
-                    System.out.println("ADM: aLoadStandardActionList: Skipping GemstoneOnly item '" + tCustomActionName + "'");
-                    continue;
-                }
                 String tButtonText = ADMutil.GetProperty(PropLocation + "/ButtonText", ADMutil.ButtonTextDefault);
                 String tWidgetSymbol = ADMutil.GetProperty(PropLocation + "/WidgetSymbol", "");
                 String tCopyModeAttributeVar = ADMutil.GetProperty(PropLocation + "/CopyModeAttributeVar", Blank);

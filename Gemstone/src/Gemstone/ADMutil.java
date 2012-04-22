@@ -24,7 +24,6 @@ import java.util.TreeMap;
 
 public class ADMutil {
 
-    public static String Version = "0.502";
     public static final String ListToken = ":&&:";
     public static final String PropertyComment = "---ADM MenuItem Properties - Do Not Manually Edit---";
     public static final String PropertyBackupFile = "ADMbackup.properties";
@@ -38,8 +37,6 @@ public class ADMutil {
     public static final String UseQLMPropertyLocation = "ADM/settings/use_qlm";
     public static final String ADMCopyModePropertyLocation = "ADM/settings/admcopymode";
     public static final String TopMenu = "xTopMenu";
-//    public static final String ADMLocation = sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + "userdata" + File.separator + "ADM";
-//    public static final String ADMDefaultsLocation = sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + "STVs" + File.separator + "ADM" + File.separator + "defaults";
     private static final String SageBGVariablesListFile = "ADMSageBGVariables.properties";
     private static final String SageSubMenusLevel1ListFile = "ADMSageSubMenus1.properties";
     private static final String SageSubMenusLevel2ListFile = "ADMSageSubMenus2.properties";
@@ -643,26 +640,10 @@ public class ADMutil {
         }
     }
             
-    public static String GetVersion() {
-        return Version;
-    }
-    
     public static String GetOptionNotFound(){
         return ADMutil.OptionNotFound;
     }
     
-    public static Float[] GetMenuInsets(){
-        Float[] Insets = new Float[]{0f,0f,0f,0f};
-        Float[] DiamondInsets = new Float[]{0f,0f,0.015f,0f};
-        if (ADMDiamond.IsDiamond()){
-            System.out.println("ADM: uGetMenuInsets: Diamond");
-            return DiamondInsets;
-        }else{
-            System.out.println("ADM: uGetMenuInsets:");
-            return Insets;
-        }
-    }
-
     public static String EvaluateAttribute(String Attribute){
         //System.out.println("ADM: uEvaluateAttribute: Attribute = '" + Attribute + "'");
         Object[] passvalue = new Object[1];
@@ -1017,24 +998,12 @@ public class ADMutil {
     }
 
     public static String ADMLocation(){
-        //return sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + "userdata" + File.separator + "ADM";
-        return getSageTVRootDir() + File.separator + "userdata" + File.separator + "ADM";
+        return util.UserDataLocation();
     }
     public static String ADMDefaultsLocation(){
-        //return  sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + "STVs" + File.separator + "ADM" + File.separator + "defaults";
-        return  getSageTVRootDir() + File.separator + "STVs" + File.separator + "ADM" + File.separator + "defaults";
-    }
-    public static String GetADMLocation() {
-        return ADMLocation();
-    }
-    public static String GetADMDefaultsLocation(){
-        return ADMDefaultsLocation();
+        return util.DefaultsLocation();
     }
 
-    public static String getSageTVRootDir() {
-        return new File(System.getProperty(SageADMBasePropertyLocation + "/sagetvHomeDir", ".")).toString();
-    }    
-   
 //    public static String[] GetSubpropertiesThatAreBranchesUI(String property)
 //	throws InvocationTargetException 
 //	{
@@ -1075,4 +1044,19 @@ public class ADMutil {
 //        
 //
 //    }
+
+    public static Boolean ShowWidgetswithQLM(){
+        //ensure at minimum that the option is enabled in QLM
+        Boolean OptionOn = util.GetPropertyAsBoolean(ADMutil.SageADMSettingsPropertyLocation + "/qlm_show_widgets", Boolean.FALSE);
+        if (OptionOn){
+            Boolean tReturn = Boolean.FALSE;
+            tReturn = Widget.GetUseWidgets();
+            if (tReturn){
+                tReturn = Widget.ShowWidgets();
+            }
+            return tReturn;
+        }
+        return Boolean.FALSE;
+    }
+
 }

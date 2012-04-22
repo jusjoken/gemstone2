@@ -211,13 +211,6 @@ public class ADMCopyMode {
                 }else{
                     FinalAction = "xAll";
                 }
-            }else if (ActionWidget.equals(ADMAction.GetWidgetSymbol(ADMAction.DiamondCustomFlows))){
-                //Diamond custom flow found so save the Attribute value
-                FinalType = ADMAction.DiamondCustomFlows;
-                FinalAction = ADMutil.OptionNotFound;
-                
-                //TODO: need to find a way to determine the selected Flow
-                
             }else if (ADMAction.CustomAction.WidgetSymbols.contains(ActionWidget)){
                 //CustomAction found so determine which one 
                 Boolean tFound = Boolean.FALSE;
@@ -241,9 +234,6 @@ public class ADMCopyMode {
                 }
             }else if (ADMAction.GetActionList(ADMAction.StandardMenuAction).contains(ActionWidget)){
                 FinalType = ADMAction.StandardMenuAction;
-            }else if (ADMAction.GetActionList(ADMAction.DiamondDefaultFlows).contains(ActionWidget)){
-                //save the Widget Symbol as the Action
-                FinalType = ADMAction.DiamondDefaultFlows;
             }else{
             }
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "Type", FinalType);

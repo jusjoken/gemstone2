@@ -1480,34 +1480,11 @@ public class ADMMenuNode {
         }
         
         //buld Diamond Videos Menu
-        if (ADMDiamond.IsDiamond()){
-            String SageTVMenuVideos = "admSageTVVideos";
-            if (ADMDiamond.UseDiamondMovies()){
-                //force the Parent Name to be Movies
-                SetMenuItemButtonText(SageTVMenuVideos, "Movies");
-//                Counter = 0;
-//                String FirstItem = "";
-//                for (String vFlow: Diamond.GetCustomViews()){
-//                    NewMenuItemName = CreateDynamicMenuItem(vFlow, SageTVMenuVideos, ADMAction.DiamondCustomFlows, Counter);
-//                    if (Counter==0){
-//                        FirstItem = NewMenuItemName;
-//                    }
-//                    Counter++;
-//                }
-//                SetMenuItemIsDefault(FirstItem, Boolean.TRUE);
-            }else{
-                //force the Parent Name to be Videos
-                SetMenuItemButtonText(SageTVMenuVideos, "Videos");
-//                for (Diamond.DefaultFlow vFlow: Diamond.DiamondDefaultFlows.values()){
-//                    NewMenuItemName = CreateDynamicMenuItem(vFlow.WidgetSymbol, SageTVMenuVideos, ADMAction.DiamondDefaultFlows, vFlow.SortOrder);
-//                    if (vFlow.Default){
-//                        SetMenuItemIsDefault(NewMenuItemName, Boolean.TRUE);
-//                    }
-//                }
-            }
-            ValidateSubMenuDefault(SageTVMenuVideos);
-            SortKeyUpdate(SageTVMenuVideos);
-        }
+        String SageTVMenuVideos = "admSageTVVideos";
+        SetMenuItemButtonText(SageTVMenuVideos, "Videos");
+        ValidateSubMenuDefault(SageTVMenuVideos);
+        SortKeyUpdate(SageTVMenuVideos);
+
         System.out.println("ADM: mLoadMenuItemDefaults: loading default menu items from '" + DefaultsFullPath + "'");
     }
     
