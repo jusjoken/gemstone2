@@ -84,6 +84,9 @@ public class ADMutil {
     }
     
     public static void InitADM(){
+        //do nothing as this has been moved to api.Load
+    }
+    public static void LoadADM(){
         
         if (!ADMInitComplete) {
             //initiate one time load items
@@ -95,11 +98,11 @@ public class ADMutil {
             try{
                 boolean success = (new File(ADMLocation())).mkdirs();
                 if (success) {
-                    System.out.println("ADM: uInitADM - Directories created for '" + ADMLocation() + "'");
+                    System.out.println("ADM: uLoadADM - Directories created for '" + ADMLocation() + "'");
                    }
 
                 }catch (Exception ex){//Catch exception if any
-                    System.out.println("ADM: uInitADM - error creating '" + ADMLocation() + "'" + ex.getMessage());
+                    System.out.println("ADM: uLoadADM - error creating '" + ADMLocation() + "'" + ex.getMessage());
                 }
             
             //also load the BGVariables for BG Images on Top Level Menus
@@ -124,12 +127,12 @@ public class ADMutil {
             
             ADMInitComplete = true;
 
-            System.out.println("ADM: uInitADM - One Time initialization complete.");
+            System.out.println("ADM: uLoadADM - One Time initialization complete.");
 
         }
         //initiate items that may differ per UIContext - the UI needs to ensure this only gets loaded once
         ADMMenuNode.LoadMenuItemsFromSage();
-        System.out.println("ADM: uInitADM - UI level initialization complete.");
+        System.out.println("ADM: uLoadADM - UI level initialization complete.");
 
     }
     
@@ -154,7 +157,7 @@ public class ADMutil {
         System.out.println("ADM: uClearAll: load default menus");
         ADMMenuNode.LoadMenuItemDefaults();
         System.out.println("ADM: uClearAll: initialize settings");
-        InitADM();
+        LoadADM();
         System.out.println("ADM: uClearAll: complete - settings restored to defaults");
         
     }
@@ -164,7 +167,7 @@ public class ADMutil {
         //clear all the Sage property settings for ADM
         System.out.println("ADM: uReloadADMSettings: reload ADM settings");
         ADMInitComplete = Boolean.FALSE;
-        InitADM();
+        LoadADM();
         System.out.println("ADM: uReloadADMSettings: complete");
         
     }

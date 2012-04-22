@@ -36,6 +36,8 @@ public class api {
     public static void Load(){
         //initialize the Logging 
         InitLogger();
+        //initialize the ADM settings
+        ADMutil.LoadADM();
         
         //generate symbols to be used for new names
         for (int idx = 0; idx < 10; ++idx)
