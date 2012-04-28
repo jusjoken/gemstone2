@@ -643,13 +643,12 @@ public class Source {
         String PropLocation = Flow.GetFlowBaseProp(ViewName) +  Const.PropDivider;
         util.LoadProperties(PropLocation + Const.FlowPathFilters, MD5Props);
         util.LoadSubProperties(PropLocation + Const.FlowPathFilters, MD5Props);
-        util.LoadProperties(PropLocation + Const.FlowSource, MD5Props);
-        util.LoadSubProperties(PropLocation + Const.FlowSource, MD5Props);
         util.LoadProperties(PropLocation + Const.FlowSourceUI, MD5Props);
         util.LoadSubProperties(PropLocation + Const.FlowSourceUI, MD5Props);
         for (String Prop:MD5Props.stringPropertyNames()){
             s = s + Prop + "=" + MD5Props.getProperty(Prop) + "|";
         }
+        s = s + Const.FlowSource + "=" + util.GetProperty(PropLocation + Const.FlowSource,"") + "|";
         LOG.debug("ViewtoMD5: for '" + ViewName + "' from '" + s + "'");
         return util.MD5(s);
     }
