@@ -896,14 +896,12 @@ public class util {
     }
     
     public static void LoadProperties(String PropLocation, Properties PropContainer){
-        LOG.debug("LoadProperties: PropLocation '" + PropLocation + "' current count '" + PropContainer.size() + "'");
         String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreLeaves(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
-        LOG.debug("LoadProperties: PropNames '" + PropNames + "'");
         for (String PropItem: PropNames){
             String tProp = PropLocation + Const.PropDivider + PropItem;
             String tValue = GetProperty(tProp, OptionNotFound);
             PropContainer.put(tProp, tValue);
-            LOG.debug("LoadProperties: '" + tProp + "' = '" + tValue + "'");
+            //LOG.debug("LoadProperties: '" + tProp + "' = '" + tValue + "'");
         }
     }
     public static void LoadSubProperties(String PropLocation, Properties PropContainer){
