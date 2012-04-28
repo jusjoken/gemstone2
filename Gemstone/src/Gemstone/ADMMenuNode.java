@@ -232,6 +232,10 @@ public class ADMMenuNode {
         }
     }
 
+    public static void BGImageCacheClear(){
+        BGCache.clear();
+    }
+    
     public static Object GetMenuItemBGImage(String Name){
         String BGKey = GetMenuItemBGImageFilePath(Name);
         Object BGImage = null;
