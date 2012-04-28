@@ -43,7 +43,8 @@ public class Source {
     public static HashMap<String,String> InternalMediaTypeFilters = new HashMap<String,String>();
     public static HashMap<String,String> InternalGroupsList = new HashMap<String,String>();
     public static HashMap<String,String> InternalSortsList = new HashMap<String,String>();
-    public static HashMap<String,ViewFolder> ViewCache = new HashMap<String,ViewFolder>();
+    public static SoftHashMap ViewCache = new SoftHashMap(3);
+    //public static HashMap<String,ViewFolder> ViewCache = new HashMap<String,ViewFolder>();
     
     //add a SORT or GROUP including the Label to use optionally (internal Label will be used otherwise)
     public static void AddOrganizerType(String OrgName, String OrgType){
@@ -415,9 +416,12 @@ public class Source {
         String md5Key = ViewtoMD5(ViewName);
         if (Flow.GetTrueFalseOption(ViewName, Const.FlowViewCache, Boolean.FALSE)){
             //String md5Key = ViewtoMD5(ViewName);
-            if (md5Key!=null && ViewCache.containsKey(md5Key)){
-                LOG.debug("LoadView: " + ViewName + " Using Cached view for Key '" + md5Key + "'");
-                return (ViewFolder) ViewCache.get(md5Key);
+            if (md5Key!=null){
+                Object tView = ViewCache.get(md5Key);
+                if (tView!=null){
+                    LOG.debug("LoadView: " + ViewName + " Using Cached view for Key '" + md5Key + "'");
+                    return (ViewFolder) tView;
+                }
             }
         }
         SourceUI mySource = new SourceUI(ViewName);
@@ -525,8 +529,12 @@ public class Source {
     
     public static void ViewCacheRemove(String ViewName){
         String md5Key = ViewtoMD5(ViewName);
-        if (md5Key!=null && ViewCache.containsKey(md5Key)){
-            ViewCache.remove(md5Key);
+        if (md5Key!=null){
+            Object tView = ViewCache.get(md5Key);
+            if (tView!=null){
+                LOG.debug("ViewCacheRemove: " + ViewName + " Removing view for Key '" + md5Key + "'");
+                ViewCache.remove(md5Key);
+            }
         }
     }
 

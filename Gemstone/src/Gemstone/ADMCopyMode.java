@@ -4,6 +4,7 @@ package Gemstone;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import sagex.UIContext;
 
 /*
@@ -17,6 +18,7 @@ import sagex.UIContext;
  */
 public class ADMCopyMode {
 
+    static private final Logger LOG = Logger.getLogger(ADMCopyMode.class);
     public static final String SageCurrentMenuItemPropertyLocation = "ADM/currmenuitem/";
 
     //save the current Folder item details to sage properties to assist the copy function
@@ -25,7 +27,7 @@ public class ADMCopyMode {
 
         ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "CurFolderStyle", CurFolderStyle);
         ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "BrowserFileCell", BrowserFileCell);
-        System.out.println("ADM: cSaveFileFolderDetails: CurFolderStyle '" + CurFolderStyle + "' BrowserFileCell '" + BrowserFileCell + "'");
+        LOG.debug("SaveFileFolderDetails: CurFolderStyle '" + CurFolderStyle + "' BrowserFileCell '" + BrowserFileCell + "'");
     }
     
     public static String GetFileFolderDetails(){
@@ -38,10 +40,10 @@ public class ADMCopyMode {
         //determine if Combined mode is on as the path is created differently
         String CurFolderStyle = ADMutil.GetProperty(SageCurrentMenuItemPropertyLocation + "CurFolderStyle", ADMutil.OptionNotFound);
         if (ADMAction.GetFileBrowserType(CurFolderStyle).equals(ADMutil.OptionNotFound)){
-            System.out.println("ADM: cIsFileFolderStyleValid: invalid Style = '" + CurFolderStyle + "'");
+            LOG.debug("IsFileFolderStyleValid: invalid Style = '" + CurFolderStyle + "'");
             return Boolean.FALSE;
         }else{
-            System.out.println("ADM: cIsFileFolderStyleValid: valid Style = '" + CurFolderStyle + "'");
+            LOG.debug("IsFileFolderStyleValid: valid Style = '" + CurFolderStyle + "'");
             return Boolean.TRUE;
         }
     }
@@ -77,11 +79,11 @@ public class ADMCopyMode {
             ADMMenuNode.SetMenuItemSubMenu(tMenuItemName,ADMutil.ListNone);
             ADMMenuNode.SetMenuItemIsActive(tMenuItemName,ADMutil.TriState.YES);
 
-            System.out.println("ADM: cCreateMenuItemfromFileFolderCopyDetails: created '" + tMenuItemName + "' for Parent = '" + Parent + "'");
+            LOG.debug("CreateMenuItemfromFileFolderCopyDetails: created '" + tMenuItemName + "' for Parent = '" + Parent + "'");
             return tMenuItemName;
             
         }else{
-            System.out.println("ADM: cCreateMenuItemfromFileFolderCopyDetails: invalid CurFolderStyle '" + CurFolderStyle + "'");
+            LOG.debug("CreateMenuItemfromFileFolderCopyDetails: invalid CurFolderStyle '" + CurFolderStyle + "'");
             return ADMutil.OptionNotFound;
         }
     }
@@ -97,7 +99,7 @@ public class ADMCopyMode {
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "CurFolder", CurFolder);
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "VideoItem", VideoItem);
         }
-        System.out.println("ADM: cSaveVideoFolderDetails: CurFolder '" + CurFolder + "' VideoItem '" + VideoItem + "'");
+        LOG.debug("SaveVideoFolderDetails: CurFolder '" + CurFolder + "' VideoItem '" + VideoItem + "'");
     }
     
     public static String GetVideoFolderDetails(){
@@ -149,7 +151,7 @@ public class ADMCopyMode {
         ADMMenuNode.SetMenuItemSubMenu(tMenuItemName,ADMutil.ListNone);
         ADMMenuNode.SetMenuItemIsActive(tMenuItemName,ADMutil.TriState.YES);
         
-        System.out.println("ADM: cCreateMenuItemfromVideoFolderCopyDetails: created '" + tMenuItemName + "' for Parent = '" + Parent + "'");
+        LOG.debug("CreateMenuItemfromVideoFolderCopyDetails: created '" + tMenuItemName + "' for Parent = '" + Parent + "'");
         return tMenuItemName;
         
     }
@@ -170,7 +172,7 @@ public class ADMCopyMode {
         UIContext tUIContext = new UIContext(sagex.api.Global.GetUIContextName());
         Object[] Children = sagex.api.WidgetAPI.GetWidgetChildren(tUIContext, CurrentWidgetSymbol);
         for (Object Child : Children){
-            //System.out.println("ADM: cSaveCurrentMenuItemDetails: WidgetName = '" + sagex.api.WidgetAPI.GetWidgetName(MyUIContext,Child) + "' WidgetType '" + sagex.api.WidgetAPI.GetWidgetType(MyUIContext,Child) + "'");
+            //LOG.debug("SaveCurrentMenuItemDetails: WidgetName = '" + sagex.api.WidgetAPI.GetWidgetName(MyUIContext,Child) + "' WidgetType '" + sagex.api.WidgetAPI.GetWidgetType(MyUIContext,Child) + "'");
             List<String> validActions = new LinkedList<String>();
             validActions.add("Action");
             validActions.add("Menu");
@@ -242,7 +244,7 @@ public class ADMCopyMode {
             //no action found so set to DoNothing
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "Type", ADMAction.ActionTypeDefault);
         }
-        System.out.println("ADM: cSaveCurrentMenuItemDetails: ButtonText '" + ButtonText + "' SubMenu '" + SubMenu + "' WidgetSymbol '" + CurrentWidgetSymbol + "' Level '" + Level + "' Type ='" + FinalType + "' Action = '" + FinalAction + "'");
+        LOG.debug("SaveCurrentMenuItemDetails: ButtonText '" + ButtonText + "' SubMenu '" + SubMenu + "' WidgetSymbol '" + CurrentWidgetSymbol + "' Level '" + Level + "' Type ='" + FinalType + "' Action = '" + FinalAction + "'");
     }
     
     //create a new Menu Item from the current Menu Item details
@@ -265,7 +267,7 @@ public class ADMCopyMode {
         }
         ADMMenuNode.SetMenuItemIsActive(tMenuItemName,ADMutil.TriState.YES);
 
-        System.out.println("ADM: cCreateMenuItemfromCopyDetails: created '" + tMenuItemName + "' for Parent = '" + Parent + "'");
+        LOG.debug("CreateMenuItemfromCopyDetails: created '" + tMenuItemName + "' for Parent = '" + Parent + "'");
         return tMenuItemName;
         
     }
@@ -300,10 +302,10 @@ public class ADMCopyMode {
         try {
             tLevel = Integer.valueOf(ADMutil.GetProperty(SageCurrentMenuItemPropertyLocation + "Level", "0"));
         } catch (NumberFormatException ex) {
-            System.out.println("ADM: cGetCurrentMenuItemDetailsLevel: error loading level: " + ADMutil.class.getName() + ex);
+            LOG.debug("GetCurrentMenuItemDetailsLevel: error loading level: " + ADMutil.class.getName() + ex);
             tLevel = 0;
         }
-        //System.out.println("ADM: cGetCurrentMenuItemDetailsLevel: returning level = '" + tLevel + "'");
+        //LOG.debug("GetCurrentMenuItemDetailsLevel: returning level = '" + tLevel + "'");
         return tLevel;
     }
     

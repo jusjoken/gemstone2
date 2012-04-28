@@ -980,7 +980,27 @@ public class util {
         } catch (NoSuchAlgorithmException e) {
         }
         return null;
-    }     
+    }   
     
+    public static void AlertNonCompatiblePlugins(){
+        UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+        //check for CVF
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, "jusjokenCVF")){
+            String tMessage = "CVF Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the CVF Plugin and reload the UI.";
+            PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+        }
+        //check for ADM
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, "jusjokenADM")){
+            String tMessage = "ADM Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the ADM Plugin and reload the UI.";
+            PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+        }
+    }
+    
+    public static void PostSytemMessage(Integer Code, String MessageType, Integer AlertLevel, String Message){
+        Properties MessageProp = new Properties();
+        MessageProp.setProperty("code", Code.toString());
+        MessageProp.setProperty("typename", MessageType);
+        sagex.api.SystemMessageAPI.PostSystemMessage(new UIContext(sagex.api.Global.GetUIContextName()), Code, AlertLevel, Message, MessageProp);
+    }
 }
 

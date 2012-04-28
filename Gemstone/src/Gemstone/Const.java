@@ -68,5 +68,10 @@ public class Const {
     public static final String WrappedFilter = "WrappedFilter";
     public static final String ImageCacheProp = "ImageCache";
     public static final String OptionNotEnabled = "Option Not Enabled";
+    public static final Integer SystemMessagePluginConflictCode = 14001;
+    public static final String SystemMessagePluginConflictName = "Gemstone Plugin Conflict";
+    public static final Integer SystemMessageAlertLevelInfo = 1;
+    public static final Integer SystemMessageAlertLevelWarning = 2;
+    public static final Integer SystemMessageAlertLevelError = 3;
     
 }

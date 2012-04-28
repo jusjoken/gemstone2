@@ -93,7 +93,7 @@ public class ADMMenuNode {
     }
 
     public static String GetMenuItemAction(String Name){
-        //System.out.println("ADM: mGetMenuItemAction for '" + Name + "' = '" + MenuNodeList().get(Name).ActionAttribute + "'");
+        //LOG.debug("GetMenuItemAction for '" + Name + "' = '" + MenuNodeList().get(Name).ActionAttribute + "'");
         try {
             if (MenuNodeList().get(Name).ActionType.equals(ADMAction.LaunchExternalApplication)){
                 return MenuNodeList().get(Name).ActionExternal.GetApplication();
@@ -101,7 +101,7 @@ public class ADMMenuNode {
                 return MenuNodeList().get(Name).ActionAttribute;
             }
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -111,11 +111,11 @@ public class ADMMenuNode {
     }
 
     public static Object GetMenuItemActionObject(String Name){
-        //System.out.println("ADM: mGetMenuItemActionObject for '" + Name + "' = '" + MenuNodeList().get(Name).ActionObject + "'");
+        //LOG.debug("GetMenuItemActionObject for '" + Name + "' = '" + MenuNodeList().get(Name).ActionObject + "'");
         try {
             return MenuNodeList().get(Name).ActionObject;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -129,7 +129,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionType;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -142,7 +142,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -150,7 +150,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetApplication();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -158,7 +158,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetArguments();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -166,7 +166,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetWindowType();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -174,7 +174,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetWaitForExit();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -182,7 +182,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetSageStatus();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -212,7 +212,7 @@ public class ADMMenuNode {
         //see if using a GlobalVariable from a Theme or a path to an image file
         BGImageFile = bBGImageFile;
         BGImageFilePath = ADMutil.GetSageBGFile(bBGImageFile);
-        //System.out.println("ADM: mSetBGImageFileandPath for '" + Name + "' BGImageFile = '" + BGImageFile + "' BGImageFilePath = '" + BGImageFilePath + "'");
+        //LOG.debug("SetBGImageFileandPath for '" + Name + "' BGImageFile = '" + BGImageFile + "' BGImageFilePath = '" + BGImageFilePath + "'");
     }
     
     public static String GetMenuItemBGImageFileButtonText(String Name){
@@ -226,7 +226,7 @@ public class ADMMenuNode {
             try {
                 return MenuNodeList().get(Name).BGImageFile;
             } catch (Exception e) {
-                System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -281,7 +281,8 @@ public class ADMMenuNode {
         Double scalewidth = 1.0;
         Double finalscalewidth = scalewidth * UIWidth;
         try {
-            ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: scale, width: " + finalscalewidth + ", height: -1}", true);
+            //ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: scale, width: " + finalscalewidth + ", height: -1}", true);
+            ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: dummy}", true);
             LOG.debug("CreateBGImage: Image = '" + ThisImage + "' for Key '" + Key + "'");
         } catch (Exception e) {
             LOG.debug("CreateBGImage: phoenix.image.CreateImage FAILED - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "' Error: '" + e + "'");
@@ -300,7 +301,7 @@ public class ADMMenuNode {
     
     //TODO: Create New function that uses this as a Key to lookup the background in a SoftHashMap Cache
     public static String GetMenuItemBGImageFilePath(String Name){
-        //System.out.println("ADM: mGetMenuItemBGImageFilePath for '" + Name + "' returning '" + MenuNodeList().get(Name).BGImageFilePath + "'");
+        //LOG.debug("GetMenuItemBGImageFilePath for '" + Name + "' returning '" + MenuNodeList().get(Name).BGImageFilePath + "'");
         try {
             if (MenuNodeList().get(Name).BGImageFilePath==null){
                 if (MenuNodeList().get(Name).Parent.equals(ADMutil.TopMenu)){
@@ -314,7 +315,7 @@ public class ADMMenuNode {
                 //return MenuNodeList().get(Name).BGImageFilePath;
             }
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -329,14 +330,14 @@ public class ADMMenuNode {
     }
 
     public static String GetMenuItemButtonText(String Name){
-        //System.out.println("ADM: mGetMenuItemButtonText: Name '" + Name + "' NodeListCount = '" + (MenuNode) UIMenuNodeList.get("SAGETV_PROCESS_LOCAL_UI").get(Name) + "' root = '" + UIroot.get("SAGETV_PROCESS_LOCAL_UI").getChildCount() + "'");
+        //LOG.debug("GetMenuItemButtonText: Name '" + Name + "' NodeListCount = '" + (MenuNode) UIMenuNodeList.get("SAGETV_PROCESS_LOCAL_UI").get(Name) + "' root = '" + UIroot.get("SAGETV_PROCESS_LOCAL_UI").getChildCount() + "'");
         if (Name.equals(ADMutil.TopMenu)){
             return "Top Level";
         }else{
             try {
                 return MenuNodeList().get(Name).ButtonText;
             } catch (Exception e) {
-                System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -358,7 +359,7 @@ public class ADMMenuNode {
         try {
             return !MenuNodeList().get(Name).NodeItem.isLeaf();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -367,7 +368,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsActive;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -386,7 +387,7 @@ public class ADMMenuNode {
             // in this case this item is active BUT the parent is not
             return "Yes (Parent: No)";
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -402,19 +403,19 @@ public class ADMMenuNode {
             for (TreeNode pathnode : path){
                 DefaultMutableTreeNode pathnodea = (DefaultMutableTreeNode)pathnode;
                 ADMMenuNode tMenu = (ADMMenuNode)pathnodea.getUserObject();
-                //System.out.println("ADM: mGetMenuItemIsActiveIncludingParent for '" + Name + "' for item = '" + tMenu.ButtonText + "'");
+                //LOG.debug("GetMenuItemIsActiveIncludingParent for '" + Name + "' for item = '" + tMenu.ButtonText + "'");
                 if (tMenu.IsActive.equals(ADMutil.TriState.NO)){
-                    //System.out.println("ADM: mGetMenuItemIsActiveIncludingParent for '" + Name + "' for item = '" + tMenu.ButtonText + "' = NO");
+                    //LOG.debug("GetMenuItemIsActiveIncludingParent for '" + Name + "' for item = '" + tMenu.ButtonText + "' = NO");
                     return ADMutil.TriState.NO;
                 }else if(tMenu.IsActive.equals(ADMutil.TriState.OTHER)){
-                    //System.out.println("ADM: mGetMenuItemIsActiveIncludingParent for '" + Name + "' for item = '" + tMenu.ButtonText + "' = OTHER");
+                    //LOG.debug("GetMenuItemIsActiveIncludingParent for '" + Name + "' for item = '" + tMenu.ButtonText + "' = OTHER");
                     return ADMutil.TriState.OTHER;
                 }
             }
-            //System.out.println("ADM: mGetMenuItemIsActiveIncludingParent for '" + Name + "' YES");
+            //LOG.debug("GetMenuItemIsActiveIncludingParent for '" + Name + "' YES");
             return ADMutil.TriState.YES;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -492,7 +493,7 @@ public class ADMMenuNode {
                 return !MenuNodeList().get(Name).BlockedSageUsersList.contains(SageUser);
             }
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -508,7 +509,7 @@ public class ADMMenuNode {
                 }
                 Save(Name, "BlockedSageUsersList", ADMutil.ConvertListtoString(MenuNodeList().get(Name).BlockedSageUsersList));
             } catch (Exception e) {
-                System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             }
         }
     }
@@ -517,7 +518,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsCreatedNotLoaded;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -530,7 +531,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsTemp;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -543,20 +544,20 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsDefault;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
 
     public static void SetMenuItemIsDefault(String Name, Boolean Setting){
-        //System.out.println("ADM: mSetMenuItemIsDefault: Name '" + Name + "' Setting '" + Setting + "'");
+        //LOG.debug("SetMenuItemIsDefault: Name '" + Name + "' Setting '" + Setting + "'");
         if (Setting==Boolean.TRUE){
             //first clear existing Default settings for Menu Items with the same parent 
             ClearSubMenuDefaults(MenuNodeList().get(Name).Parent);
             Save(Name, "IsDefault", Setting.toString());
-            System.out.println("ADM: mSetMenuItemIsDefault: true Name '" + Name + "' Setting '" + Setting + "'");
+            LOG.debug("SetMenuItemIsDefault: true Name '" + Name + "' Setting '" + Setting + "'");
         }else{
-            //System.out.println("ADM: mSetMenuItemIsDefault: false Name '" + Name + "' Setting '" + Setting + "'");
+            //LOG.debug("SetMenuItemIsDefault: false Name '" + Name + "' Setting '" + Setting + "'");
             Save(Name, "IsDefault", Setting.toString());
             //ensure at least 1 item remaining is a default
             ValidateSubMenuDefault(MenuNodeList().get(Name).Parent);
@@ -587,17 +588,17 @@ public class ADMMenuNode {
                 //no default found so set the first item as the default
                 DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)MenuNodeList().get(bParent).NodeItem.getFirstChild();
                 ADMMenuNode tMenu = (ADMMenuNode)firstChild.getUserObject();
-                System.out.println("ADM: mValidateSubMenuDefault for '" + bParent + "' : no Default found so setting first = '" + tMenu.Name + "'");
+                LOG.debug("ValidateSubMenuDefault for '" + bParent + "' : no Default found so setting first = '" + tMenu.Name + "'");
                 Save(tMenu.Name, "IsDefault", Boolean.TRUE.toString());
             }else {
-                System.out.println("ADM: mValidateSubMenuDefault for '" + bParent + "' : Default already set");
+                LOG.debug("ValidateSubMenuDefault for '" + bParent + "' : Default already set");
             }
             //As there are submenu items the submenu setting should be null
             SetMenuItemSubMenu(bParent, ADMutil.ListNone);
         }else{
             //no subMenu items so make sure this parent's SubMenu settings are correct
             SetMenuItemSubMenu(bParent, ADMutil.ListNone);
-            System.out.println("ADM: mValidateSubMenuDefault for '" + bParent + "' : no SubMenu items found");
+            LOG.debug("ValidateSubMenuDefault for '" + bParent + "' : no SubMenu items found");
         }
     }
         
@@ -615,7 +616,7 @@ public class ADMMenuNode {
                 }
             }         
         }
-        System.out.println("ADM: mClearSubMenuDefaults for '" + bParent + "' '" + MenuNodeList().get(bParent).NodeItem.getChildCount() + "' cleared");
+        LOG.debug("ClearSubMenuDefaults for '" + bParent + "' '" + MenuNodeList().get(bParent).NodeItem.getChildCount() + "' cleared");
     }
     
     @SuppressWarnings("unchecked")
@@ -634,7 +635,7 @@ public class ADMMenuNode {
                     //skip
                 }else{
                     if (tMenu.IsDefault){
-                        System.out.println("ADM: mGetSubMenuDefault for '" + bParent + "' Default = '" + tMenu.Name + "'");
+                        LOG.debug("GetSubMenuDefault for '" + bParent + "' Default = '" + tMenu.Name + "'");
                         return tMenu.Name;
                     }
                 }
@@ -642,14 +643,14 @@ public class ADMMenuNode {
         }
         //if you get here then NOT FOUND so find the first item and return it 
         if (FirstChildName.equals(ADMutil.OptionNotFound)){
-            System.out.println("ADM: mGetSubMenuDefault for '" + bParent + "' - none found");
+            LOG.debug("GetSubMenuDefault for '" + bParent + "' - none found");
             return "";
         }else{
             if (GetMenuItemActionType(FirstChildName).equals(ADMAction.DynamicList)){
-                System.out.println("ADM: mGetSubMenuDefault for '" + bParent + "' - not found so returning Dynamic Lists FirstChild '" + FirstChildName + "'");
+                LOG.debug("GetSubMenuDefault for '" + bParent + "' - not found so returning Dynamic Lists FirstChild '" + FirstChildName + "'");
                 return GetSubMenuFirstChild(FirstChildName);
             }else{
-                System.out.println("ADM: mGetSubMenuDefault for '" + bParent + "' - not found so returning FirstChild '" + FirstChildName + "'");
+                LOG.debug("GetSubMenuDefault for '" + bParent + "' - not found so returning FirstChild '" + FirstChildName + "'");
                 return FirstChildName;
             }
         }
@@ -668,10 +669,10 @@ public class ADMMenuNode {
             }         
         }
         if (FirstChildName.equals(ADMutil.OptionNotFound)){
-            System.out.println("ADM: mGetSubMenuFirstChild for '" + bParent + "' - none found");
+            LOG.debug("GetSubMenuFirstChild for '" + bParent + "' - none found");
             return "";
         }else{
-            System.out.println("ADM: mGetSubMenuFirstChild for '" + bParent + "' - FirstChild '" + FirstChildName + "'");
+            LOG.debug("GetSubMenuFirstChild for '" + bParent + "' - FirstChild '" + FirstChildName + "'");
             return FirstChildName;
         }
     }
@@ -680,7 +681,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).NodeItem.getLevel();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -692,14 +693,14 @@ public class ADMMenuNode {
     public static String GetMenuItemParent(String Name){
         //get the parent from the Tree structure
         if (Name.equals(ADMutil.TopMenu)){
-            //System.out.println("ADM: mGetMenuItemParent for '" + Name + "' returning null");
+            //LOG.debug("GetMenuItemParent for '" + Name + "' returning null");
             return null;
         }else{
-            //System.out.println("ADM: mGetMenuItemParent for '" + Name + "' = '" + MenuNodeList().get(Name).NodeItem.getParent().toString() + "'");
+            //LOG.debug("GetMenuItemParent for '" + Name + "' = '" + MenuNodeList().get(Name).NodeItem.getParent().toString() + "'");
             try {
                 return MenuNodeList().get(Name).NodeItem.getParent().toString();
             } catch (Exception e) {
-                System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -729,7 +730,7 @@ public class ADMMenuNode {
             //make sure the old and new SubMenus have a single default item
             ValidateSubMenuDefault(OldParent);
             ValidateSubMenuDefault(NewParent);
-            System.out.println("ADM: mSetMenuItemParent: Parent changed for '" + Name + "' to = '" + NewParent + "'");
+            LOG.debug("SetMenuItemParent: Parent changed for '" + Name + "' to = '" + NewParent + "'");
         }
     }
     
@@ -740,7 +741,7 @@ public class ADMMenuNode {
             try {
                 return MenuNodeList().get(Name).ShowIF;
             } catch (Exception e) {
-                System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -750,7 +751,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).SortKey;
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -760,7 +761,7 @@ public class ADMMenuNode {
         try {
             tSortKey = Integer.valueOf(SortKey);
         } catch (NumberFormatException ex) {
-            System.out.println("ADM: msetSortKey: error converting '" + SortKey + "' " + ADMutil.class.getName() + ex);
+            LOG.debug("setSortKey: error converting '" + SortKey + "' " + ADMutil.class.getName() + ex);
             tSortKey = SortKeyCounter++;
         }
         this.SortKey = tSortKey;
@@ -769,9 +770,9 @@ public class ADMMenuNode {
     public static void ChangeSortOrder(String Name, Integer aDelta){
         if (moveNode(MenuNodeList().get(Name).NodeItem, aDelta)){
             SortKeyUpdate((DefaultMutableTreeNode)MenuNodeList().get(Name).NodeItem.getParent());
-            System.out.println("ADM: mChangeSortOrder: moving '" + Name + "' by '" + aDelta.toString() + "'");
+            LOG.debug("ChangeSortOrder: moving '" + Name + "' by '" + aDelta.toString() + "'");
         }else{
-            System.out.println("ADM: mChangeSortOrder: NOT ABLE to move '" + Name + "' by '" + aDelta.toString() + "'");
+            LOG.debug("ChangeSortOrder: NOT ABLE to move '" + Name + "' by '" + aDelta.toString() + "'");
         }
     }
     
@@ -812,10 +813,10 @@ public class ADMMenuNode {
                 tMenu.SortKey = child.getParent().getIndex(child);
                 String PropLocation = ADMutil.SagePropertyLocation + tMenu.Name + "/" + "SortKey";
                 ADMutil.SetProperty(PropLocation, tMenu.SortKey.toString());
-                //System.out.println("ADM: mSortKeyUpdate: Child = '" + child + "' SortKey = '" + tMenu.SortKey + "' Parent = '" + child.getParent() + "'"  );
+                //LOG.debug("SortKeyUpdate: Child = '" + child + "' SortKey = '" + tMenu.SortKey + "' Parent = '" + child.getParent() + "'"  );
             }
         }         
-        System.out.println("ADM: mSortKeyUpdate: completed for Parent = '" + aParent + "'"  );
+        LOG.debug("SortKeyUpdate: completed for Parent = '" + aParent + "'"  );
     }
     
     //the SubMenu field is only filled in if using a built in Sage SubMenu
@@ -845,7 +846,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).getSubMenuExcludingSageMenus();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -854,7 +855,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).getSubMenu();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -863,13 +864,13 @@ public class ADMMenuNode {
         try {
             return ADMutil.GetSubMenuListButtonText(MenuNodeList().get(Name).getSubMenu(), GetMenuItemLevel(Name));
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
 
     public static void SetMenuItemSubMenu(String Name, String Setting){
-        //System.out.println("ADM: mSetMenuItemSubMenu for '" + Name + "' Setting = '" + Setting + "'");
+        //LOG.debug("SetMenuItemSubMenu for '" + Name + "' Setting = '" + Setting + "'");
         if (Setting.equals(ADMutil.ListNone) || Setting==null){
             //set the SubMenu field
             Save(Name, "SubMenu", null);
@@ -886,7 +887,7 @@ public class ADMMenuNode {
     public static Boolean IsSubMenuItem(String bParent, String Item, Boolean QLMCheck){
         //check if Item is a child of bParent
         if (bParent==null || Item==null || !MenuNodeList().containsKey(Item)){
-            //System.out.println("ADM: mIsSubMenuItem for Parent = '" + bParent + "' Item '" + Item + "' NOT found or null");
+            //LOG.debug("IsSubMenuItem for Parent = '" + bParent + "' Item '" + Item + "' NOT found or null");
             return Boolean.FALSE;
         }
         try {
@@ -902,15 +903,15 @@ public class ADMMenuNode {
                         return Boolean.FALSE;
                     }
                 }else{
-                    //System.out.println("ADM: mIsSubMenuItem for Parent = '" + bParent + "' Item '" + Item + "' found");
+                    //LOG.debug("IsSubMenuItem for Parent = '" + bParent + "' Item '" + Item + "' found");
                     return Boolean.TRUE;
                 }
             }else{
-                //System.out.println("ADM: mIsSubMenuItem for Parent = '" + bParent + "' Item '" + Item + "' NOT found");
+                //LOG.debug("IsSubMenuItem for Parent = '" + bParent + "' Item '" + Item + "' NOT found");
                 return Boolean.FALSE;
             }
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available for '" + bParent + "' Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available for '" + bParent + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -920,7 +921,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().keySet();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available. Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available. Exception = '" + e + "'");
             return null;
         }
     }
@@ -970,7 +971,7 @@ public class ADMMenuNode {
                 //otherwise do not add the Menu Item
             }         
         }
-        System.out.println("ADM: mGetMenuItemNameList for '" + Parent + "' : IncludeInactive = '" + IncludeInactive.toString() + "' " + bNames);
+        LOG.debug("GetMenuItemNameList for '" + Parent + "' : IncludeInactive = '" + IncludeInactive.toString() + "' " + bNames);
         return bNames;
     }
     
@@ -1019,7 +1020,7 @@ public class ADMMenuNode {
     }
     
     public static void MenuBeforeOpen(Integer Level, String MenuName){
-        System.out.println("ADM: mMenuBeforeOpen: Level '" + Level + "' MenuName '" + MenuName + "'");
+        LOG.debug("MenuBeforeOpen: Level '" + Level + "' MenuName '" + MenuName + "'");
         //store the Menu for this Level for later retrieval while the menu is open
         //cleanup previous Temp Menu Items if any
         DeleteAllTempMenuItems();
@@ -1046,12 +1047,12 @@ public class ADMMenuNode {
     }
 
     public static void MenuAfterClose(Integer Level){
-        System.out.println("ADM: mMenuAfterClose: Level '" + Level + "'");
+        LOG.debug("MenuAfterClose: Level '" + Level + "'");
         //clear the Menus for this Level and delete any TEMP Menu items
         
     }
     public static void MenuBeforeOpenQLM(String MenuName){
-        System.out.println("ADM: mMenuBeforeOpenQLM: MenuName '" + MenuName + "'");
+        LOG.debug("MenuBeforeOpenQLM: MenuName '" + MenuName + "'");
         //cleanup previous Temp Menu Items if any
         DeleteAllTempMenuItems();
         String UIContext = sagex.api.Global.GetUIContextName();
@@ -1063,7 +1064,7 @@ public class ADMMenuNode {
         UIMenuListQLM.get(UIContext).addAll(GetMenuItemNameListQLM(MenuName));
     }
     public static void MenuAfterCloseQLM(){
-        System.out.println("ADM: mMenuAfterCloseQLM:");
+        LOG.debug("MenuAfterCloseQLM:");
         //clear the QLM Menu and delete any TEMP Menu items
         
     }
@@ -1075,7 +1076,7 @@ public class ADMMenuNode {
             if (tMenu.IsTemp){
                 TempItems.add(tMenu.Name);
                 tMenu.NodeItem.removeFromParent();
-                //System.out.println("ADM: mDeleteAllTempMenuItems for '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "'");
+                //LOG.debug("DeleteAllTempMenuItems for '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "'");
             }
         }
         String PropLocation = "";
@@ -1085,7 +1086,7 @@ public class ADMMenuNode {
             PropLocation = ADMutil.SagePropertyLocation + TempItem;
             ADMutil.RemovePropertyAndChildren(PropLocation);
         }
-        System.out.println("ADM: mDeleteAllTempMenuItems : Deleted '" + TempItems.size() + "' items");
+        LOG.debug("DeleteAllTempMenuItems : Deleted '" + TempItems.size() + "' items");
     }
     
     private static Boolean QLMInvalidSubmenu(ADMMenuNode tMenu){
@@ -1109,7 +1110,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().size();
         } catch (Exception e) {
-            System.out.println("ADM: mGet... ERROR: Value not available. Exception = '" + e + "'");
+            LOG.debug("Get... ERROR: Value not available. Exception = '" + e + "'");
             return 0;
         }
     }
@@ -1169,7 +1170,7 @@ public class ADMMenuNode {
                 }
             }
         }         
-        System.out.println("ADM: mGetMenuItemSortedList: Grouped = '" + Grouped.toString() + "' :" + FinalList);
+        LOG.debug("GetMenuItemSortedList: Grouped = '" + Grouped.toString() + "' :" + FinalList);
         return FinalList;
     }
     
@@ -1196,7 +1197,7 @@ public class ADMMenuNode {
                 }
             }
         }         
-        System.out.println("ADM: mGetMenuItemParentList: '" + ValidParentList + "'");
+        LOG.debug("GetMenuItemParentList: '" + ValidParentList + "'");
         return ValidParentList;
     }
     
@@ -1215,7 +1216,7 @@ public class ADMMenuNode {
                 }
             }
         }         
-        System.out.println("ADM: mGetMenuItemParentList: for Level = '" + SpecificLevel + "' List = '" + ValidParentList + "'");
+        LOG.debug("GetMenuItemParentList: for Level = '" + SpecificLevel + "' List = '" + ValidParentList + "'");
         return ValidParentList;
     }
     
@@ -1286,14 +1287,14 @@ public class ADMMenuNode {
         //ListAllNodes(UIContext + "-before");
         //create and store the top menu node
         if (UIroot.containsKey(UIContext)){
-            System.out.println("ADM: mCleanMenuNodeListandTree: clearing root for '" + UIContext + "'");
+            LOG.debug("CleanMenuNodeListandTree: clearing root for '" + UIContext + "'");
             UIroot.get(UIContext).removeAllChildren();
             UIroot.remove(UIContext);
         }
 
         //clear the existing MenuItems from the list
         if (UIMenuNodeList.containsKey(UIContext)){
-            System.out.println("ADM: mCleanMenuNodeListandTree: clearing MenuNodeList for '" + UIContext + "'");
+            LOG.debug("CleanMenuNodeListandTree: clearing MenuNodeList for '" + UIContext + "'");
             UIMenuNodeList.remove(UIContext);
         }
         MenuNodeList().clear();
@@ -1314,7 +1315,7 @@ public class ADMMenuNode {
             //  misleadingly return the Servers property if the client property is not set
             if (sagex.api.Global.IsRemoteUI(cUI)){
                 //process the RemoteUI's property file directly
-                System.out.println("ADM: mGetMenuItemsList: Remote UI '" + rUI + "'");
+                LOG.debug("GetMenuItemsList: Remote UI '" + rUI + "'");
                 //make sure the properties file has been saved first
                 sagex.api.Configuration.SaveProperties(cUI);
                 //get the RemoteUI properties file
@@ -1329,11 +1330,11 @@ public class ADMMenuNode {
                         MenuItemProps.load(in);
                         in.close();
                     } catch (IOException ex) {
-                        System.out.println("ADM: mGetMenuItemsList: IO exception loading properties " + ADMutil.class.getName() + ex);
+                        LOG.debug("GetMenuItemsList: IO exception loading properties " + ADMutil.class.getName() + ex);
                         return MenuList;
                     }
                 } catch (FileNotFoundException ex) {
-                    System.out.println("ADM: mGetMenuItemsList: file not found loading properties " + ADMutil.class.getName() + ex);
+                    LOG.debug("GetMenuItemsList: file not found loading properties " + ADMutil.class.getName() + ex);
                     return MenuList;
                 }
                 
@@ -1341,17 +1342,17 @@ public class ADMMenuNode {
                     if (MenuItemProps.getProperty(ADMutil.SagePropertyLocation + tMenuItemName + "/Name",ADMutil.OptionNotFound).equals(tMenuItemName)){
                         MenuList.add(tMenuItemName);
                     }else{
-                        System.out.println("ADM: mGetMenuItemsList: skipping invalid menuitem '" + tMenuItemName + "'");
+                        LOG.debug("GetMenuItemsList: skipping invalid menuitem '" + tMenuItemName + "'");
                     }
                 }
             }else{
                 //process the clients's properties using Sage functions
-                System.out.println("ADM: mGetMenuItemsList: Client UI '" + rUI + "'");
+                LOG.debug("GetMenuItemsList: Client UI '" + rUI + "'");
                 for (String tMenuItemName : MenuItemNames){
                     if (ADMutil.HasProperty(ADMutil.SagePropertyLocation + tMenuItemName + "/Name")){
                         MenuList.add(tMenuItemName);
                     }else{
-                        System.out.println("ADM: mGetMenuItemsList: skipping invalid menuitem '" + tMenuItemName + "'");
+                        LOG.debug("GetMenuItemsList: skipping invalid menuitem '" + tMenuItemName + "'");
                     }
                 }
             }
@@ -1367,12 +1368,6 @@ public class ADMMenuNode {
         
         //find all MenuItem Name entries from the SageTV properties file
         Collection<String> MenuItemNames = GetMenuItemsList();
-        //java_util_Arrays_asList(GetSubpropertiesThatAreBranches("ADM/menuitem/")
-//        System.out.println("ADM: TEST: Context '" + sagex.api.Global.GetUIContextName() + "' MenuItemNames '" + Arrays.asList(MenuItemNames) + "'");
-//        System.out.println("ADM: TEST: admRecordings HasProperty '" + ADMutil.HasProperty(ADMutil.SagePropertyLocation + "admRecordings/ButtonText") + "'");
-//        System.out.println("ADM: TEST: admRecordings using util '" + ADMutil.GetProperty(ADMutil.SagePropertyLocation + "admRecordings/ButtonText", ADMutil.ButtonTextDefault) + "'");
-//        System.out.println("ADM: TEST: admRecordings getP withcontext '" + sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),ADMutil.SagePropertyLocation + "admRecordings/ButtonText", ADMutil.ButtonTextDefault) + "'");
-//        System.out.println("ADM: TEST: admRecordings getP withoutcontext'" + sagex.api.Configuration.GetProperty(ADMutil.SagePropertyLocation + "admRecordings/ButtonText", ADMutil.ButtonTextDefault) + "'");
 
         if (MenuItemNames.size()>0){
             
@@ -1400,12 +1395,12 @@ public class ADMMenuNode {
                             NewMenuItem.ShowIF = ADMutil.GetProperty(PropLocation + "/ShowIF", ADMutil.OptionNotFound);
                         }
                         NewMenuItem.ActionExternal.Load();
-                        System.out.println("ADM: mLoadMenuItemsFromSage: loaded - '" + tMenuItemName + "' = '" + NewMenuItem.ButtonText + "'");
+                        LOG.debug("LoadMenuItemsFromSage: loaded - '" + tMenuItemName + "' = '" + NewMenuItem.ButtonText + "'");
                     }else{
-                        System.out.println("ADM: mLoadMenuItemsFromSage: skipped - '" + tMenuItemName + "' due to ShowIF ");
+                        LOG.debug("LoadMenuItemsFromSage: skipped - '" + tMenuItemName + "' due to ShowIF ");
                     }
                 }else{
-                    System.out.println("ADM: mLoadMenuItemsFromSage: skipping - '" + tMenuItemName + "' - should not load a TopMenu item");
+                    LOG.debug("LoadMenuItemsFromSage: skipping - '" + tMenuItemName + "' - should not load a TopMenu item");
                 }
             }
             if (MenuNodeList().size()>0){
@@ -1420,10 +1415,10 @@ public class ADMMenuNode {
             
         }else{
             //load a default Menu here.  Load a Diamond Menu if Diamond if active
-            System.out.println("ADM: mLoadMenuItemsFromSage: no MenuItems found - loading default menu.");
+            LOG.debug("LoadMenuItemsFromSage: no MenuItems found - loading default menu.");
             LoadMenuItemDefaults();
         }
-        System.out.println("ADM: mLoadMenuItemsFromSage: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
+        LOG.debug("LoadMenuItemsFromSage: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
         
         return;
     }
@@ -1448,7 +1443,7 @@ public class ADMMenuNode {
             //add the item into the MenuNodeList
             MenuNodeList().put(tMenu.Name, tMenu);
         }         
-        System.out.println("ADM: mSaveMenuItemsToSage: saved " + MenuNodeList().size() + " MenuItems");
+        LOG.debug("SaveMenuItemsToSage: saved " + MenuNodeList().size() + " MenuItems");
         
         return;
     }
@@ -1481,7 +1476,7 @@ public class ADMMenuNode {
         ValidateSubMenuDefault(OldParent);
         //rebuild any lists
         SaveMenuItemsToSage();
-        System.out.println("ADM: mDeleteMenuItem: deleted '" + Name + "'");
+        LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
     }
     
     public static void DeleteAllMenuItems(){
@@ -1497,7 +1492,7 @@ public class ADMMenuNode {
         //Create 1 new MenuItem at the TopMenu level
         NewMenuItem(ADMutil.TopMenu, 1) ;
 
-        System.out.println("ADM: mDeleteAllMenuItems: completed");
+        LOG.debug("DeleteAllMenuItems: completed");
     }
     
     public static String NewMenuItem(String Parent, Integer SortKey){
@@ -1510,7 +1505,7 @@ public class ADMMenuNode {
         InsertNode(MenuNodeList().get(Parent).NodeItem, NewMenuItem, Boolean.TRUE);
         //ensure there is 1 default item
         ValidateSubMenuDefault(Parent);
-        System.out.println("ADM: mNewMenuItem: Parent '" + Parent + "' Name '" + tMenuItemName + "' SortKey = '" + SortKey + "'");
+        LOG.debug("NewMenuItem: Parent '" + Parent + "' Name '" + tMenuItemName + "' SortKey = '" + SortKey + "'");
         //ADMutil.ListObjectMembers(NewMenuItem);
         return tMenuItemName;
     }
@@ -1524,7 +1519,7 @@ public class ADMMenuNode {
         ADMutil.ClearFocusStorage();
         
         //now build any dynamic submenus
-        System.out.println("ADM: mLoadMenuItemDefaults: building any dynamic submenus");
+        LOG.debug("LoadMenuItemDefaults: building any dynamic submenus");
         Integer Counter = 0;
         
         //build the TV Recordings submenu
@@ -1555,7 +1550,7 @@ public class ADMMenuNode {
         ValidateSubMenuDefault(SageTVMenuVideos);
         SortKeyUpdate(SageTVMenuVideos);
 
-        System.out.println("ADM: mLoadMenuItemDefaults: loading default menu items from '" + DefaultsFullPath + "'");
+        LOG.debug("LoadMenuItemDefaults: loading default menu items from '" + DefaultsFullPath + "'");
     }
     
     public static String CreateDynamicMenuItem(String dKey, String dParent, String dActionType, Integer dSortKey){
@@ -1624,7 +1619,7 @@ public class ADMMenuNode {
     public static Boolean ImportMenuItems(String ImportPath){
 
         if (ImportPath==null){
-            System.out.println("ADM: mImportMenuItems: null ImportPath passed.");
+            LOG.debug("ImportMenuItems: null ImportPath passed.");
             return false;
         }
         
@@ -1637,19 +1632,19 @@ public class ADMMenuNode {
                 MenuItemProps.load(in);
                 in.close();
             } catch (IOException ex) {
-                System.out.println("ADM: mImportMenuItems: IO exception inporting menus " + ADMutil.class.getName() + ex);
+                LOG.debug("ImportMenuItems: IO exception inporting menus " + ADMutil.class.getName() + ex);
                 return false;
             }
         } catch (FileNotFoundException ex) {
-            System.out.println("ADM: mImportMenuItems: file not found inporting menus " + ADMutil.class.getName() + ex);
+            LOG.debug("ImportMenuItems: file not found inporting menus " + ADMutil.class.getName() + ex);
             return false;
         }
         
         //backup existing MenuItems before processing the import if any exist
         if (MenuNodeList().size()>0){
-            System.out.println("ADM: mImportMenuItems: called Export");
+            LOG.debug("ImportMenuItems: called Export");
             ExportMenuItems(ADMutil.PropertyBackupFile);
-            System.out.println("ADM: mImportMenuItems: Export returned to Import");
+            LOG.debug("ImportMenuItems: Export returned to Import");
         }
         
         if (MenuItemProps.size()>0){
@@ -1660,21 +1655,21 @@ public class ADMMenuNode {
             for (String tPropertyKey : MenuItemProps.stringPropertyNames()){
                 ADMutil.SetProperty(tPropertyKey, MenuItemProps.getProperty(tPropertyKey));
                 
-                //System.out.println("ADM: mImportMenuItems: imported - '" + tPropertyKey + "' = '" + MenuItemProps.getProperty(tPropertyKey) + "'");
+                //LOG.debug("ImportMenuItems: imported - '" + tPropertyKey + "' = '" + MenuItemProps.getProperty(tPropertyKey) + "'");
             }
             
             //now load the properties from the Sage properties file
             LoadMenuItemsFromSage();
 
         }
-        System.out.println("ADM: mImportMenuItems: completed for '" + ImportPath + "'");
+        LOG.debug("ImportMenuItems: completed for '" + ImportPath + "'");
         return true;
     }
  
     public static void ExportMenuItems(String ExportFile){
         String PropLocation = "";
         String ExportFilePath = ADMutil.ADMLocation() + File.separator + ExportFile;
-        //System.out.println("ADM: mExportMenuItems: Full Path = '" + ExportFilePath + "'");
+        //LOG.debug("ExportMenuItems: Full Path = '" + ExportFilePath + "'");
         
         //iterate through all the MenuItems and save to a Property Collection
         Properties MenuItemProps = new Properties();
@@ -1712,7 +1707,7 @@ public class ADMMenuNode {
                     if (GetMenuItemActionType(tName).equals(ADMAction.LaunchExternalApplication)){
                         GetMenuItemActionExternal(tName).AddProperties(MenuItemProps);
                     }
-                    //System.out.println("ADM: mExportMenuItems: exported - '" + entry.getValue().getName() + "'");
+                    //LOG.debug("ExportMenuItems: exported - '" + entry.getValue().getName() + "'");
                 }
             }
         }
@@ -1723,13 +1718,13 @@ public class ADMMenuNode {
                 MenuItemProps.store(out, ADMutil.PropertyComment);
                 out.close();
             } catch (IOException ex) {
-                System.out.println("ADM: mExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
+                LOG.debug("ExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
             }
         } catch (FileNotFoundException ex) {
-            System.out.println("ADM: mExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
+            LOG.debug("ExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
         }
 
-        System.out.println("ADM: mExportMenuItems: exported " + MenuNodeList().size() + " MenuItems");
+        LOG.debug("ExportMenuItems: exported " + MenuNodeList().size() + " MenuItems");
         
         return;
     }
@@ -1746,16 +1741,16 @@ public class ADMMenuNode {
             if (aNode.Parent.equals(ADMutil.TopMenu)){
                 //root.add(new DefaultMutableTreeNode(aNode));
                 InsertNode(root(), aNode, Boolean.FALSE);
-                //System.out.println("ADM: mAddNode: node '" + aNode.ButtonText + "' not found so adding to ROOT");
+                //LOG.debug("AddNode: node '" + aNode.ButtonText + "' not found so adding to ROOT");
             }else{
                 AddNode(MenuNodeList().get(aNode.Parent));
                 DefaultMutableTreeNode tParent = FindNode(root(), aNode.Parent);
                 //tParent.add(new DefaultMutableTreeNode(aNode));
                 InsertNode(tParent, aNode, Boolean.FALSE);
-                //System.out.println("ADM: mAddNode: node '" + aNode.ButtonText + "' not found so adding");
+                //LOG.debug("AddNode: node '" + aNode.ButtonText + "' not found so adding");
             }
         }else{
-            //System.out.println("ADM: mAddNode: node '" + aNode.ButtonText + "' already exists");
+            //LOG.debug("AddNode: node '" + aNode.ButtonText + "' already exists");
         }
     }
     
@@ -1820,11 +1815,11 @@ public class ADMMenuNode {
             if(child.equals(Node)) 
             { 
                 //tree node with string found 
-                //System.out.println("ADM: mFindNode: '" + Node + "' found = '" + child + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
+                //LOG.debug("FindNode: '" + Node + "' found = '" + child + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
                 return child;                          
             } 
         }         
-        //System.out.println("ADM: mFindNode: '" + Node + "' not found.");
+        //LOG.debug("FindNode: '" + Node + "' not found.");
         return null;
     }
     
@@ -1836,11 +1831,11 @@ public class ADMMenuNode {
             if(NodeKey.equals(child.getUserObject().toString())) 
             { 
                 //tree node with string found 
-                //System.out.println("ADM: mFindNode: '" + NodeKey + "' found = '" + child + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
+                //LOG.debug("FindNode: '" + NodeKey + "' found = '" + child + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
                 return child;                          
             } 
         }         
-        //System.out.println("ADM: mFindNode: '" + NodeKey + "' not found.");
+        //LOG.debug("FindNode: '" + NodeKey + "' not found.");
         return null;
     }
     
@@ -1854,7 +1849,7 @@ public class ADMMenuNode {
                 return tMenu.Name;
             }
         }         
-        //System.out.println("ADM: mFindNode: '" + NodeKey + "' not found.");
+        //LOG.debug("FindNode: '" + NodeKey + "' not found.");
         return ADMutil.OptionNotFound;
     }
     
@@ -1866,11 +1861,11 @@ public class ADMMenuNode {
             if(NodeKey.equals(child.getUserObject().toString())) 
             { 
                 //tree node with string found 
-                //System.out.println("ADM: mNodeExists: '" + NodeKey + "' found = '" + child + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
+                //LOG.debug("NodeExists: '" + NodeKey + "' found = '" + child + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
                 return Boolean.TRUE;                          
             } 
         }         
-        //System.out.println("ADM: mNodeExists: '" + NodeKey + "' not found.");
+        //LOG.debug("NodeExists: '" + NodeKey + "' not found.");
         return Boolean.FALSE;
     }
     
@@ -1880,7 +1875,7 @@ public class ADMMenuNode {
         while (en.hasMoreElements())   {
             DefaultMutableTreeNode child = en.nextElement();
             ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
-            System.out.println("ADM: mListAllNodes(" + LogText + "}: '" + tMenu.Name + "' ButtonText = '" + tMenu.ButtonText + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
+            LOG.debug("ListAllNodes(" + LogText + "}: '" + tMenu.Name + "' ButtonText = '" + tMenu.ButtonText + "' childcount = '" + child.getChildCount() + "' Parent = '" + child.getParent() + "' Level = '" + child.getLevel() + "' Leaf = '" + child.isLeaf() + "'"  );
         }         
     }
     
@@ -1907,7 +1902,7 @@ public class ADMMenuNode {
         DefaultMutableTreeNode oldParent = (DefaultMutableTreeNode)Node.getParent();   
         oldParent.remove(Node);   
         newParent.add(Node);  
-        System.out.println("ADM: msetParent: node = '" + Node + "' oldParent = '" + oldParent +"' newParent = '" + newParent + "'");
+        LOG.debug("setParent: node = '" + Node + "' oldParent = '" + oldParent +"' newParent = '" + newParent + "'");
     }
     
     private static void Save(String Name, String PropType, String Setting){
@@ -1942,9 +1937,9 @@ public class ADMMenuNode {
             }else if (PropType.equals("BlockedSageUsersList")){
                 //assume that the list has already been modified by the calling routine
             }else{
-                System.out.println("ADM: mSave - invalid option passed for '" + PropType + "' '" + Name + "' = '" + Setting + "'");
+                LOG.debug("Save - invalid option passed for '" + PropType + "' '" + Name + "' = '" + Setting + "'");
             }
-            //System.out.println("ADM: mSave completed for '" + PropType + "' '" + Name + "' = '" + Setting + "'");
+            //LOG.debug("Save completed for '" + PropType + "' '" + Name + "' = '" + Setting + "'");
         }
     }
     
@@ -1964,15 +1959,15 @@ public class ADMMenuNode {
         String UIContext = sagex.api.Global.GetUIContextName();
         if (!UIMenuNodeList.containsKey(UIContext)){
             //create the MenuNodeList for this UIContext
-            System.out.println("ADM: mMenuNodeList: creating MenuNodeList for '" + UIContext + "'");
+            LOG.debug("MenuNodeList: creating MenuNodeList for '" + UIContext + "'");
             UIMenuNodeList.put(UIContext, new LinkedHashMap<String,ADMMenuNode>());
         }
-        //System.out.println("ADM: mMenuNodeList: '" + UIContext + "'");
+        //LOG.debug("MenuNodeList: '" + UIContext + "'");
         Map<String,ADMMenuNode> tMenuNodeList = null;
         try {
             tMenuNodeList = UIMenuNodeList.get(UIContext);
         } catch (Exception e) {
-            //System.out.println("ADM: mMenuNodeList ERROR: '" + UIContext + "' = '" + e + "'");
+            //LOG.debug("MenuNodeList ERROR: '" + UIContext + "' = '" + e + "'");
         }
         return tMenuNodeList;
     }
@@ -1980,25 +1975,25 @@ public class ADMMenuNode {
     public static DefaultMutableTreeNode root(){
         String UIContext = sagex.api.Global.GetUIContextName();
         if (!UIroot.containsKey(UIContext)){
-            System.out.println("ADM: mroot: creating root for '" + UIContext + "'");
+            LOG.debug("root: creating root for '" + UIContext + "'");
             ADMMenuNode rootNode = new ADMMenuNode(ADMutil.TopMenu);
             UIroot.put(UIContext,new DefaultMutableTreeNode(rootNode));
             rootNode.NodeItem = UIroot.get(UIContext);
             rootNode.ButtonText = "Top Level";
         }
-        //System.out.println("ADM: mroot: '" + UIContext + "'");
+        //LOG.debug("root: '" + UIContext + "'");
         return UIroot.get(UIContext);
     }
 
     public static DefaultMutableTreeNode root(String UIContext){
         if (!UIroot.containsKey(UIContext)){
-            System.out.println("ADM: mroot: creating root for '" + UIContext + "'");
+            LOG.debug("root: creating root for '" + UIContext + "'");
             ADMMenuNode rootNode = new ADMMenuNode(ADMutil.TopMenu);
             UIroot.put(UIContext,new DefaultMutableTreeNode(rootNode));
             rootNode.NodeItem = UIroot.get(UIContext);
             rootNode.ButtonText = "Top Level";
         }
-        //System.out.println("ADM: mroot: '" + UIContext + "'");
+        //LOG.debug("root: '" + UIContext + "'");
         return UIroot.get(UIContext);
     }
     
