@@ -207,7 +207,7 @@ public class ImageCache {
                 //see if the image is in the cache and if so return it
                 mediaObject = ICache.get(Key.getKey());
                 if (mediaObject!=null){
-                    LOG.debug("GetImage: FromKey: found Image in Cache and return it based on '" + tImageString + "' and Key '" + Key.getKey() + "'");
+                    //LOG.debug("GetImage: FromKey: found Image in Cache and return it based on '" + tImageString + "' and Key '" + Key.getKey() + "'");
                     return mediaObject;
                 }else{
                     if (UseQueue(faArtifactType) && !SkipQueue){

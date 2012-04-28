@@ -650,6 +650,7 @@ public class Source {
         for (String Prop:MD5Props.stringPropertyNames()){
             s = s + Prop + "=" + MD5Props.getProperty(Prop) + "|";
         }
+        LOG.debug("ViewtoMD5: for '" + ViewName + "' from '" + s + "'");
         return util.MD5(s);
     }
     

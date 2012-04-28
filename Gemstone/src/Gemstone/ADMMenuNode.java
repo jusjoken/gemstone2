@@ -241,6 +241,7 @@ public class ADMMenuNode {
         }else{
             BGImage = BGCache.get(BGKey);
             if (BGImage!=null){
+                //LOG.debug("GetMenuItemBGImage: BGImage found in Cache for Key '" + BGKey + "'");
                 return BGImage;
             }else{
                 //add it to the Cache and then return it
