@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Properties;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import org.apache.log4j.Logger;
 import sagex.UIContext;
 
 /**
@@ -30,6 +31,7 @@ import sagex.UIContext;
 public class ADMMenuNode {
     //public static DefaultMutableTreeNode Testing;
 
+    static private final Logger LOG = Logger.getLogger(ADMMenuNode.class);
     private String Parent = "";
     public String Name = "";
     private String ButtonText = "";
@@ -61,6 +63,7 @@ public class ADMMenuNode {
     public static Map<String,Collection<String>> UIMenuListLevel2 = new LinkedHashMap<String,Collection<String>>();
     public static Map<String,Collection<String>> UIMenuListLevel3 = new LinkedHashMap<String,Collection<String>>();
     public static Map<String,Collection<String>> UIMenuListQLM = new LinkedHashMap<String,Collection<String>>();
+    private static SoftHashMap BGCache = new SoftHashMap(5);
 
     public ADMMenuNode(String bName){
         //create a MenuItem with just default values
@@ -229,6 +232,67 @@ public class ADMMenuNode {
         }
     }
 
+    public static Object GetMenuItemBGImage(String Name){
+        String BGKey = GetMenuItemBGImageFilePath(Name);
+        Object BGImage = null;
+        if (BGKey==null){
+            LOG.debug("GetMenuItemBGImage: null Key returned from GetMenuItemBGImageFilePath for '" + Name + "'");
+            return null;
+        }else{
+            BGImage = BGCache.get(BGKey);
+            if (BGImage!=null){
+                return BGImage;
+            }else{
+                //add it to the Cache and then return it
+                BGImage = CreateBGImage(BGKey);
+                if (BGImage==null){
+                    LOG.debug("GetMenuItemBGImage: null image returned from CreateBGImage '" + BGKey + "'");
+                }else{
+                    BGCache.put(BGKey, BGImage);
+                    LOG.debug("GetMenuItemBGImage: adding to BGCache '" + BGKey + "'");
+                }
+                return BGImage;
+            }
+        }
+    }
+    
+    public static Object CreateBGImage(String Key){
+        String CreateImageTag = "GemstoneMenuBG";
+        if (Key==null){
+            LOG.debug("CreateBGImage: called with null Key");
+            return null;
+        }
+        Object ThisImage = null;
+        //See if the image is already cached in the filesystem by a previous CreateBGImage call
+        ThisImage = phoenix.image.GetImage(Key, CreateImageTag);
+        if (ThisImage!=null){
+            LOG.debug("CreateBGImage: Filesystem cached item found for Tag '" + CreateImageTag + "' ID '" + Key + "' ThisImage = '" + ThisImage + "'");
+            return ThisImage;
+        }
+        
+        //if we got this far then the Image was not in the FileSystem Cache
+        UIContext UIc = new UIContext(sagex.api.Global.GetUIContextName());
+        Integer UIWidth = sagex.api.Global.GetFullUIWidth(UIc);
+        Double scalewidth = 1.0;
+        Double finalscalewidth = scalewidth * UIWidth;
+        try {
+            ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: scale, width: " + finalscalewidth + ", height: -1}", true);
+            LOG.debug("CreateBGImage: Image = '" + ThisImage + "' for Key '" + Key + "'");
+        } catch (Exception e) {
+            LOG.debug("CreateBGImage: phoenix.image.CreateImage FAILED - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "' Error: '" + e + "'");
+            return null;
+        }
+        if (!sagex.api.Utility.IsImageLoaded(UIc, ThisImage)){
+            LOG.debug("CreateBGImage: Loaded using LoagImage(loadImage)) - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "'");
+            sagex.api.Utility.LoadImage(UIc, sagex.api.Utility.LoadImage(UIc, ThisImage));
+        }else{
+            sagex.api.Utility.UnloadImage(UIc, ThisImage.toString());
+            sagex.api.Utility.LoadImage(UIc, sagex.api.Utility.LoadImage(UIc, ThisImage));
+            LOG.debug("CreateBGImage: already Loaded - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "'");
+        }
+        return ThisImage;
+    }
+    
     //TODO: Create New function that uses this as a Key to lookup the background in a SoftHashMap Cache
     public static String GetMenuItemBGImageFilePath(String Name){
         //System.out.println("ADM: mGetMenuItemBGImageFilePath for '" + Name + "' returning '" + MenuNodeList().get(Name).BGImageFilePath + "'");

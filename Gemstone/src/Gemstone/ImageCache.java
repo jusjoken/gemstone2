@@ -538,23 +538,6 @@ public class ImageCache {
         }
         
         //if we got this far then an OverWrite was either FORCED or the Image was not in the FileSystem Cache
-//        //based on the ImageType determine the scalewidth to use
-//        Integer UIWidth = sagex.api.Global.GetFullUIWidth(UIc);
-//        Double scalewidth = 0.2;
-//        Double scalepercent = 1.0; //TODO: need to set this from the UI and save in a property
-//        if (Key.getOriginalSize()){
-//            scalewidth = 1.0;
-//        }else{
-//            if (Key.getArtifactType().equals(MediaArtifactType.POSTER)){
-//                scalewidth = 0.2 * scalepercent;
-//            }else if (Key.getArtifactType().equals(MediaArtifactType.BANNER)){
-//                scalewidth = 0.6 * scalepercent;
-//            }else if (Key.getArtifactType().equals(MediaArtifactType.BACKGROUND)){
-//                scalewidth = 0.4 * scalepercent;
-//            }else{
-//                //use default
-//            }
-//        }
         Double finalscalewidth = GetScaleWidth(Key.getArtifactType(), OverWrite);
         if (Key.HasDefaultEpisodeImage()){
             try {
