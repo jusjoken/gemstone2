@@ -73,5 +73,6 @@ public class Const {
     public static final Integer SystemMessageAlertLevelInfo = 1;
     public static final Integer SystemMessageAlertLevelWarning = 2;
     public static final Integer SystemMessageAlertLevelError = 3;
+    public static final String CreateBGImageTag = "GemstoneMenuBG";
     
 }

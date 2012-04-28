@@ -23,6 +23,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
+import sagex.phoenix.image.ImageUtil;
 
 /**
  *
@@ -233,7 +234,30 @@ public class ADMMenuNode {
     }
 
     public static void BGImageCacheClear(){
+        //clear the memory cache
         BGCache.clear();
+        //clear the file system cache
+        ClearBGFileSystemCache();
+    }
+    
+    public static void ClearBGFileSystemCache(){
+        File CacheLoc = ImageUtil.getImageCacheDir();
+        File GemCache = new File(CacheLoc, Const.CreateBGImageTag);
+        File[] files = GemCache.listFiles();
+        Integer counterYes = 0;
+        Integer counterNo = 0;
+        for (File file : files){
+            if (!file.delete()){
+                LOG.debug("ClearBGFileSystemCache: failed to delete '" + file + "'");
+                counterNo++;
+            }else{
+                counterYes++;
+            }
+        }
+        LOG.debug("ClearBGFileSystemCache: deleted " + counterYes + " of " + files.length + " files from: '" + GemCache.getPath());
+        if (counterNo>0){
+            LOG.debug("ClearBGFileSystemCache: FAILED to delete " + counterNo + " of " + files.length + " files from: '" + GemCache.getPath());
+        }
     }
     
     public static Object GetMenuItemBGImage(String Name){
@@ -262,16 +286,15 @@ public class ADMMenuNode {
     }
     
     public static Object CreateBGImage(String Key){
-        String CreateImageTag = "GemstoneMenuBG";
         if (Key==null){
             LOG.debug("CreateBGImage: called with null Key");
             return null;
         }
         Object ThisImage = null;
         //See if the image is already cached in the filesystem by a previous CreateBGImage call
-        ThisImage = phoenix.image.GetImage(Key, CreateImageTag);
+        ThisImage = phoenix.image.GetImage(Key, Const.CreateBGImageTag);
         if (ThisImage!=null){
-            LOG.debug("CreateBGImage: Filesystem cached item found for Tag '" + CreateImageTag + "' ID '" + Key + "' ThisImage = '" + ThisImage + "'");
+            LOG.debug("CreateBGImage: Filesystem cached item found for Tag '" + Const.CreateBGImageTag + "' ID '" + Key + "' ThisImage = '" + ThisImage + "'");
             return ThisImage;
         }
         
@@ -282,7 +305,7 @@ public class ADMMenuNode {
         Double finalscalewidth = scalewidth * UIWidth;
         try {
             //ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: scale, width: " + finalscalewidth + ", height: -1}", true);
-            ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: dummy}", true);
+            ThisImage = phoenix.image.CreateImage(Key, Const.CreateBGImageTag, Key, "{name: dummy}", true);
             LOG.debug("CreateBGImage: Image = '" + ThisImage + "' for Key '" + Key + "'");
         } catch (Exception e) {
             LOG.debug("CreateBGImage: phoenix.image.CreateImage FAILED - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "' Error: '" + e + "'");
