@@ -982,17 +982,34 @@ public class util {
         return null;
     }   
     
-    public static void AlertNonCompatiblePlugins(){
+    public static void HandleNonCompatiblePlugins(){
+        Boolean DisableForConflict = GetTrueFalseOption("Utility", "PluginConflictMode", Boolean.FALSE);
         UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
         //check for CVF
         if (sagex.api.PluginAPI.IsPluginEnabled(tUI, "jusjokenCVF")){
-            String tMessage = "CVF Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the CVF Plugin and reload the UI.";
-            PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+            if(DisableForConflict){
+                sagex.api.PluginAPI.DisablePlugin(tUI, "jusjokenCVF");
+                String tMessage = "CVF Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* CVF Plugin has been disabled.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelInfo, tMessage);
+                LOG.debug("HandleNonCompatiblePlugins: CVF found and disabled");
+            }else{
+                String tMessage = "CVF Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the CVF Plugin and reload the UI.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+                LOG.debug("HandleNonCompatiblePlugins: CVF found and System Error message created");
+            }
         }
         //check for ADM
         if (sagex.api.PluginAPI.IsPluginEnabled(tUI, "jusjokenADM")){
-            String tMessage = "ADM Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the ADM Plugin and reload the UI.";
-            PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+            if(DisableForConflict){
+                sagex.api.PluginAPI.DisablePlugin(tUI, "jusjokenADM");
+                String tMessage = "ADM Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* ADM Plugin has been disabled.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelInfo, tMessage);
+                LOG.debug("HandleNonCompatiblePlugins: ADM found and disabled");
+            }else{
+                String tMessage = "ADM Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the ADM Plugin and reload the UI.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+                LOG.debug("HandleNonCompatiblePlugins: ADM found and System Error message created");
+            }
         }
     }
     

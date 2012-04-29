@@ -37,7 +37,7 @@ public class api {
         //initialize the Logging 
         InitLogger();
         //initialize the ADM settings
-        util.AlertNonCompatiblePlugins();
+        util.HandleNonCompatiblePlugins();
         ADMutil.LoadADM();
         
         //generate symbols to be used for new names
