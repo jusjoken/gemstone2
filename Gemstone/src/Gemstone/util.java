@@ -84,11 +84,17 @@ public class util {
 ////        }
 //        print(map);
     }
-    private static String FreeMem() {
+    public static String FreeMem() {
         Long total = Runtime.getRuntime().totalMemory();
         Long free = Runtime.getRuntime().freeMemory();
         String InfoText = Math.round((total-free)/1000000.0) + "MB/";
         return InfoText;
+    }
+    public static void LogFreeMem(String Message) {
+        Long total = Runtime.getRuntime().totalMemory();
+        Long free = Runtime.getRuntime().freeMemory();
+        String InfoText = Math.round((total-free)/1000000.0) + "MB";
+        LOG.debug(Message + " FreeMem '" + InfoText + "'");
     }
     private static String TempName(Integer i) {
         return "Item_" + i;

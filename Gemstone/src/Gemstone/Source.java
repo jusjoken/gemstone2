@@ -44,6 +44,7 @@ public class Source {
     public static HashMap<String,String> InternalGroupsList = new HashMap<String,String>();
     public static HashMap<String,String> InternalSortsList = new HashMap<String,String>();
     public static SoftHashMap ViewCache = new SoftHashMap(3);
+    public static SoftHashMap BaseSourceCache = new SoftHashMap(3);
     //public static HashMap<String,ViewFolder> ViewCache = new HashMap<String,ViewFolder>();
     
     //add a SORT or GROUP including the Label to use optionally (internal Label will be used otherwise)
@@ -823,6 +824,16 @@ public class Source {
             }
         }
     }
+    
+    //BaseSourceCache functions
+    //main base is used in the others only
+    //  AddGlobalContext("gemstoneBaseSource", phoenix_umb_CreateView("gemstone.base.all"))
+    //BaseTitles used for the firstletter filter
+    // AddGlobalContext("gemstoneBaseTitles", phoenix_umb_CreateView("gemstone.source.firstletter"))
+    //BaseGenres used for Genre Filter
+    //  AddGlobalContext("gemstoneBaseGenres", Gemstone_Source_GetGenres(gemstoneBaseSource))
+    //BaseRatings used for ratings filter
+    //  AddGlobalContext("gemstoneBaseRatings", Gemstone_Source_GetRatings(gemstoneBaseSource))
     
     //<editor-fold defaultstate="collapsed" desc="phoenix api additions">
     public static Boolean IsFileCurrentlyRecording(IMediaFile res){
