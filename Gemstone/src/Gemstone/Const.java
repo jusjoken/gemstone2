@@ -63,7 +63,6 @@ public class Const {
     public static final String MainMenuProp = "MainMenu";
     public static final String WidgetProp = "Widgets";
     public static final String UnknownName = "-UnknownName-";
-    public static final String BaseSource = "gemstone.source.Base";
     public static final String PropertyComment = "---gemstone Export Properties - Do Not Manually Edit---";
     public static final String WrappedFilter = "WrappedFilter";
     public static final String ImageCacheProp = "ImageCache";
@@ -74,5 +73,11 @@ public class Const {
     public static final Integer SystemMessageAlertLevelWarning = 2;
     public static final Integer SystemMessageAlertLevelError = 3;
     public static final String CreateBGImageTag = "GemstoneMenuBG";
+    public static final String BaseSource = "gemstone.base.all";
+    public static final String BaseTitleSource = "gemstone.source.firstletter";
+    public static final String BaseGenreSource = "BaseGenreSource";
+    public static final String BaseRatingsSource = "BaseRatingsSource";
+
+    
     
 }

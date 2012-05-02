@@ -828,12 +828,53 @@ public class Source {
     //BaseSourceCache functions
     //main base is used in the others only
     //  AddGlobalContext("gemstoneBaseSource", phoenix_umb_CreateView("gemstone.base.all"))
+    public static Object GetBaseSource(){
+        Object tSource = BaseSourceCache.get(Const.BaseSource);
+        if (tSource==null){
+            tSource = phoenix.umb.CreateView(Const.BaseSource);
+            BaseSourceCache.put(Const.BaseSource, tSource);
+            LOG.debug("GetBaseSource: Loaded Source and placed in cache");
+        }
+        return tSource;
+    }
     //BaseTitles used for the firstletter filter
     // AddGlobalContext("gemstoneBaseTitles", phoenix_umb_CreateView("gemstone.source.firstletter"))
+    public static Object GetBaseTitleSource(){
+        Object tSource = BaseSourceCache.get(Const.BaseTitleSource);
+        if (tSource==null){
+            tSource = phoenix.umb.CreateView(Const.BaseTitleSource);
+            BaseSourceCache.put(Const.BaseTitleSource, tSource);
+            LOG.debug("GetBaseTitleSource: Loaded Source and placed in cache");
+        }
+        return tSource;
+    }
     //BaseGenres used for Genre Filter
     //  AddGlobalContext("gemstoneBaseGenres", Gemstone_Source_GetGenres(gemstoneBaseSource))
+    public static Object GetBaseGenreSource(){
+        Object tSource = BaseSourceCache.get(Const.BaseGenreSource);
+        if (tSource==null){
+            tSource = GetGenres((ViewFolder) GetBaseSource());
+            BaseSourceCache.put(Const.BaseGenreSource, tSource);
+            LOG.debug("GetBaseGenreSource: Loaded Source and placed in cache");
+        }
+        return tSource;
+    }
     //BaseRatings used for ratings filter
     //  AddGlobalContext("gemstoneBaseRatings", Gemstone_Source_GetRatings(gemstoneBaseSource))
+    public static Object GetBaseRatingsSource(){
+        Object tSource = BaseSourceCache.get(Const.BaseRatingsSource);
+        if (tSource==null){
+            tSource = GetRatings((ViewFolder) GetBaseSource());
+            BaseSourceCache.put(Const.BaseRatingsSource, tSource);
+            LOG.debug("GetBaseRatingsSource: Loaded Source and placed in cache");
+        }
+        return tSource;
+    }
+
+    public static void BaseSourceClear(){
+        BaseSourceCache.clear();
+        LOG.debug("BaseSourceClear: Base Source Cache cleared");
+    }
     
     //<editor-fold defaultstate="collapsed" desc="phoenix api additions">
     public static Boolean IsFileCurrentlyRecording(IMediaFile res){
