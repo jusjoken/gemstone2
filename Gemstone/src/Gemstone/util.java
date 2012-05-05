@@ -1025,5 +1025,16 @@ public class util {
         MessageProp.setProperty("typename", MessageType);
         sagex.api.SystemMessageAPI.PostSystemMessage(new UIContext(sagex.api.Global.GetUIContextName()), Code, AlertLevel, Message, MessageProp);
     }
+    
+    public static String CleanProperty(String PropLocation, String Default){
+        String tValue = GetProperty(PropLocation, Default);
+        //see if the value has Diamond_ or sagediamond_ in it and if so then return the default
+        if (tValue.startsWith("Diamond_") || tValue.startsWith("sagediamond_")){
+            //save the default so the old invalid property is overwritten
+            SetProperty(PropLocation, Default);
+            return Default;
+        }
+        return tValue;
+    }
 }
 

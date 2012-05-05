@@ -101,10 +101,6 @@ public class api {
 //        LOG.fatal("Test Log Message - fatal");
    }
 
-    public static int GetSeasonEpisodeNumber(Object MediaObject) {
-        return MetadataCalls.GetSeasonEpisodeNumber(MediaObject);
-    }
-
     public static void AddStaticContext(String Context, Object Value) {
         sagex.api.Global.AddStaticContext(new UIContext(sagex.api.Global.GetUIContextName()), Context, Value);
 
