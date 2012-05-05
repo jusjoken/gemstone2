@@ -471,7 +471,11 @@ public class FanartManager {
         ImageCache.SetPreCacheItemLocation(tKey.getImagePath());
         //update counts for the summary view
         if (this.FanartType.equals("poster")){
-            ImageCache.PreCachePosterItems++;
+            if (OriginalSize){
+                ImageCache.PreCacheFullPosterItems++;
+            }else{
+                ImageCache.PreCachePosterItems++;
+            }
         }else if (this.FanartType.equals("banner")){
             ImageCache.PreCacheBannerItems++;
         }else if (this.FanartType.equals("background")){
@@ -539,6 +543,10 @@ public class FanartManager {
                     //also cache a FullSize background
                     CacheImage(FanartList.get(0).toString(), Boolean.TRUE);
                 }
+                if (faType.toLowerCase().equals("poster") && ImageCache.PreCacheFullPosters()){
+                    //also cache a FullSize poster
+                    CacheImage(FanartList.get(0).toString(), Boolean.TRUE);
+                }
             }
             if (IsTV()){
                 for (Object Season: TVModeList){
@@ -549,6 +557,10 @@ public class FanartManager {
                         }
                         if (faType.toLowerCase().equals("background") && ImageCache.PreCacheFullBackgrounds()){
                             //also cache a FullSize background
+                            CacheImage(FanartList.get(0).toString(), Boolean.TRUE);
+                        }
+                        if (faType.toLowerCase().equals("poster") && ImageCache.PreCacheFullPosters()){
+                            //also cache a FullSize poster
                             CacheImage(FanartList.get(0).toString(), Boolean.TRUE);
                         }
                     }

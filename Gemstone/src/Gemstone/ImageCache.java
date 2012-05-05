@@ -590,6 +590,8 @@ public class ImageCache {
         if (OriginalSize){
             if (FanartType.equals(MediaArtifactType.BACKGROUND)){ //full background
                 scalewidth = GetImageScale("fullbackground")*0.01;
+            }else if (FanartType.equals(MediaArtifactType.POSTER)){ //full poster
+                scalewidth = GetImageScale("fullposter")*0.01;
             }else{
                 scalewidth = 1.0;
             }
@@ -678,6 +680,22 @@ public class ImageCache {
     }
     public static void SetPreCacheFullBackgroundsNext(){
         String tProp = ICacheProps + Const.PropDivider + Const.ImagePreCache + Const.PropDivider + "FULL:BACKGROUND";
+        util.SetTrueFalseOptionNext(tProp);
+    }
+    
+    public static String PreCacheFullPostersName(){
+        if (PreCacheFullPosters()){
+            return "Yes";
+        }else{
+            return "No";
+        }
+    }
+    public static Boolean PreCacheFullPosters(){
+        String tProp = ICacheProps + Const.PropDivider + Const.ImagePreCache + Const.PropDivider + "FULL:POSTER";
+        return util.GetPropertyAsBoolean(tProp, Boolean.TRUE);
+    }
+    public static void SetPreCacheFullPostersNext(){
+        String tProp = ICacheProps + Const.PropDivider + Const.ImagePreCache + Const.PropDivider + "FULL:POSTER";
         util.SetTrueFalseOptionNext(tProp);
     }
     
@@ -856,6 +874,7 @@ public class ImageCache {
     public static Integer PreCacheBannerItems = 0;
     public static Integer PreCacheBackgroundItems = 0;
     public static Integer PreCacheFullBackgroundItems = 0;
+    public static Integer PreCacheFullPosterItems = 0;
     public static Integer PreCacheItemsCreated = 0;
     public static Integer PreCacheItemsExisted = 0;
     public static Integer PreCacheItemsFailed = 0;
@@ -875,6 +894,7 @@ public class ImageCache {
         PreCacheBannerItems = 0;
         PreCacheBackgroundItems = 0;
         PreCacheFullBackgroundItems = 0;
+        PreCacheFullPosterItems = 0;
         PreCacheItemsCreated = 0;
         PreCacheItemsExisted = 0;
         PreCacheItemsFailed = 0;
@@ -957,6 +977,14 @@ public class ImageCache {
             return util.intToString(PreCacheFullBackgroundItems,4) + " Full Backgrounds";
         }else{
             return "Full Background " + Const.OptionNotEnabled;
+        }
+    }
+
+    public static String GetPreCacheFullPosterItems(){
+        if (PreCacheFullPosters()){
+            return util.intToString(PreCacheFullPosterItems,4) + " Full Posters";
+        }else{
+            return "Full Poster " + Const.OptionNotEnabled;
         }
     }
     
