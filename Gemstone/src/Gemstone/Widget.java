@@ -22,11 +22,39 @@ public class Widget {
     public static enum WidgetSize{XL,L,M,S};
     public static List<String> InternalWidgetList = new ArrayList<String>();
     public static Map<String,Integer> InternalWidgetListSections = new HashMap<String,Integer>();
+    public static Map<String,Integer> InternalWidgetListDefaultListSize = new HashMap<String,Integer>();
+    public static Map<String,ArrayList> InternalWidgetLists = new HashMap<String,ArrayList>();
+    
+    public static void SetWidgetList(String WidgetType, ArrayList List){
+        InternalWidgetLists.put(WidgetType, List);
+    }
+    public static ArrayList GetWidgetList(String WidgetType){
+        if (InternalWidgetLists.containsKey(WidgetType)){
+            return InternalWidgetLists.get(WidgetType);
+        }
+        return new ArrayList();
+    }
+    public static Boolean WidgetListIsValid(String WidgetType){
+        if (InternalWidgetLists.containsKey(WidgetType)){
+            return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+    public static Boolean WidgetListIsEmpty(String WidgetType){
+        if (InternalWidgetLists.containsKey(WidgetType)){
+            return InternalWidgetLists.get(WidgetType).isEmpty();
+        }
+        return Boolean.TRUE;
+    }
     
     public static void AddWidgetType(String WidgetType, Integer Sections){
+        AddWidgetType(WidgetType, Sections, 1);
+    }
+    public static void AddWidgetType(String WidgetType, Integer Sections, Integer DefaultListSize){
         if (!InternalWidgetList.contains(WidgetType)){
             InternalWidgetList.add(WidgetType);
             InternalWidgetListSections.put(WidgetType, Sections);
+            InternalWidgetListDefaultListSize.put(WidgetType, DefaultListSize);
         }
     }
 
@@ -273,9 +301,15 @@ public class Widget {
         util.SetProperty(tProp, NewValue.toString());
     }
 
+    public static Integer GetDefaultListSize(String WidgetType){
+        if (InternalWidgetListDefaultListSize.containsKey(WidgetType)){
+            return InternalWidgetListDefaultListSize.get(WidgetType);
+        }
+        return 1;
+    }
     public static Integer GetListSize(String WidgetType){
         String tProp = WidgetProps + WidgetType + Const.PropDivider + "ListSize";
-        Integer tRetVal = util.GetPropertyAsInteger(tProp,1);
+        Integer tRetVal = util.GetPropertyAsInteger(tProp,InternalWidgetListDefaultListSize.get(WidgetType));
         return tRetVal;
     }
     public static void SetListSize(String WidgetType, Integer tSize){
