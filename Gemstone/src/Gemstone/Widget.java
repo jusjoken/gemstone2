@@ -325,10 +325,10 @@ public class Widget {
         Integer tRetVal = util.GetPropertyAsInteger(tProp,InternalWidgetListDefaultListSize.get(WidgetType));
         Integer tCurrentSize = GetWidgetListCurrentSize(WidgetType);
         if (tCurrentSize<tRetVal){
-            LOG.debug("GetListSize: for '" + WidgetType + "' returning Current '" + tCurrentSize + "'");
+            //LOG.debug("GetListSize: for '" + WidgetType + "' returning Current '" + tCurrentSize + "'");
             return tCurrentSize;
         }else{
-            LOG.debug("GetListSize: for '" + WidgetType + "' returning Max '" + tRetVal + "'");
+            //LOG.debug("GetListSize: for '" + WidgetType + "' returning Max '" + tRetVal + "'");
             return tRetVal;
         }
     }

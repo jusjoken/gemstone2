@@ -442,7 +442,7 @@ public class util {
             LOG.debug("EvaluateAttribute for Attribute = '" + Attribute + "' not evaluated.");
             return OptionNotFound;
         }else{
-            LOG.debug("EvaluateAttribute for Attribute = '" + Attribute + "' = '" + passvalue[0].toString() + "'");
+            //LOG.debug("EvaluateAttribute for Attribute = '" + Attribute + "' = '" + passvalue[0].toString() + "'");
             return passvalue[0].toString();
         }
         
