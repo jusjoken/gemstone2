@@ -24,7 +24,7 @@ public class api {
 
     public static Logger LOG=null;
 
-    public static String Version = "1.006" + "";
+    public static String Version = "1.007" + "";
 
     public static void main(String[] args){
 
