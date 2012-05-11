@@ -1122,9 +1122,9 @@ public class ADMMenuNode {
                 if (tMenu.NodeItem.getLevel()==Level+1){
                     TempItems.add(tMenu.Name);
                     tMenu.NodeItem.removeFromParent();
-                    LOG.debug("DeleteAllTempMenuItems for Level '" + Level + "' '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "'");
+                    //LOG.debug("DeleteAllTempMenuItems for Level '" + Level + "' '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "'");
                 }else{
-                    LOG.debug("DeleteAllTempMenuItems for Level '" + Level + "' Skipping as different Level '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "' Level = '" + (GetMenuItemLevel(tMenu.Name)-1) + "'");
+                    //LOG.debug("DeleteAllTempMenuItems for Level '" + Level + "' Skipping as different Level '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "' Level = '" + (GetMenuItemLevel(tMenu.Name)-1) + "'");
                 }
             }
         }
