@@ -183,6 +183,7 @@ public class ADMAction {
         CustomAction.WidgetSymbols.clear();
         CustomAction.AllActionCategories.clear();
         CustomAction.AllActionCategories.add(ActionCategoryOther);
+        CustomAction.AllActionCategories.add("Gemstone");
 
         LoadStandardActionList();
         LoadDynamicLists();

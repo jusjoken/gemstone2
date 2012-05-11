@@ -1046,24 +1046,27 @@ public class ADMMenuNode {
         LOG.debug("MenuBeforeOpen: Level '" + Level + "' MenuName '" + MenuName + "'");
         //store the Menu for this Level for later retrieval while the menu is open
         //cleanup previous Temp Menu Items if any
-        DeleteAllTempMenuItems();
+        //DeleteAllTempMenuItems();
         String UIContext = sagex.api.Global.GetUIContextName();
         if (Level==1){
             if (!UIMenuListLevel1.containsKey(UIContext)){
                 UIMenuListLevel1.put(UIContext, new LinkedHashSet<String>());
             }
+            DeleteAllTempMenuItems(1);
             UIMenuListLevel1.get(UIContext).clear();
             UIMenuListLevel1.get(UIContext).addAll(GetMenuItemNameList(MenuName));
         }else if (Level==2){
             if (!UIMenuListLevel2.containsKey(UIContext)){
                 UIMenuListLevel2.put(UIContext, new LinkedHashSet<String>());
             }
+            DeleteAllTempMenuItems(2);
             UIMenuListLevel2.get(UIContext).clear();
             UIMenuListLevel2.get(UIContext).addAll(GetMenuItemNameList(MenuName));
         }else if (Level==3){
             if (!UIMenuListLevel3.containsKey(UIContext)){
                 UIMenuListLevel3.put(UIContext, new LinkedHashSet<String>());
             }
+            DeleteAllTempMenuItems(3);
             UIMenuListLevel3.get(UIContext).clear();
             UIMenuListLevel3.get(UIContext).addAll(GetMenuItemNameList(MenuName));
         }
@@ -1110,6 +1113,29 @@ public class ADMMenuNode {
             ADMutil.RemovePropertyAndChildren(PropLocation);
         }
         LOG.debug("DeleteAllTempMenuItems : Deleted '" + TempItems.size() + "' items");
+    }
+    private static void DeleteAllTempMenuItems(Integer Level){
+        List<String> TempItems = new LinkedList<String>();
+        //Get Temp Items for deletion
+        for (ADMMenuNode tMenu : MenuNodeList().values()){
+            if (tMenu.IsTemp){
+                if (tMenu.NodeItem.getLevel()==Level+1){
+                    TempItems.add(tMenu.Name);
+                    tMenu.NodeItem.removeFromParent();
+                    LOG.debug("DeleteAllTempMenuItems for Level '" + Level + "' '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "'");
+                }else{
+                    LOG.debug("DeleteAllTempMenuItems for Level '" + Level + "' Skipping as different Level '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "' Level = '" + (GetMenuItemLevel(tMenu.Name)-1) + "'");
+                }
+            }
+        }
+        String PropLocation = "";
+        for (String TempItem : TempItems){
+            MenuNodeList().remove(TempItem);
+            //remove them from the SageTV Properties
+            PropLocation = ADMutil.SagePropertyLocation + TempItem;
+            ADMutil.RemovePropertyAndChildren(PropLocation);
+        }
+        LOG.debug("DeleteAllTempMenuItems for Level " + Level + " : Deleted '" + TempItems.size() + "' items");
     }
     
     private static Boolean QLMInvalidSubmenu(ADMMenuNode tMenu){
