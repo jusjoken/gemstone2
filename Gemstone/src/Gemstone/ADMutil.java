@@ -36,6 +36,9 @@ public class ADMutil {
     public static final String SageADMSettingsPropertyLocation = "ADM/settings";
     public static final String AdvancedModePropertyLocation = "ADM/settings/advanced_mode";
     public static final String UseADMPropertyLocation = "ADM/settings/use_adm";
+    public static final String ADMMenuStyleLocation = "Gemstone/MenuManager/settings/MenuStyle";
+    public static final String SortGroupedLocation = "Gemstone/MenuManager/settings/SortGrouped";
+    public static final String ADMMenuStyleDefault = "Sage Style";
     public static final String UseQLMPropertyLocation = "ADM/settings/use_qlm";
     public static final String ADMCopyModePropertyLocation = "ADM/settings/admcopymode";
     public static final String TopMenu = "xTopMenu";
@@ -572,16 +575,21 @@ public class ADMutil {
     }
     
     public static Boolean UseADM(){
-        if (GetPropertyAsBoolean(UseADMPropertyLocation, Boolean.TRUE)){
+        //true unless this is specifically set to "off"
+        LOG.debug("UseADM: '" + GetProperty(ADMMenuStyleLocation, ADMMenuStyleDefault) + "'");
+        if (GetProperty(ADMMenuStyleLocation, ADMMenuStyleDefault).toLowerCase().equals("off")){
+            return Boolean.FALSE;
+        }else{
+            return Boolean.TRUE;
+        }
+    }
+        
+    public static Boolean SortGrouped(){
+        if (GetPropertyAsBoolean(SortGroupedLocation, Boolean.FALSE)){
             return Boolean.TRUE;
         }else{
             return Boolean.FALSE;
         }
-    }
-    
-    public static void ChangeUseADM(){
-        Boolean NewValue = !GetPropertyAsBoolean(UseADMPropertyLocation, Boolean.FALSE);
-        SetProperty(UseADMPropertyLocation, NewValue.toString());
     }
     
     public static Boolean UseQLM(){

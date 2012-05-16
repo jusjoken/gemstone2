@@ -1270,7 +1270,7 @@ public class ADMMenuNode {
     }
     
     //get the specific format based on the Sort style
-    public static String GetMenuItemButtonTextbyStyle(String Name, String SortStyle){
+    public static String GetMenuItemButtonTextbyStyle(String Name, Boolean SortGrouped){
         String SubMenuText = GetMenuItemSubMenu(Name);
         if (SubMenuText!=null){
             if (SubMenuText.equals(Name)){
@@ -1285,12 +1285,12 @@ public class ADMMenuNode {
         if (MenuNodeList().get(Name).IsDefault){
             DefaultIndicator = "* ";
         }
-        if (SortStyle.equals(ADMutil.SortStyleDefault)){
-            //return a prefix padded string
-            return GetMenuItemButtonTextFormatted(Name,"     ") + DefaultIndicator + SubMenuText;
-        }else{
+        if (SortGrouped){
             //return a / delimited path
             return GetMenuItemButtonTextFormatted(Name,null) + DefaultIndicator + SubMenuText;
+        }else{
+            //return a prefix padded string
+            return GetMenuItemButtonTextFormatted(Name,"     ") + DefaultIndicator + SubMenuText;
         }
     }
 
