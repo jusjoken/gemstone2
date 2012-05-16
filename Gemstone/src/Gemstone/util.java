@@ -30,6 +30,7 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
+import sagex.api.PluginAPI;
 import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
 
@@ -988,35 +989,55 @@ public class util {
         return null;
     }   
     
-    public static void HandleNonCompatiblePlugins(){
-        Boolean DisableForConflict = GetTrueFalseOption("Utility", "PluginConflictMode", Boolean.FALSE);
+    public static Boolean HandleNonCompatiblePlugins(){
+        Boolean DisableForConflict = Boolean.TRUE;
+        Boolean ReloadUI = Boolean.FALSE;
+        //Boolean DisableForConflict = GetTrueFalseOption("Utility", "PluginConflictMode", Boolean.FALSE);
         UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+
+//        //List plugins
+//        Object[] plugins = PluginAPI.GetAllAvailablePlugins();
+//        if (plugins != null && plugins.length > 0) {
+//            for (Object plugin : plugins) {
+//                LOG.debug("HandleNonCompatiblePlugins: Plugin '" + PluginAPI.GetPluginIdentifier(plugin)+ "' Installed '" + PluginAPI.IsPluginInstalled(plugin) + "' Enabled '" + PluginAPI.IsPluginEnabled(plugin) + "' C Installed '" + PluginAPI.IsClientPluginInstalled(plugin) + "'");
+//            }
+//        }
+//        
         //check for CVF
-        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, "jusjokenCVF")){
+        Object thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"jusjokencvf");
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI,thisPlugin)){
             if(DisableForConflict){
-                sagex.api.PluginAPI.DisablePlugin(tUI, "jusjokenCVF");
+                sagex.api.PluginAPI.DisablePlugin(tUI, thisPlugin);
                 String tMessage = "CVF Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* CVF Plugin has been disabled.";
                 PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelInfo, tMessage);
+                ReloadUI = Boolean.TRUE;
                 LOG.debug("HandleNonCompatiblePlugins: CVF found and disabled");
             }else{
                 String tMessage = "CVF Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the CVF Plugin and reload the UI.";
                 PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
                 LOG.debug("HandleNonCompatiblePlugins: CVF found and System Error message created");
             }
+        }else{
+            LOG.debug("HandleNonCompatiblePlugins: checking for CVF - not found");
         }
         //check for ADM
-        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, "jusjokenADM")){
+        thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"jusjokenadm");
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, thisPlugin)){
             if(DisableForConflict){
-                sagex.api.PluginAPI.DisablePlugin(tUI, "jusjokenADM");
+                sagex.api.PluginAPI.DisablePlugin(tUI, thisPlugin);
                 String tMessage = "ADM Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* ADM Plugin has been disabled.";
                 PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelInfo, tMessage);
+                ReloadUI = Boolean.TRUE;
                 LOG.debug("HandleNonCompatiblePlugins: ADM found and disabled");
             }else{
                 String tMessage = "ADM Plugin is NOT compatible with Gemstone as Gemstone now contains similar functions.\n \n* Please disable the ADM Plugin and reload the UI.";
                 PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
                 LOG.debug("HandleNonCompatiblePlugins: ADM found and System Error message created");
             }
+        }else{
+            LOG.debug("HandleNonCompatiblePlugins: checking for ADM - not found");
         }
+        return ReloadUI;
     }
     
     public static void PostSytemMessage(Integer Code, String MessageType, Integer AlertLevel, String Message){

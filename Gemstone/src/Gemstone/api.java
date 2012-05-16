@@ -34,10 +34,12 @@ public class api {
 
     //load any Gemstone settings that need to load at application start
     public static void Load(){
+        //the following calls are now called from ApplicationStarted hook in the STV
         //initialize the Logging 
-        InitLogger();
+        //InitLogger();
         //initialize the ADM settings
-        util.HandleNonCompatiblePlugins();
+        //util.HandleNonCompatiblePlugins();
+        
         ADMutil.LoadADM();
         
         //generate symbols to be used for new names
