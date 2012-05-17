@@ -27,20 +27,19 @@ public class ADMutil {
 
     static private final Logger LOG = Logger.getLogger(ADMutil.class);
     public static final String ListToken = ":&&:";
+    public static final String MenuManagerBaseProp = Const.BaseProp + Const.PropDivider + Const.MenuManagerProp + Const.PropDivider;
     public static final String PropertyComment = "---ADM MenuItem Properties - Do Not Manually Edit---";
     public static final String PropertyBackupFile = "ADMbackup.properties";
     public static final String SageADMBasePropertyLocation = "ADM/";
     public static final String SagePropertyLocation = "ADM/menuitem/";
     public static final String SageFocusPropertyLocation = "ADM/focus/";
     public static final String SageBackgroundsPropertyLocation = "ADM/backgrounds/";
-    public static final String SageADMSettingsPropertyLocation = "ADM/settings";
-    public static final String AdvancedModePropertyLocation = "ADM/settings/advanced_mode";
-    public static final String UseADMPropertyLocation = "ADM/settings/use_adm";
-    public static final String ADMMenuStyleLocation = "Gemstone/MenuManager/settings/MenuStyle";
-    public static final String SortGroupedLocation = "Gemstone/MenuManager/settings/SortGrouped";
+    public static final String AdvancedModePropertyLocation = MenuManagerBaseProp + "advanced_mode";
+    public static final String ADMMenuStyleLocation = MenuManagerBaseProp + "MenuStyle";
+    public static final String SortGroupedLocation = MenuManagerBaseProp + "SortGrouped";
     public static final String ADMMenuStyleDefault = "Sage Style";
-    public static final String UseQLMPropertyLocation = "ADM/settings/use_qlm";
-    public static final String ADMCopyModePropertyLocation = "ADM/settings/admcopymode";
+    public static final String UseQLMPropertyLocation = MenuManagerBaseProp + "use_qlm";
+    public static final String ADMCopyModePropertyLocation = MenuManagerBaseProp + "admcopymode";
     public static final String TopMenu = "xTopMenu";
     private static final String SageBGVariablesListFile = "ADMSageBGVariables.properties";
     private static final String SageSubMenusLevel1ListFile = "ADMSageSubMenus1.properties";
@@ -64,24 +63,28 @@ public class ADMutil {
     private static final String MainMenuWidgetSymbol = "OPUS4A-202264"; //"BASE-44343";
     public static enum TriState{YES,NO,OTHER};
 
+    public static String GetMenuManagerBaseProp(){
+        return MenuManagerBaseProp;
+    }
+    
     public static String GetListNone(){ return ListNone; }
 
     public static Boolean GetDefaultsWorkingMode() {
-        return GetPropertyAsBoolean(SageADMSettingsPropertyLocation + "/DefaultsWorkingMode", Boolean.FALSE);
+        return GetPropertyAsBoolean(MenuManagerBaseProp + "DefaultsWorkingMode", Boolean.FALSE);
     }
     public static void SetDefaultsWorkingMode() {
         Boolean tValue = !GetDefaultsWorkingMode(); 
-        SetProperty(SageADMSettingsPropertyLocation + "/DefaultsWorkingMode", tValue.toString());
+        SetProperty(MenuManagerBaseProp + "DefaultsWorkingMode", tValue.toString());
         LOG.debug("DefaultsWorkingMode - set to '" + tValue.toString() + "'");
     }
     
     //ADM Hidden Features are toggled in ADM by typing 5309 on the Close button on the Options Menu in ADM Manager
     public static Boolean GetADMHiddenFeaturesMode() {
-        return GetPropertyAsBoolean(SageADMSettingsPropertyLocation + "/ADMHiddenFeaturesMode", Boolean.FALSE);
+        return GetPropertyAsBoolean(MenuManagerBaseProp + "ADMHiddenFeaturesMode", Boolean.FALSE);
     }
     public static void SetADMHiddenFeaturesMode() {
         Boolean tValue = !GetADMHiddenFeaturesMode(); 
-        SetProperty(SageADMSettingsPropertyLocation + "/ADMHiddenFeaturesMode", tValue.toString());
+        SetProperty(MenuManagerBaseProp + "ADMHiddenFeaturesMode", tValue.toString());
         LOG.debug("ADMHiddenFeaturesMode - set to '" + tValue.toString() + "'");
     }
     
@@ -893,7 +896,7 @@ public class ADMutil {
     
     public static Integer GetMaxMenuItemsQLM(){
         Integer DefaultMax = 8;
-        Integer LevelMax = GetPropertyAsInteger(SageADMSettingsPropertyLocation + "/MaxMenuItems/0", DefaultMax);
+        Integer LevelMax = GetPropertyAsInteger(MenuManagerBaseProp + "MaxMenuItems/0", DefaultMax);
         return LevelMax;
     }
 
@@ -903,7 +906,7 @@ public class ADMutil {
             DefaultMax = 10;
         }
         if (Level==1){
-            Integer Level1Max = GetPropertyAsInteger(SageADMSettingsPropertyLocation + "/MaxMenuItems/" + Level.toString(), DefaultMax);
+            Integer Level1Max = GetPropertyAsInteger(MenuManagerBaseProp + "MaxMenuItems/" + Level.toString(), DefaultMax);
             Integer TopMenuCount = ADMMenuNode.GetMenuItemCount(1);
             if (Level1Max > TopMenuCount){
                 return TopMenuCount;
@@ -911,7 +914,7 @@ public class ADMutil {
                 return Level1Max;
             }
         }else{
-            return GetPropertyAsInteger(SageADMSettingsPropertyLocation + "/MaxMenuItems/" + Level.toString(), DefaultMax);
+            return GetPropertyAsInteger(MenuManagerBaseProp + "MaxMenuItems/" + Level.toString(), DefaultMax);
         }
     }
 
@@ -920,7 +923,7 @@ public class ADMutil {
         if (Level > 1){
             DefaultMax = 10;
         }
-        return GetPropertyAsInteger(SageADMSettingsPropertyLocation + "/MaxMenuItems/" + Level.toString(), DefaultMax);
+        return GetPropertyAsInteger(MenuManagerBaseProp + "MaxMenuItems/" + Level.toString(), DefaultMax);
     }
     public static void SetPropertyMaxMenuItems(Integer Level, Integer Value){
         //ensure the value is within a reasonable range
@@ -931,11 +934,11 @@ public class ADMutil {
         }else if (Value < dMin){
             Value = dMin;
         }
-        SetProperty(SageADMSettingsPropertyLocation + "/MaxMenuItems/" + Level.toString(), Value.toString());
+        SetProperty(MenuManagerBaseProp + "MaxMenuItems/" + Level.toString(), Value.toString());
     }
 
     public static enum QLMCloseType{HOME_MM_LEFT_CLOSE,HOME_CLOSE_LEFT_MM,HOME_CLOSE_LEFT_CLOSE};
-    public static final String SageADMSettingsQLMCloseState = SageADMSettingsPropertyLocation + "/qlm_close_state";
+    public static final String SageADMSettingsQLMCloseState = MenuManagerBaseProp + "/qlm_close_state";
 
     public static String GetQLMCloseState(){
         //determine the current state and return a button text string to display
@@ -1057,7 +1060,7 @@ public class ADMutil {
 
     public static Boolean ShowWidgetswithQLM(){
         //ensure at minimum that the option is enabled in QLM
-        Boolean OptionOn = util.GetPropertyAsBoolean(ADMutil.SageADMSettingsPropertyLocation + "/qlm_show_widgets", Boolean.FALSE);
+        Boolean OptionOn = util.GetPropertyAsBoolean(MenuManagerBaseProp + "qlm_show_widgets", Boolean.FALSE);
         if (OptionOn){
             Boolean tReturn = Boolean.FALSE;
             tReturn = Widget.GetUseWidgets();

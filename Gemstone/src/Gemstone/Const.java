@@ -62,6 +62,7 @@ public class Const {
     public static final String FlowProp = "Flow";
     public static final String MainMenuProp = "MainMenu";
     public static final String WidgetProp = "Widgets";
+    public static final String MenuManagerProp = "MenuManager";
     public static final String UnknownName = "-UnknownName-";
     public static final String PropertyComment = "---gemstone Export Properties - Do Not Manually Edit---";
     public static final String WrappedFilter = "WrappedFilter";
