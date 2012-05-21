@@ -28,8 +28,10 @@ public class ADMutil {
     static private final Logger LOG = Logger.getLogger(ADMutil.class);
     public static final String ListToken = ":&&:";
     public static final String MenuManagerBaseProp = Const.BaseProp + Const.PropDivider + Const.MenuManagerProp + Const.PropDivider;
-    public static final String PropertyComment = "---ADM MenuItem Properties - Do Not Manually Edit---";
-    public static final String PropertyBackupFile = "ADMbackup.properties";
+    public static final String PropertyComment = "---Menu Manager MenuItem Properties - Do Not Manually Edit---";
+    public static final String PropertyBackupFile = "MenusBackup.properties";
+    //TODO: need to change the base location to Gemstone/MenuManager !!!!
+    //TODO: need a convert to load the old ADM properties and create Gemstone/MenuManager properties ???
     public static final String SageADMBasePropertyLocation = "ADM/";
     public static final String SagePropertyLocation = "ADM/menuitem/";
     public static final String SageFocusPropertyLocation = "ADM/focus/";
@@ -154,10 +156,18 @@ public class ADMutil {
         }
         
         //clear all the Sage property settings for ADM
+        
+        //TODO: can likely removed these once converted to the new MenuManager properties for Gemstone
         LOG.debug("ClearAll: clear Sage Properties");
         RemovePropertyAndChildren(SageADMBasePropertyLocation);
         LOG.debug("ClearAll: clear Sage Server Properties");
         RemoveServerPropertyAndChildren(SageADMBasePropertyLocation);
+
+        LOG.debug("ClearAll: clear MenuManager Properties");
+        RemovePropertyAndChildren(MenuManagerBaseProp);
+        LOG.debug("ClearAll: clear MenuManager Server Properties");
+        RemoveServerPropertyAndChildren(MenuManagerBaseProp);
+        
         ADMInitComplete = Boolean.FALSE;
         LOG.debug("ClearAll: load default menus");
         ADMMenuNode.LoadMenuItemDefaults();
@@ -938,7 +948,7 @@ public class ADMutil {
     }
 
     public static enum QLMCloseType{HOME_MM_LEFT_CLOSE,HOME_CLOSE_LEFT_MM,HOME_CLOSE_LEFT_CLOSE};
-    public static final String SageADMSettingsQLMCloseState = MenuManagerBaseProp + "/qlm_close_state";
+    public static final String SageADMSettingsQLMCloseState = MenuManagerBaseProp + "/QLMCloseState";
 
     public static String GetQLMCloseState(){
         //determine the current state and return a button text string to display
@@ -1060,7 +1070,7 @@ public class ADMutil {
 
     public static Boolean ShowWidgetswithQLM(){
         //ensure at minimum that the option is enabled in QLM
-        Boolean OptionOn = util.GetPropertyAsBoolean(MenuManagerBaseProp + "qlm_show_widgets", Boolean.FALSE);
+        Boolean OptionOn = util.GetPropertyAsBoolean(MenuManagerBaseProp + "QLMShowWidgets", Boolean.FALSE);
         if (OptionOn){
             Boolean tReturn = Boolean.FALSE;
             tReturn = Widget.GetUseWidgets();
