@@ -34,8 +34,9 @@ public class ADMutil {
     //TODO: need a convert to load the old ADM properties and create Gemstone/MenuManager properties ???
     public static final String SageADMBasePropertyLocation = "ADM/";
     public static final String SagePropertyLocation = "ADM/menuitem/";
-    public static final String SageFocusPropertyLocation = "ADM/focus/";
-    public static final String SageBackgroundsPropertyLocation = "ADM/backgrounds/";
+
+    public static final String SageFocusPropertyLocation = MenuManagerBaseProp + "focus/";
+    public static final String SageBackgroundsPropertyLocation = MenuManagerBaseProp + "backgrounds/";
     public static final String AdvancedModePropertyLocation = MenuManagerBaseProp + "advanced_mode";
     public static final String ADMMenuStyleLocation = MenuManagerBaseProp + "MenuStyle";
     public static final String SortGroupedLocation = MenuManagerBaseProp + "SortGrouped";
@@ -1080,6 +1081,31 @@ public class ADMutil {
             return tReturn;
         }
         return Boolean.FALSE;
+    }
+    
+    public static void ConvertADMtoGemstone(){
+        //TODO: convert of ADM settings and menuitems to a separate file
+        
+        //one time conversion of some ADM settings to Gemstone settings to retain "main" settings
+        String OldBackgroundsPropertyLocation = "ADM/backgrounds/";
+
+        // ADM/backgrounds/admg6qvgazdm9=C\:\\Program Files\\SageTV\\SageTV\\STVs\\SageTV7\\Themes\\Diamond Serenity Now\\SettingsBackground.jpg
+        // ADM/backgrounds/admjpmna0b7xa=C\:\\Program Files\\SageTV\\SageTV\\STVs\\SageTV7\\Themes\\Diamond Blue Too\\PhotoBackground.jpg
+        // ADM/backgrounds/admokxc1dqt0j=C\:\\Program Files\\SageTV\\SageTV\\STVs\\SageTV7\\Themes\\Diamond Blue Too\\ExitBackground.jpg
+        
+        String OldUseQLMPropertyLocation = MenuManagerBaseProp + "use_qlm";
+        // ADM/settings/MaxMenuItems/1=8
+        // ADM/settings/MaxMenuItems/2=10
+        // ADM/settings/MaxMenuItems/3=10
+        // ADM/settings/qlm_close_state=HOME_CLOSE_LEFT_CLOSE
+
+        // ADM/settings/qlm_left_as_back=false
+        // ADM/settings/qlm_menu_title=ADM Quick Launch
+        // ADM/settings/qlm_show_diamond_widgets=true
+        // ADM/settings/qlm_show_widgets=false
+        // ADM/settings/sorting_style=xNaturalOrder
+        
+        
     }
 
 }
