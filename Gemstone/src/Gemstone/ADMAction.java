@@ -1160,7 +1160,17 @@ public class ADMAction {
             this.Save();
         }
         
+        //TODO: EXTERNAL MENU DONE - External action save
         public void Save(){
+            //save all variables to the sage Properties
+            ADMMenuNode.Save(MenuItemName, "ExternalAction/Application", command);
+            ADMMenuNode.Save(MenuItemName, "ExternalAction/Arguments", arguments);
+            ADMMenuNode.Save(MenuItemName, "ExternalAction/WindowType", windowType.toString());
+            ADMMenuNode.Save(MenuItemName, "ExternalAction/WaitForExit", waitForExit.toString());
+            ADMMenuNode.Save(MenuItemName, "ExternalAction/SageStatus", sageStatus.toString());
+        }
+        //TODO: REMOVE after testing new external menu
+        public void SaveOld(){
             //save all variables to the sage Properties
             String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
             ADMutil.SetProperty(PropLocation + "Application", command);
@@ -1170,8 +1180,9 @@ public class ADMAction {
             ADMutil.SetProperty(PropLocation + "SageStatus", sageStatus.toString());
         }
         
+        //TODO: EXTERNAL MENU - External action load
         public void Load(){
-            //save all variables to the sage Properties
+            //load all variables from the sage Properties
             String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
             this.command = ADMutil.GetProperty(PropLocation + "Application", "");
             this.arguments = ADMutil.GetProperty(PropLocation + "Arguments", "");
@@ -1180,6 +1191,7 @@ public class ADMAction {
             this.sageStatus = ADMutil.GetPropertyAsInteger(PropLocation + "SageStatus", 0);
         }
 
+        //TODO: EXTERNAL MENU - External action ???
         public void AddProperties(Properties inProp){
             String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
             inProp.setProperty(PropLocation + "Application", command);

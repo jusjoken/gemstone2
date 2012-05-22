@@ -834,8 +834,7 @@ public class ADMMenuNode {
             ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
             if (!tMenu.Name.equals(ADMutil.TopMenu)){
                 tMenu.SortKey = child.getParent().getIndex(child);
-                String PropLocation = ADMutil.SagePropertyLocation + tMenu.Name + "/" + "SortKey";
-                ADMutil.SetProperty(PropLocation, tMenu.SortKey.toString());
+                Save(tMenu.Name, "SortKey", tMenu.SortKey.toString());
                 //LOG.debug("SortKeyUpdate: Child = '" + child + "' SortKey = '" + tMenu.SortKey + "' Parent = '" + child.getParent() + "'"  );
             }
         }         
@@ -1095,6 +1094,7 @@ public class ADMMenuNode {
         
     }
     
+    //TODO: EXTERNAL MENU - Delete Temp Menu Items
     private static void DeleteAllTempMenuItems(){
         List<String> TempItems = new LinkedList<String>();
         //Get Temp Items for deletion
@@ -1114,6 +1114,7 @@ public class ADMMenuNode {
         }
         LOG.debug("DeleteAllTempMenuItems : Deleted '" + TempItems.size() + "' items");
     }
+    //TODO: EXTERNAL MENU - Delete Temp Menu Items
     private static void DeleteAllTempMenuItems(Integer Level){
         List<String> TempItems = new LinkedList<String>();
         //Get Temp Items for deletion
@@ -1352,7 +1353,7 @@ public class ADMMenuNode {
         
     }
     
-    //TODO: EXTERNAL MENU
+    //TODO: EXTERNAL MENU - GetMenuItemsList
     public static Collection<String> GetMenuItemsList(){
         Collection<String> MenuList = new LinkedHashSet<String>();
         String rUI = sagex.api.Global.GetUIContextName();
@@ -1410,7 +1411,7 @@ public class ADMMenuNode {
         return MenuList;
     }
     
-    //TODO: EXTERNAL MENU
+    //TODO: EXTERNAL MENU - LoadMenuItemsFromSage
     public static void LoadMenuItemsFromSage(){
         String PropLocation = "";
 
@@ -1474,6 +1475,7 @@ public class ADMMenuNode {
         return;
     }
     
+    //TODO: EXTERNAL MENU - SaveMenuItemsToSage
     //saves all MenuItems to Sage properties
     @SuppressWarnings("unchecked")
     public static void SaveMenuItemsToSage(){
@@ -1499,6 +1501,7 @@ public class ADMMenuNode {
         return;
     }
  
+    //TODO: EXTERNAL MENU - SaveMenuItemToSage
     public static void SaveMenuItemToSage(ADMMenuNode tMenu){
         if (!tMenu.Name.equals(ADMutil.TopMenu)){
             String PropLocation = "";
@@ -1530,6 +1533,7 @@ public class ADMMenuNode {
         LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
     }
     
+    //TODO: EXTERNAL MENU - DeleteAllMenuItems
     public static void DeleteAllMenuItems(){
 
         //backup existing MenuItems before deleting
@@ -1667,7 +1671,7 @@ public class ADMMenuNode {
         }
     }
     
-    //TODO: EXTERNAL MENU
+    //TODO: EXTERNAL MENU - ImportMenuItems
     public static Boolean ImportMenuItems(String ImportPath){
 
         if (ImportPath==null){
@@ -1718,7 +1722,7 @@ public class ADMMenuNode {
         return true;
     }
  
-    //TODO: EXTERNAL MENU
+    //TODO: EXTERNAL MENU - ExportMenuItems
     public static void ExportMenuItems(String ExportFile){
         String PropLocation = "";
         String ExportFilePath = ADMutil.ADMLocation() + File.separator + ExportFile;
@@ -1781,7 +1785,110 @@ public class ADMMenuNode {
         
         return;
     }
+
+    //TODO: EXTERNAL MENU - needs updating to find a shared or client based menu file
+    public static String GetDefaultMenuLocation(){
+        String tLocation = ADMutil.ADMLocation() + File.separator + "Menus.properties";
+        Boolean Override = util.GetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+        if (Override){
+            String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", tLocation);
+            LOG.debug("GetDefaultMenuLocation: returning '" + rLocation + "'");
+            return rLocation;
+        }else{
+            LOG.debug("GetDefaultMenuLocation: returning '" + tLocation + "'");
+            return tLocation;
+        }
+    }
+    public static String GetDefaultMenuLocationPath(){
+        return (new File(GetDefaultMenuLocation())).getParent();
+    }
+    public static void SetDefaultMenuLocation(String Location){
+        Boolean FileExists = (new File(Location)).exists();
+        if (FileExists){
+            util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", Location);
+            LOG.debug("SetDefaultMenuLocation: setting to '" + Location + "'");
+        }else{
+            util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+            util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", GetDefaultMenuLocation());
+            LOG.debug("SetDefaultMenuLocation: '" + Location + "' not found so using default client menu");
+        }
+        
+    }
     
+    //Gemstone Menus SaveAll functions to replace previous solution that saved to the Sage properties file
+    private static final String UseDefaultMenuLocation = "UseDefaultMenuLocation";
+    public static void SaveAll(){
+        SaveAll(UseDefaultMenuLocation);
+    }
+    //used for Export IF a filename is passed in
+    public static void SaveAll(String ExportFile){
+        String PropLocation = "";
+        String ExportFilePath = "";
+        if (ExportFile.equals(UseDefaultMenuLocation)){
+            ExportFilePath = GetDefaultMenuLocation();
+        }else{
+            ExportFilePath = ADMutil.ADMLocation() + File.separator + ExportFile;
+        }
+        LOG.debug("SaveAll: Full Path = '" + ExportFilePath + "'");
+        
+        //iterate through all the MenuItems and save to a Property Collection
+        Properties MenuItemProps = new Properties();
+
+        for (String tName : MenuNodeList().keySet()){
+            if (!tName.equals(ADMutil.TopMenu)){
+                if (GetMenuItemIsCreatedNotLoaded(tName) && ADMutil.GetDefaultsWorkingMode()){
+                    //skip exporting this item as we are in DefaultsWorkingMode and this is a Created item so it should not be exported
+                }else if (GetMenuItemIsTemp(tName)){
+                    //skip exporting this item as it is a TEMP Menu Item and should not be exported
+                }else{
+                    PropLocation = ADMutil.SagePropertyLocation + tName;
+                    PropertyAdd(MenuItemProps,PropLocation + "/Action",GetMenuItemAction(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/ActionType", GetMenuItemActionType(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/BGImageFile", GetMenuItemBGImageFile(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/ButtonText", GetMenuItemButtonText(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/Name", tName);
+                    PropertyAdd(MenuItemProps,PropLocation + "/Parent", GetMenuItemParent(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/SortKey", GetMenuItemSortKey(tName).toString());
+                    if (GetMenuItemSubMenu(tName)==null){
+                        //do nothing for null
+                    }else if (!GetMenuItemSubMenu(tName).equals(tName)){
+                        PropertyAdd(MenuItemProps,PropLocation + "/SubMenu", GetMenuItemSubMenu(tName));
+                    }
+                    PropertyAdd(MenuItemProps,PropLocation + "/IsDefault", GetMenuItemIsDefault(tName).toString());
+                    PropertyAdd(MenuItemProps,PropLocation + "/IsActive", GetMenuItemIsActive(tName).toString());
+                    if (GetMenuItemBlockedSageUsersListAsList(tName).size()>0){
+                        PropertyAdd(MenuItemProps,PropLocation + "/BlockedSageUsersList", GetMenuItemBlockedSageUsersList(tName));
+                    }
+                    if (ADMutil.GetDefaultsWorkingMode() && !GetMenuItemShowIF(tName).equals(ADMutil.OptionNotFound)){
+                        //in this mode the ShowIF property get's exported so it's available to build a new defaults file
+                        PropertyAdd(MenuItemProps,PropLocation + "/ShowIF", GetMenuItemShowIF(tName));
+                    }
+                    //if this is an external action then save out the external action properties
+                    if (GetMenuItemActionType(tName).equals(ADMAction.LaunchExternalApplication)){
+                        GetMenuItemActionExternal(tName).AddProperties(MenuItemProps);
+                    }
+                    //LOG.debug("ExportMenuItems: exported - '" + entry.getValue().getName() + "'");
+                }
+            }
+        }
+        //write the properties to the properties file
+        try {
+            FileOutputStream out = new FileOutputStream(ExportFilePath);
+            try {
+                MenuItemProps.store(out, ADMutil.PropertyComment);
+                out.close();
+            } catch (IOException ex) {
+                LOG.debug("SaveAll: error saving menus " + ADMutil.class.getName() + ex);
+            }
+        } catch (FileNotFoundException ex) {
+            LOG.debug("SaveAll: error saving menus " + ADMutil.class.getName() + ex);
+        }
+
+        LOG.debug("SaveAll: saved " + MenuNodeList().size() + " MenuItems");
+        
+        return;
+    }
+
     private static void PropertyAdd(Properties inProp, String Location, String Setting){
         if (Setting!=null){
             inProp.setProperty(Location, Setting);
@@ -1958,8 +2065,8 @@ public class ADMMenuNode {
         LOG.debug("setParent: node = '" + Node + "' oldParent = '" + oldParent +"' newParent = '" + newParent + "'");
     }
     
-    //TODO: EXTERNAL MENU
-    private static void Save(String Name, String PropType, String Setting){
+    //TODO: EXTERNAL MENU - Save
+    public static void Save(String Name, String PropType, String Setting){
         if (!Name.equals(ADMutil.TopMenu)){
             String PropLocation = ADMutil.SagePropertyLocation + Name;
             ADMutil.SetProperty(PropLocation + "/" + PropType, Setting);
@@ -1982,10 +2089,12 @@ public class ADMMenuNode {
                 MenuNodeList().get(Name).IsTemp = Boolean.parseBoolean(Setting);
             }else if (PropType.equals("IsDefault")){
                 MenuNodeList().get(Name).IsDefault = Boolean.parseBoolean(Setting);
+            }else if (PropType.equals("SortKey")){
+                //included sortKey only so it does not raise an error when called
             }else if (PropType.equals("SubMenu")){
                 MenuNodeList().get(Name).SubMenu = Setting;
             }else if (PropType.equals("Name")){
-                //included Name only so it does not raise an erro when called
+                //included Name only so it does not raise an error when called
             }else if (PropType.equals("Parent")){
                 MenuNodeList().get(Name).Parent = Setting;
             }else if (PropType.equals("BlockedSageUsersList")){
