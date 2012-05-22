@@ -1352,6 +1352,7 @@ public class ADMMenuNode {
         
     }
     
+    //TODO: EXTERNAL MENU
     public static Collection<String> GetMenuItemsList(){
         Collection<String> MenuList = new LinkedHashSet<String>();
         String rUI = sagex.api.Global.GetUIContextName();
@@ -1409,6 +1410,7 @@ public class ADMMenuNode {
         return MenuList;
     }
     
+    //TODO: EXTERNAL MENU
     public static void LoadMenuItemsFromSage(){
         String PropLocation = "";
 
@@ -1665,6 +1667,7 @@ public class ADMMenuNode {
         }
     }
     
+    //TODO: EXTERNAL MENU
     public static Boolean ImportMenuItems(String ImportPath){
 
         if (ImportPath==null){
@@ -1715,6 +1718,7 @@ public class ADMMenuNode {
         return true;
     }
  
+    //TODO: EXTERNAL MENU
     public static void ExportMenuItems(String ExportFile){
         String PropLocation = "";
         String ExportFilePath = ADMutil.ADMLocation() + File.separator + ExportFile;
@@ -1954,6 +1958,7 @@ public class ADMMenuNode {
         LOG.debug("setParent: node = '" + Node + "' oldParent = '" + oldParent +"' newParent = '" + newParent + "'");
     }
     
+    //TODO: EXTERNAL MENU
     private static void Save(String Name, String PropType, String Setting){
         if (!Name.equals(ADMutil.TopMenu)){
             String PropLocation = ADMutil.SagePropertyLocation + Name;
