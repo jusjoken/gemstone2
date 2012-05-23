@@ -737,7 +737,7 @@ public class ADMAction {
 
     public static void LoadStandardActionList(){
         Properties CustomActionProps = new Properties();
-        String CustomActionPropsPath = ADMutil.ADMDefaultsLocation() + File.separator + StandardActionListFile;
+        String CustomActionPropsPath = util.DefaultsLocation() + File.separator + StandardActionListFile;
         //read the properties from the properties file
         try {
             FileInputStream in = new FileInputStream(CustomActionPropsPath);

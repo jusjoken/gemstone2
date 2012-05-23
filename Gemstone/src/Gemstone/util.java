@@ -49,7 +49,7 @@ public class util {
     private static final Random random = new Random();
     public static final String OptionNotFound = "Option not Found";
     public static enum TriState{YES,NO,OTHER};
-    public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,GENERIC};
+    public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,MENUS,GENERIC};
     public static final String ListToken = ":&&:";
     
     public static void main(String[] args){
@@ -874,12 +874,7 @@ public class util {
         
         //iterate through all the Properties and Children and save to a Property Collection
         Properties ExportProps = new Properties();
-        //Add the Export Type to aid in the Import
-        ExportProps.put(Const.ExportTypeKey, eType.toString());
-        ExportProps.put(Const.ExportPropKey, PropLocation);
-        if (!Name.equals("")){
-            ExportProps.put(Const.ExportPropName, Name);
-        }
+        LabelExport(ExportProps, PropLocation, eType, Name);
 
         //Get all base properties first
         LoadProperties(PropLocation, ExportProps);
@@ -898,6 +893,15 @@ public class util {
             }
         } catch (FileNotFoundException ex) {
             LOG.debug("Export: error exporting properties " + util.class.getName() + ex);
+        }
+        
+    }
+    public static void LabelExport(Properties PropContainer,String PropLocation, ExportType eType, String Name){
+        //Add the Export Type to aid in the Import
+        PropContainer.put(Const.ExportTypeKey, eType.toString());
+        PropContainer.put(Const.ExportPropKey, PropLocation);
+        if (!Name.equals("")){
+            PropContainer.put(Const.ExportPropName, Name);
         }
         
     }
@@ -931,6 +935,10 @@ public class util {
 
     public static String DefaultsLocation(){
         return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "defaults";
+    }
+    
+    public static String MenusLocation(){
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "menus";
     }
     
     public static String GetSageTVRootDir(){

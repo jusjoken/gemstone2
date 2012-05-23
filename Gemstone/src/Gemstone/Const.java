@@ -64,7 +64,7 @@ public class Const {
     public static final String WidgetProp = "Widgets";
     public static final String MenuManagerProp = "MenuManager";
     public static final String UnknownName = "-UnknownName-";
-    public static final String PropertyComment = "---gemstone Export Properties - Do Not Manually Edit---";
+    public static final String PropertyComment = "---Gemstone Export Properties - Do Not Manually Edit---";
     public static final String WrappedFilter = "WrappedFilter";
     public static final String ImageCacheProp = "ImageCache";
     public static final String OptionNotEnabled = "Option Not Enabled";

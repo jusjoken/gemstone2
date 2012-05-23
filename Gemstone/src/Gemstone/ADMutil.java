@@ -28,7 +28,9 @@ public class ADMutil {
     static private final Logger LOG = Logger.getLogger(ADMutil.class);
     public static final String ListToken = ":&&:";
     public static final String MenuManagerBaseProp = Const.BaseProp + Const.PropDivider + Const.MenuManagerProp + Const.PropDivider;
-    public static final String PropertyComment = "---Menu Manager MenuItem Properties - Do Not Manually Edit---";
+    //public static final String PropertyComment = "---Menu Manager MenuItem Properties - Do Not Manually Edit---";
+    //ADMPropertyComment is used to identify previous Menu exports so they can be imported
+    public static final String ADMPropertyComment = "---ADM MenuItem Properties - Do Not Manually Edit---";
     public static final String PropertyBackupFile = "MenusBackup.properties";
     //TODO: need to change the base location to Gemstone/MenuManager !!!!
     //TODO: need a convert to load the old ADM properties and create Gemstone/MenuManager properties ???
@@ -104,13 +106,13 @@ public class ADMutil {
             
             //ensure the ADM file location exists
             try{
-                boolean success = (new File(ADMLocation())).mkdirs();
+                boolean success = (new File(util.UserDataLocation())).mkdirs();
                 if (success) {
-                    LOG.debug("LoadADM - Directories created for '" + ADMLocation() + "'");
+                    LOG.debug("LoadADM - Directories created for '" + util.UserDataLocation() + "'");
                    }
 
                 }catch (Exception ex){//Catch exception if any
-                    LOG.debug("LoadADM - error creating '" + ADMLocation() + "'" + ex.getMessage());
+                    LOG.debug("LoadADM - error creating '" + util.UserDataLocation() + "'" + ex.getMessage());
                 }
             
             //also load the BGVariables for BG Images on Top Level Menus
@@ -239,7 +241,7 @@ public class ADMutil {
     }
     
     public static void LoadSubMenuListLevel1(){
-        String SubMenuPropsPath = ADMDefaultsLocation() + File.separator + SageSubMenusLevel1ListFile;
+        String SubMenuPropsPath = util.DefaultsLocation() + File.separator + SageSubMenusLevel1ListFile;
         SageSubMenusLevel1Keys.clear();
         SageSubMenusKeys.clear();
         
@@ -280,7 +282,7 @@ public class ADMutil {
     }
 
     public static void LoadSubMenuListLevel2(){
-        String SubMenuPropsPath = ADMDefaultsLocation() + File.separator + SageSubMenusLevel2ListFile;
+        String SubMenuPropsPath = util.DefaultsLocation() + File.separator + SageSubMenusLevel2ListFile;
         SageSubMenusLevel2Keys.clear();
         
         //read the properties from the properties file
@@ -320,7 +322,7 @@ public class ADMutil {
     }
 
     public static void LoadSageBGVariablesList(){
-        String StandardActionPropsPath = ADMDefaultsLocation() + File.separator + SageBGVariablesListFile;
+        String StandardActionPropsPath = util.DefaultsLocation() + File.separator + SageBGVariablesListFile;
         SageBGVariablesKeys.clear();
         
         //read the properties from the properties file
@@ -590,7 +592,7 @@ public class ADMutil {
     
     public static Boolean UseADM(){
         //true unless this is specifically set to "off"
-        LOG.debug("UseADM: '" + GetProperty(ADMMenuStyleLocation, ADMMenuStyleDefault) + "'");
+        //LOG.debug("UseADM: '" + GetProperty(ADMMenuStyleLocation, ADMMenuStyleDefault) + "'");
         if (GetProperty(ADMMenuStyleLocation, ADMMenuStyleDefault).toLowerCase().equals("off")){
             return Boolean.FALSE;
         }else{
@@ -1019,13 +1021,6 @@ public class ADMutil {
 
     private static void CloseOptionsMenu(){
         sagex.api.Global.CloseOptionsMenu(new UIContext(sagex.api.Global.GetUIContextName()));
-    }
-
-    public static String ADMLocation(){
-        return util.UserDataLocation();
-    }
-    public static String ADMDefaultsLocation(){
-        return util.DefaultsLocation();
     }
 
 //    public static String[] GetSubpropertiesThatAreBranchesUI(String property)

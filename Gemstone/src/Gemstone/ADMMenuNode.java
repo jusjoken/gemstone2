@@ -1568,7 +1568,7 @@ public class ADMMenuNode {
     public static void LoadMenuItemDefaults(){
         //load default MenuItems from one or more default .properties file
         String DefaultPropFile = "ADMDefault.properties";
-        String DefaultsFullPath = ADMutil.ADMDefaultsLocation() + File.separator + DefaultPropFile;
+        String DefaultsFullPath = util.DefaultsLocation() + File.separator + DefaultPropFile;
         
         ImportMenuItems(DefaultsFullPath);
         ADMutil.ClearFocusStorage();
@@ -1725,7 +1725,7 @@ public class ADMMenuNode {
     //TODO: EXTERNAL MENU - ExportMenuItems
     public static void ExportMenuItems(String ExportFile){
         String PropLocation = "";
-        String ExportFilePath = ADMutil.ADMLocation() + File.separator + ExportFile;
+        String ExportFilePath = util.UserDataLocation() + File.separator + ExportFile;
         //LOG.debug("ExportMenuItems: Full Path = '" + ExportFilePath + "'");
         
         //iterate through all the MenuItems and save to a Property Collection
@@ -1772,7 +1772,7 @@ public class ADMMenuNode {
         try {
             FileOutputStream out = new FileOutputStream(ExportFilePath);
             try {
-                MenuItemProps.store(out, ADMutil.PropertyComment);
+                MenuItemProps.store(out, ADMutil.ADMPropertyComment);
                 out.close();
             } catch (IOException ex) {
                 LOG.debug("ExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
@@ -1787,8 +1787,30 @@ public class ADMMenuNode {
     }
 
     //TODO: EXTERNAL MENU - needs updating to find a shared or client based menu file
+    private static String CleanPathChars(String InPath){
+        InPath = InPath.replaceAll("/", "");
+        InPath = InPath.replaceAll(File.separator, "");
+        InPath = InPath.replaceAll(":", "");
+        InPath = InPath.replaceAll("\\.", "");
+        return InPath.toLowerCase();
+    }
+    public static String GetMenuID(){
+        String tID = sagex.api.Global.GetUIContextName();
+        Boolean Override = util.GetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+        if (Override){
+            String rID = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", tID);
+            if (!rID.equals(tID)){
+                rID = CleanPathChars(rID);
+            }
+            LOG.debug("GetMenuID: returning '" + rID + "'");
+            return rID;
+        }else{
+            LOG.debug("GetMenuID: returning '" + tID + "'");
+            return tID;
+        }
+    }
     public static String GetDefaultMenuLocation(){
-        String tLocation = ADMutil.ADMLocation() + File.separator + "Menus.properties";
+        String tLocation = util.MenusLocation() + File.separator + GetMenuID() + ".properties";
         Boolean Override = util.GetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
         if (Override){
             String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", tLocation);
@@ -1800,19 +1822,31 @@ public class ADMMenuNode {
         }
     }
     public static String GetDefaultMenuLocationPath(){
-        return (new File(GetDefaultMenuLocation())).getParent();
+        String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", util.OptionNotFound);
+        if (rLocation.equals(util.OptionNotFound)){
+            LOG.debug("GetDefaultMenuLocationPath: returning '" + util.UserDataLocation() + "'");
+            return util.UserDataLocation();
+        }else{
+            String tLocation = (new File(rLocation)).getParent();
+            LOG.debug("GetDefaultMenuLocationPath: returning '" + tLocation + "'");
+            return tLocation;
+        }
     }
     public static void SetDefaultMenuLocation(String Location){
-        Boolean FileExists = (new File(Location)).exists();
-        if (FileExists){
-            util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", Location);
-            LOG.debug("SetDefaultMenuLocation: setting to '" + Location + "'");
-        }else{
-            util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
-            util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", GetDefaultMenuLocation());
-            LOG.debug("SetDefaultMenuLocation: '" + Location + "' not found so using default client menu");
+        //first see if this is a change
+        String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", util.OptionNotFound);
+        if (!rLocation.equals(Location)){
+            Boolean FileExists = (new File(Location)).exists();
+            if (FileExists){
+                util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", Location);
+                //TODO: EXTERNAL MENU - load new menus here
+                LOG.debug("SetDefaultMenuLocation: setting to '" + Location + "' and loading new Menus");
+            }else{
+                util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+                util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", GetDefaultMenuLocation());
+                LOG.debug("SetDefaultMenuLocation: '" + Location + "' not found so using default client menu");
+            }
         }
-        
     }
     
     //Gemstone Menus SaveAll functions to replace previous solution that saved to the Sage properties file
@@ -1827,7 +1861,7 @@ public class ADMMenuNode {
         if (ExportFile.equals(UseDefaultMenuLocation)){
             ExportFilePath = GetDefaultMenuLocation();
         }else{
-            ExportFilePath = ADMutil.ADMLocation() + File.separator + ExportFile;
+            ExportFilePath = util.UserDataLocation() + File.separator + ExportFile;
         }
         LOG.debug("SaveAll: Full Path = '" + ExportFilePath + "'");
         
@@ -1872,10 +1906,12 @@ public class ADMMenuNode {
             }
         }
         //write the properties to the properties file
+        util.LabelExport(MenuItemProps, ADMutil.SagePropertyLocation, util.ExportType.MENUS, "");
+        
         try {
             FileOutputStream out = new FileOutputStream(ExportFilePath);
             try {
-                MenuItemProps.store(out, ADMutil.PropertyComment);
+                MenuItemProps.store(out, Const.PropertyComment);
                 out.close();
             } catch (IOException ex) {
                 LOG.debug("SaveAll: error saving menus " + ADMutil.class.getName() + ex);
