@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -27,6 +26,7 @@ public class Import {
     private Boolean IsValid = Boolean.FALSE;
     private String Description = "";
     private String Name = "";
+    private String DateTime = "";
     
     public Import(String FilePath){
         this.FilePath = FilePath;
@@ -52,7 +52,8 @@ public class Import {
             }
         }
         if (KeepProcessing){
-            String tType = Props.getProperty(Const.ExportTypeKey, util.OptionNotFound);
+            String tType = this.Props.getProperty(Const.ExportTypeKey, util.OptionNotFound);
+            this.DateTime = this.Props.getProperty(Const.ExportDateTimeKey, "");
             if (tType.equals(util.ExportType.ALL.toString())){
                 IsValid = Boolean.TRUE;
                 eType = util.ExportType.ALL;
@@ -149,40 +150,48 @@ public class Import {
     public String GetDescription(){
         return this.Description;
     }
+    public String GetDateTime(){
+        return this.DateTime;
+    }
     public Boolean IsValid(){
         return this.IsValid;
     }
     public util.ExportType Type(){
         return this.eType;
     }
-    public void Save(){
-        //save the properties to the SageTV properties file
+    public void Load(){
+        //load the properties to the SageTV properties file or menus file
         if (this.Props.size()>0 && this.IsValid){
-            if (this.eType.equals(util.ExportType.MENUS)){
-                //handle the Menus imports differently from other imports
-                //TODO: EXTERNAL MENU - call the Menu Import here from the generic import class
-                LOG.debug("Save: processing menus import");
-            }else{
-                //clean up existing Properties from the SageTV properties file before writing the new ones
-                String tProp = this.Props.getProperty(Const.ExportPropKey,util.OptionNotFound);
-                if (!tProp.equals(util.OptionNotFound)){
+            //clean up existing Properties from the SageTV properties file before writing the new ones
+            String tProp = this.Props.getProperty(Const.ExportPropKey,util.OptionNotFound);
+            if (!tProp.equals(util.OptionNotFound)){
+                if (this.eType.equals(util.ExportType.MENUS)){
+                    //TODO: Import Load - need to decide if we clean old ADM/menuitems from Sage properties
+                }else{
                     util.RemovePropertyAndChildren(tProp);
-                    LOG.debug("Save: removing old properties '" + tProp + "'");
+                    LOG.debug("Load: removing old properties '" + tProp + "'");
                 }
 
-                for (String tPropertyKey : this.Props.stringPropertyNames()){
-                    if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName)){
-                        LOG.debug("Save: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
-                    }else if(tPropertyKey.startsWith(ADMutil.SagePropertyLocation)){
-                        //TODO: EXTERNAL MENU - handle ADM/menuitem entries differently
-                        LOG.debug("Save: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
-                    }else{
-                        util.SetProperty(tPropertyKey, this.Props.getProperty(tPropertyKey));
-                        LOG.debug("Save: writing '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
-                    }
+            }
+            //need a properties to store potential Menus properties
+            Properties Menus = new Properties();
+
+            for (String tPropertyKey : this.Props.stringPropertyNames()){
+                if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey)){
+                    LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                }else if(tPropertyKey.startsWith(ADMutil.SagePropertyLocation)){
+                    Menus.put(tPropertyKey, this.Props.getProperty(tPropertyKey));
+                    LOG.debug("Load: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                }else{
+                    util.SetProperty(tPropertyKey, this.Props.getProperty(tPropertyKey));
+                    LOG.debug("Load: loading '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
                 }
             }
-            
+            if (Menus.size()>0){
+                //handle the Menus imports differently from other imports
+                //TODO: EXTERNAL MENU - call the Menu Import here from the generic import class
+                LOG.debug("Load: processing menus import");
+            }
         }
     }
     

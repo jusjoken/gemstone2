@@ -865,22 +865,37 @@ public class util {
 //        Export(ExportFile, PropLocation, ExportType.GENERIC);
 //    }
     public static void Export(String ExportFile, String PropLocation, ExportType eType){
-        Export(ExportFile, PropLocation, eType, "");
+        Export(Boolean.FALSE, ExportFile, PropLocation, eType, "");
     }
     public static void Export(String ExportFile, String PropLocation, ExportType eType, String Name){
-        //Gemstone/Flow/sd5osqk1vijs
-        String ExportFilePath = UserDataLocation() + File.separator + ExportFile + ".properties";
+        Export(Boolean.FALSE, ExportFile, PropLocation, eType, Name);
+    }
+    public static void Export(Boolean FullPath, String ExportFile, String PropLocation, ExportType eType, String Name){
+        String ExportFilePath = "";
+        if (FullPath){
+            ExportFilePath = ExportFile;
+        }else{
+            ExportFilePath = UserDataLocation() + File.separator + ExportFile + ".properties";
+        }
         LOG.info("Export: Full Path = '" + ExportFilePath + "' for Properties '" + PropLocation + "'");
         
         //iterate through all the Properties and Children and save to a Property Collection
         Properties ExportProps = new Properties();
         LabelExport(ExportProps, PropLocation, eType, Name);
 
-        //Get all base properties first
-        LoadProperties(PropLocation, ExportProps);
-        
-        //Now get all subproperties
-        LoadSubProperties(PropLocation, ExportProps);
+        if (eType.equals(ExportType.MENUS)){
+            //only load menus
+            ADMMenuNode.PropertyLoad(ExportProps);
+        }else{
+            //Get all base properties first
+            LoadProperties(PropLocation, ExportProps);
+            //Now get all subproperties
+            LoadSubProperties(PropLocation, ExportProps);
+            if (eType.equals(ExportType.ALL)){
+                //also load menus
+                ADMMenuNode.PropertyLoad(ExportProps);
+            }
+        }
 
         //write the properties to the properties file
         try {
@@ -900,6 +915,7 @@ public class util {
         //Add the Export Type to aid in the Import
         PropContainer.put(Const.ExportTypeKey, eType.toString());
         PropContainer.put(Const.ExportPropKey, PropLocation);
+        PropContainer.put(Const.ExportDateTimeKey, PrintDateTime());
         if (!Name.equals("")){
             PropContainer.put(Const.ExportPropName, Name);
         }
@@ -925,7 +941,12 @@ public class util {
     }
     
     public static String PrintDateSortable(){  
-        DateFormat df = new SimpleDateFormat("yyyyMMdd-hhmm");  
+        DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmm");  
+        return df.format(new Date());  
+    }      
+
+    public static String PrintDateTime(){  
+        DateFormat df = new SimpleDateFormat("HHmm MMM dd yyyy");  
         return df.format(new Date());  
     }      
 
