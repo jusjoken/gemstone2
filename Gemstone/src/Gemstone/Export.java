@@ -5,6 +5,10 @@
 package Gemstone;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
 import org.apache.log4j.Logger;
 
 /**
@@ -19,7 +23,6 @@ public class Export {
     private Boolean FLOWS = Boolean.FALSE;
     private Boolean WIDGETS = Boolean.FALSE;
     private String FLOW = "";
-    private Boolean FullPath = Boolean.FALSE;
 
     public Export(String FilePath){
         this.FilePath = FilePath;
@@ -111,6 +114,14 @@ public class Export {
         return FilePath;
     }
 
+    public String getFileName() {
+        if (this.FileName.equals("")){
+            return BuildFileName();
+        }else{
+            return this.FileName;
+        }
+    }
+
     public void setFileName(String FileName) {
         this.FileName = FileName;
     }
@@ -164,6 +175,44 @@ public class Export {
             this.FilePath = util.UserDataLocation() + File.separator + this.FileName + ".properties";
         }
         if (ContinueProcessing){
+
+            Properties ExportProps = new Properties();
+            ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime());
+            
+            //add a single Flow to the export
+            if (IsFLOW()){
+
+            }
+            //add all Flows to the export
+            if (this.FLOWS){
+                
+            }
+            //add Menus to the export
+            if (this.MENUS){
+                
+            }
+            //add Widgets to the export
+            if (this.WIDGETS){
+                
+            }
+
+            if (ExportProps.size()>0){
+                //write the properties to the properties file
+                try {
+                    FileOutputStream out = new FileOutputStream(this.FilePath);
+                    try {
+                        ExportProps.store(out, Const.PropertyComment);
+                        out.close();
+                    } catch (IOException ex) {
+                        LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
+                    }
+                } catch (FileNotFoundException ex) {
+                    LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
+                }
+            }else{
+                LOG.debug("Execute: no properties to export");
+            }
+            
             
         }
     }
