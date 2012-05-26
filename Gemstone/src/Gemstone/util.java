@@ -47,7 +47,7 @@ public class util {
     private static final Random random = new Random();
     public static final String OptionNotFound = "Option not Found";
     public static enum TriState{YES,NO,OTHER};
-    public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,MENUS,GENERAL,GENERIC};
+    public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,MENUS,GENERAL};
     public static final String ListToken = ":&&:";
     
     public static void main(String[] args){
@@ -859,6 +859,7 @@ public class util {
     }
     
     //Export/Import functions
+    //TODO: REMOVE all Export functions once removed from Sage
 //    public static void Export(String ExportFile, String PropLocation){
 //        Export(ExportFile, PropLocation, ExportType.GENERIC);
 //    }

@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import sagex.UIContext;
 
 /**
  *
@@ -195,23 +196,36 @@ public class Export {
             
             //add a single Flow to the export
             if (IsFLOW()){
-
-            }
-            //add all Flows to the export
-            if (this.FLOWS){
-                
+                ExportProps.put(util.ExportType.FLOW.toString(), this.FLOW);
+                LoadAllProperties(Flow.GetFlowBaseProp(this.FLOW), ExportProps, Boolean.FALSE);
             }
             //add Menus to the export
             if (this.MENUS){
-                
+                ExportProps.put(util.ExportType.MENUS.toString(), "true");
+                ADMMenuNode.PropertyLoad(ExportProps);
             }
-            //add Widgets to the export
-            if (this.WIDGETS){
-                
-            }
-            //add General to the export
-            if (this.GENERAL){
-                
+            if (IsALL()){
+                //this will also load FLOWS and WIDGETS so do it in a single call
+                ExportProps.put(util.ExportType.FLOWS.toString(), "true");
+                ExportProps.put(util.ExportType.WIDGETS.toString(), "true");
+                ExportProps.put(util.ExportType.GENERAL.toString(), "true");
+                LoadAllProperties(Const.BaseProp, ExportProps, Boolean.FALSE);
+            }else{
+                //add all Flows to the export
+                if (this.FLOWS){
+                    ExportProps.put(util.ExportType.FLOWS.toString(), "true");
+                    LoadAllProperties(Flow.GetFlowsBaseProp(), ExportProps, Boolean.FALSE);
+                }
+                //add Widgets to the export
+                if (this.WIDGETS){
+                    ExportProps.put(util.ExportType.WIDGETS.toString(), "true");
+                    LoadAllProperties(Const.BaseProp + Const.PropDivider + Const.WidgetProp, ExportProps, Boolean.FALSE);
+                }
+                //add General to the export
+                if (this.GENERAL){
+                    ExportProps.put(util.ExportType.GENERAL.toString(), "true");
+                    LoadAllProperties(Const.BaseProp, ExportProps, Boolean.TRUE);
+                }
             }
 
             if (ExportProps.size()>0){
@@ -234,4 +248,36 @@ public class Export {
             
         }
     }
+
+    private static void LoadAllProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
+        LOG.debug("LoadAllProperties: started for '" + PropLocation + "' SkipEnabled '" + SkipEnabled + "'");
+        LoadProperties(PropLocation, PropContainer, SkipEnabled);
+        LoadSubProperties(PropLocation, PropContainer, SkipEnabled);
+        LOG.debug("LoadAllProperties: completed for '" + PropLocation + "'");
+    }
+    
+    private static void LoadProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
+        String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreLeaves(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
+        for (String PropItem: PropNames){
+            String tProp = PropLocation + Const.PropDivider + PropItem;
+            if (SkipEnabled && (tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.FlowProp) || tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.WidgetProp))){
+                //skip this property
+                LOG.debug("LoadProperties: skipping '" + tProp + "'");
+            }else{
+                String tValue = util.GetProperty(tProp, util.OptionNotFound);
+                PropContainer.put(tProp, tValue);
+                LOG.debug("LoadProperties: '" + tProp + "' = '" + tValue + "'");
+            }
+        }
+    }
+    private static void LoadSubProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
+        String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreBranches(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
+        for (String PropItem: PropNames){
+            String tProp = PropLocation + Const.PropDivider + PropItem;
+            LoadProperties(tProp, PropContainer, SkipEnabled);
+            LoadSubProperties(tProp, PropContainer, SkipEnabled);
+        }
+    }
+    
+
 }

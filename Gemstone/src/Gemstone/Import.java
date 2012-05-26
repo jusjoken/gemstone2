@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import sagex.UIContext;
 
 /**
  *
@@ -20,7 +21,7 @@ import org.apache.log4j.Logger;
  */
 public class Import {
     static private final Logger LOG = Logger.getLogger(Import.class);
-    private util.ExportType eType = util.ExportType.GENERIC;
+    private util.ExportType eType = util.ExportType.GENERAL;
     private String FilePath = "";
     private Properties Props = new Properties();
     private Boolean IsValid = Boolean.FALSE;
@@ -76,55 +77,11 @@ public class Import {
                 this.FLOW = this.Props.getProperty(util.ExportType.FLOW.toString(), util.OptionNotFound);
             }
             SetImportSettings();
-            
-            
-//            if (tType.equals(util.ExportType.ALL.toString())){
-//                IsValid = Boolean.TRUE;
-//                eType = util.ExportType.ALL;
-//                this.Name = "All Settings";
-//                this.Description = "This import will overwrite ALL settings for this plugin. Use with caution.";
-//            }else if (tType.equals(util.ExportType.FLOW.toString())){
-//                IsValid = Boolean.TRUE;
-//                eType = util.ExportType.FLOW;
-//                this.Name = this.Props.getProperty(Const.ExportPropName, "Single Flow");
-//                this.Description = "Import of this Flow will overwrite any existing Flow settings if the same Flow existed previously.";
-//            }else if (tType.equals(util.ExportType.FLOWS.toString())){
-//                IsValid = Boolean.TRUE;
-//                eType = util.ExportType.FLOWS;
-//                this.Name = "All Flows";
-//                this.Description = "This import will overwrite and replace ALL existing Flows. Use with caution.";
-//            }else if (tType.equals(util.ExportType.WIDGETS.toString())){
-//                IsValid = Boolean.TRUE;
-//                eType = util.ExportType.WIDGETS;
-//                this.Name = "Widget Settings";
-//                this.Description = "This import will overwrite and replace ALL existing Widget settings.";
-//            }else if (tType.equals(util.ExportType.GENERIC.toString())){
-//                IsValid = Boolean.TRUE;
-//                eType = util.ExportType.GENERIC;
-//                this.Name = this.Props.getProperty(Const.ExportPropName, "Generic Import");
-//                this.Description = "Generic import used. No specific details are available.";
-//            }else if (tType.equals(util.ExportType.MENUS.toString())){
-//                IsValid = Boolean.TRUE;
-//                eType = util.ExportType.MENUS;
-//                this.Name = "Menus";
-//                this.Description = "This import will overwrite and replace ALL menus in Menu Manager.";
-//            }else{ //block this as it is not a valid import
-//                if (IsOldADMExport(FilePath)){
-//                    IsValid = Boolean.TRUE;
-//                    eType = util.ExportType.MENUS;
-//                    this.Name = "Old ADM Menus";
-//                    this.Description = "This import will overwrite and replace ALL menus in Menu Manager.";
-//                }else{
-//                    IsValid = Boolean.FALSE;
-//                    this.Name = "Invalid Import";
-//                    this.Description = "This import file was not recognized so the import will not proceed.";
-//                }
-//            }
         }else{
+            IsValid = Boolean.FALSE;
             this.Name = "Failed";
             this.Description = "Import failed. Check the logs for more details.";
         }
-        
     }
 
     private Boolean IsALL(){
@@ -189,9 +146,9 @@ public class Import {
                     this.Name = "Old ADM Menus";
                     this.Description = "This import will overwrite and replace ALL menus in Menu Manager.";
                 }else{
-                    IsValid = Boolean.FALSE;
-                    this.Name = "Invalid Import";
-                    this.Description = "This import file was not recognized so the import will not proceed.";
+                    IsValid = Boolean.TRUE;
+                    this.Name = "Unrecognized Import";
+                    this.Description = "This import file was not recognized so import with CAUTION as all properties found will be imported into the SageTV properties file.";
                 }
             }else if (counter>1){
                 IsValid = Boolean.TRUE;
@@ -267,43 +224,43 @@ public class Import {
     public util.ExportType Type(){
         return this.eType;
     }
+//    public void LoadOld(){
+//        //load the properties to the SageTV properties file or menus file
+//        if (this.Props.size()>0 && this.IsValid){
+//            //clean up existing Properties from the SageTV properties file before writing the new ones
+//            String tProp = this.Props.getProperty(Const.ExportPropKey,util.OptionNotFound);
+//            if (!tProp.equals(util.OptionNotFound)){
+//                if (this.eType.equals(util.ExportType.MENUS)){
+//                    //TODO: Import Load - need to decide if we clean old ADM/menuitems from Sage properties
+//                }else{
+//                    util.RemovePropertyAndChildren(tProp);
+//                    LOG.debug("Load: removing old properties '" + tProp + "'");
+//                }
+//
+//            }
+//            //need a properties to store potential Menus properties
+//            Properties Menus = new Properties();
+//
+//            for (String tPropertyKey : this.Props.stringPropertyNames()){
+//                if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey)){
+//                    LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+//                }else if(tPropertyKey.startsWith(ADMutil.SagePropertyLocation)){
+//                    Menus.put(tPropertyKey, this.Props.getProperty(tPropertyKey));
+//                    LOG.debug("Load: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+//                }else{
+//                    util.SetProperty(tPropertyKey, this.Props.getProperty(tPropertyKey));
+//                    LOG.debug("Load: loading '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+//                }
+//            }
+//            if (Menus.size()>0){
+//                //handle the Menus imports differently from other imports
+//                //TODO: EXTERNAL MENU - call the Menu Import here from the generic import class
+//                LOG.debug("Load: processing menus import");
+//            }
+//        }
+//    }
+
     public void Load(){
-        //load the properties to the SageTV properties file or menus file
-        if (this.Props.size()>0 && this.IsValid){
-            //clean up existing Properties from the SageTV properties file before writing the new ones
-            String tProp = this.Props.getProperty(Const.ExportPropKey,util.OptionNotFound);
-            if (!tProp.equals(util.OptionNotFound)){
-                if (this.eType.equals(util.ExportType.MENUS)){
-                    //TODO: Import Load - need to decide if we clean old ADM/menuitems from Sage properties
-                }else{
-                    util.RemovePropertyAndChildren(tProp);
-                    LOG.debug("Load: removing old properties '" + tProp + "'");
-                }
-
-            }
-            //need a properties to store potential Menus properties
-            Properties Menus = new Properties();
-
-            for (String tPropertyKey : this.Props.stringPropertyNames()){
-                if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey)){
-                    LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
-                }else if(tPropertyKey.startsWith(ADMutil.SagePropertyLocation)){
-                    Menus.put(tPropertyKey, this.Props.getProperty(tPropertyKey));
-                    LOG.debug("Load: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
-                }else{
-                    util.SetProperty(tPropertyKey, this.Props.getProperty(tPropertyKey));
-                    LOG.debug("Load: loading '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
-                }
-            }
-            if (Menus.size()>0){
-                //handle the Menus imports differently from other imports
-                //TODO: EXTERNAL MENU - call the Menu Import here from the generic import class
-                LOG.debug("Load: processing menus import");
-            }
-        }
-    }
-
-    public void Load2(){
         //load the properties to the SageTV properties file or menus file
         if (this.Props.size()>0 && this.IsValid){
             //clean up existing Properties from the SageTV properties file before writing the new ones
@@ -311,40 +268,41 @@ public class Import {
             if (IsALL()){
                 tProp = Const.BaseProp;
                 util.RemovePropertyAndChildren(tProp);
-                LOG.debug("Load: removing old properties '" + tProp + "'");
+                LOG.debug("Load: removing old properties for ALL '" + tProp + "'");
             }else if(IsFLOW()){
                 tProp = Flow.GetFlowBaseProp(this.FLOW);
                 util.RemovePropertyAndChildren(tProp);
-                LOG.debug("Load: removing old properties '" + tProp + "'");
+                LOG.debug("Load: removing old properties for specific Flow '" + tProp + "'");
             }else{
                 if (this.FLOWS){
                     tProp = Const.BaseProp + Const.PropDivider + Const.FlowProp;
                     util.RemovePropertyAndChildren(tProp);
-                    LOG.debug("Load: removing old properties '" + tProp + "'");
+                    LOG.debug("Load: removing old properties for FLOWS type '" + tProp + "'");
                 }
                 if (this.WIDGETS){
                     tProp = Const.BaseProp + Const.PropDivider + Const.WidgetProp;
                     util.RemovePropertyAndChildren(tProp);
-                    LOG.debug("Load: removing old properties '" + tProp + "'");
+                    LOG.debug("Load: removing old properties for WIDGET type '" + tProp + "'");
                 }
+                if (this.GENERAL){
+                    //remove all Gemstone properties BUT NOT FLOWS or WIDGETS
+                    tProp = Const.BaseProp;
+                    SafeRemoveAllProperties(tProp);
+                    SafeRemoveAllSubProperties(tProp);
+                    LOG.debug("Load: removing old properties for GENERAL type '" + tProp + "'");
+                }
+                //no need to remove properties for MENUS as they are stored in a separate file
 
             }
             
-            if (!tProp.equals(util.OptionNotFound)){
-                if (this.eType.equals(util.ExportType.MENUS)){
-                    //TODO: Import Load - need to decide if we clean old ADM/menuitems from Sage properties
-                }else{
-                    util.RemovePropertyAndChildren(tProp);
-                    LOG.debug("Load: removing old properties '" + tProp + "'");
-                }
-
-            }
             //need a properties to store potential Menus properties
             Properties Menus = new Properties();
 
             for (String tPropertyKey : this.Props.stringPropertyNames()){
                 if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey)){
                     LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                }else if(tPropertyKey.equals("FLOW") || tPropertyKey.equals("FLOWS") || tPropertyKey.equals("GENERAL") || tPropertyKey.equals("MENUS") || tPropertyKey.equals("WIDGETS")){
+                    LOG.debug("Load: skipping type identifier '" + tPropertyKey + "'");
                 }else if(tPropertyKey.startsWith(ADMutil.SagePropertyLocation)){
                     Menus.put(tPropertyKey, this.Props.getProperty(tPropertyKey));
                     LOG.debug("Load: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
@@ -361,19 +319,29 @@ public class Import {
         }
     }
 
-    public void LoadPropBasedExport(String tProp){
-        //clean up existing Properties from the SageTV properties file before writing the new ones
-        util.RemovePropertyAndChildren(tProp);
-        LOG.debug("Load: removing old properties '" + tProp + "'");
-        //load the properties to the SageTV properties file
-        for (String tPropertyKey : this.Props.stringPropertyNames()){
-            if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey)){
-                LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+    private static void SafeRemoveAllProperties(String PropLocation){
+        //remove any property as long as it is not a Flow or Widget property
+        String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreLeaves(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
+        for (String PropItem: PropNames){
+            String tProp = PropLocation + Const.PropDivider + PropItem;
+            if (tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.FlowProp) || tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.WidgetProp)){
+                //skip this property
+                LOG.debug("SafeRemoveAllProperties: skipping '" + tProp + "'");
             }else{
-                util.SetProperty(tPropertyKey, this.Props.getProperty(tPropertyKey));
-                LOG.debug("Load: loading '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                util.RemoveProperty(tProp);
+                LOG.debug("SafeRemoveAllProperties: removing '" + tProp + "'");
             }
         }
     }
+    private static void SafeRemoveAllSubProperties(String PropLocation){
+        String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreBranches(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
+        for (String PropItem: PropNames){
+            String tProp = PropLocation + Const.PropDivider + PropItem;
+            SafeRemoveAllProperties(tProp);
+            SafeRemoveAllSubProperties(tProp);
+        }
+    }
+    
+    
     
 }
