@@ -102,7 +102,7 @@ public class ADMMenuNode {
                 return MenuNodeList().get(Name).ActionAttribute;
             }
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemAction ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -116,7 +116,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionObject;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionObject ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -130,7 +130,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionType;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionType ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -143,7 +143,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionExternal ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -151,7 +151,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetApplication();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionExternalApplication ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -159,7 +159,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetArguments();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionExternalArguments ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -167,7 +167,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetWindowType();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionExternalWindowType ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -175,7 +175,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetWaitForExit();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionExternalWaitForExit ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -183,7 +183,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).ActionExternal.GetSageStatus();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemActionExternalSageStatus ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -227,7 +227,7 @@ public class ADMMenuNode {
             try {
                 return MenuNodeList().get(Name).BGImageFile;
             } catch (Exception e) {
-                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("GetMenuItemBGImageFile ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -338,7 +338,7 @@ public class ADMMenuNode {
                 //return MenuNodeList().get(Name).BGImageFilePath;
             }
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemBGImageFilePath ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -360,7 +360,7 @@ public class ADMMenuNode {
             try {
                 return MenuNodeList().get(Name).ButtonText;
             } catch (Exception e) {
-                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("GetMenuItemButtonText ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -382,7 +382,7 @@ public class ADMMenuNode {
         try {
             return !MenuNodeList().get(Name).NodeItem.isLeaf();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemHasSubMenu ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -391,7 +391,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsActive;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemIsActive ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -410,7 +410,7 @@ public class ADMMenuNode {
             // in this case this item is active BUT the parent is not
             return "Yes (Parent: No)";
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemIsActiveIncludingParentFormatted ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -438,7 +438,7 @@ public class ADMMenuNode {
             //LOG.debug("GetMenuItemIsActiveIncludingParent for '" + Name + "' YES");
             return ADMutil.TriState.YES;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemIsActiveIncludingParent ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -516,7 +516,7 @@ public class ADMMenuNode {
                 return !MenuNodeList().get(Name).BlockedSageUsersList.contains(SageUser);
             }
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("IsSageUserAllowed ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -532,7 +532,7 @@ public class ADMMenuNode {
                 }
                 Save(Name, "BlockedSageUsersList", ADMutil.ConvertListtoString(MenuNodeList().get(Name).BlockedSageUsersList));
             } catch (Exception e) {
-                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("ChangeSageUserAllowed ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             }
         }
     }
@@ -541,7 +541,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsCreatedNotLoaded;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemIsCreatedNotLoaded ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -554,7 +554,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsTemp;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("SetMenuItemIsCreatedNotLoaded ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -567,7 +567,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).IsDefault;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("SetMenuItemIsTemp ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -704,7 +704,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).NodeItem.getLevel();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemLevel ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -723,7 +723,7 @@ public class ADMMenuNode {
             try {
                 return MenuNodeList().get(Name).NodeItem.getParent().toString();
             } catch (Exception e) {
-                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("GetMenuItemParent ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -764,7 +764,7 @@ public class ADMMenuNode {
             try {
                 return MenuNodeList().get(Name).ShowIF;
             } catch (Exception e) {
-                LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+                LOG.debug("GetMenuItemShowIF ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
                 return null;
             }
         }
@@ -774,7 +774,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).SortKey;
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemSortKey ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -868,7 +868,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).getSubMenuExcludingSageMenus();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemSubMenuQLM ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -877,7 +877,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().get(Name).getSubMenu();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemSubMenu ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -886,7 +886,7 @@ public class ADMMenuNode {
         try {
             return ADMutil.GetSubMenuListButtonText(MenuNodeList().get(Name).getSubMenu(), GetMenuItemLevel(Name));
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            LOG.debug("GetMenuItemSubMenuButtonText ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -933,7 +933,7 @@ public class ADMMenuNode {
                 return Boolean.FALSE;
             }
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available for '" + bParent + "' Exception = '" + e + "'");
+            LOG.debug("IsSubMenuItem ERROR: Value not available for '" + bParent + "' Exception = '" + e + "'");
             return null;
         }
     }
@@ -943,7 +943,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().keySet();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available. Exception = '" + e + "'");
+            LOG.debug("GetMenuItemNameList ERROR: Value not available. Exception = '" + e + "'");
             return null;
         }
     }
@@ -1160,7 +1160,7 @@ public class ADMMenuNode {
         try {
             return MenuNodeList().size();
         } catch (Exception e) {
-            LOG.debug("Get... ERROR: Value not available. Exception = '" + e + "'");
+            LOG.debug("GetMenuItemCount ERROR: Value not available. Exception = '" + e + "'");
             return 0;
         }
     }
