@@ -22,6 +22,7 @@ public class Export {
     private Boolean MENUS = Boolean.FALSE;
     private Boolean FLOWS = Boolean.FALSE;
     private Boolean WIDGETS = Boolean.FALSE;
+    private Boolean GENERAL = Boolean.FALSE;
     private String FLOW = "";
 
     public Export(String FilePath){
@@ -41,7 +42,7 @@ public class Export {
     }
 
     private Boolean IsALL(){
-        if (this.FLOWS && this.MENUS && this.WIDGETS){
+        if (this.FLOWS && this.MENUS && this.WIDGETS && this.GENERAL){
             return Boolean.TRUE;
         }else{
             return Boolean.FALSE;
@@ -55,12 +56,14 @@ public class Export {
             this.FLOWS = Boolean.FALSE;
             this.MENUS = Boolean.FALSE;
             this.WIDGETS = Boolean.FALSE;
+            this.GENERAL = Boolean.FALSE;
         }else{
             //set all to true
             this.FLOW = "";
             this.FLOWS = Boolean.TRUE;
             this.MENUS = Boolean.TRUE;
             this.WIDGETS = Boolean.TRUE;
+            this.GENERAL = Boolean.TRUE;
         }
     }
 
@@ -110,6 +113,14 @@ public class Export {
         this.WIDGETS = !this.WIDGETS;
     }
 
+    public Boolean getGENERAL() {
+        return GENERAL;
+    }
+
+    public void GENERALToggle() {
+        this.GENERAL = !this.GENERAL;
+    }
+
     public String getFilePath() {
         return FilePath;
     }
@@ -140,6 +151,9 @@ public class Export {
         }else{
             if (this.FLOWS){
                 tName = AppendName(tName, "FLOWS");
+            }
+            if (this.GENERAL){
+                tName = AppendName(tName, "GENERAL");
             }
             if (this.MENUS){
                 tName = AppendName(tName, "MENUS");
@@ -193,6 +207,10 @@ public class Export {
             }
             //add Widgets to the export
             if (this.WIDGETS){
+                
+            }
+            //add General to the export
+            if (this.GENERAL){
                 
             }
 

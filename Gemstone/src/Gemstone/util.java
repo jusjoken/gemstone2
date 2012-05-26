@@ -19,7 +19,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
-import sagex.api.PluginAPI;
 import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
 
@@ -49,7 +47,7 @@ public class util {
     private static final Random random = new Random();
     public static final String OptionNotFound = "Option not Found";
     public static enum TriState{YES,NO,OTHER};
-    public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,MENUS,GENERIC};
+    public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,MENUS,GENERAL,GENERIC};
     public static final String ListToken = ":&&:";
     
     public static void main(String[] args){
