@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
@@ -25,6 +26,8 @@ public class Export {
     private Boolean WIDGETS = Boolean.FALSE;
     private Boolean GENERAL = Boolean.FALSE;
     private String FLOW = "";
+    private Boolean FLOWExport = Boolean.FALSE;
+    private Date ExportDateTime = new Date();
 
     public Export(String FilePath){
         this.FilePath = FilePath;
@@ -38,10 +41,18 @@ public class Export {
         if (IsALL()){
             return "Clear all Exports";
         }else{
-            return "Set all Exports";
+            return "Select all Exports";
         }
     }
 
+    public Boolean SomethingToExport(){
+        if (this.FLOWExport || this.FLOWS || this.MENUS || this.WIDGETS || this.GENERAL){
+            return Boolean.TRUE;
+        }else{
+            return Boolean.FALSE;
+        }
+    }
+    
     private Boolean IsALL(){
         if (this.FLOWS && this.MENUS && this.WIDGETS && this.GENERAL){
             return Boolean.TRUE;
@@ -53,14 +64,14 @@ public class Export {
     public void ALLToggle() {
         if (IsALL()){
             //clear all toggles
-            this.FLOW = "";
+            this.FLOWExport = Boolean.FALSE;
             this.FLOWS = Boolean.FALSE;
             this.MENUS = Boolean.FALSE;
             this.WIDGETS = Boolean.FALSE;
             this.GENERAL = Boolean.FALSE;
         }else{
             //set all to true
-            this.FLOW = "";
+            this.FLOWExport = Boolean.FALSE;
             this.FLOWS = Boolean.TRUE;
             this.MENUS = Boolean.TRUE;
             this.WIDGETS = Boolean.TRUE;
@@ -76,6 +87,15 @@ public class Export {
         this.FLOW = FLOW;
         if (IsFLOW()){
             this.FLOWS = Boolean.FALSE;
+            this.FLOWExport = Boolean.TRUE;
+        }
+    }
+
+    public String getFLOWText() {
+        if (IsFLOW()){
+            return Flow.GetFlowName(this.FLOW);
+        }else{
+            return "None selected";
         }
     }
 
@@ -87,6 +107,17 @@ public class Export {
         }
     }
 
+    public Boolean getFLOWExport() {
+        return FLOWExport;
+    }
+
+    public void FLOWExportToggle() {
+        this.FLOWExport = !this.FLOWExport;
+        if (this.FLOWExport){
+            this.FLOWS = Boolean.FALSE;
+        }
+    }
+
     public Boolean getFLOWS() {
         return FLOWS;
     }
@@ -94,7 +125,7 @@ public class Export {
     public void FLOWSToggle() {
         this.FLOWS = !this.FLOWS;
         if (this.FLOWS){
-            this.FLOW = "";
+            this.FLOWExport = Boolean.FALSE;
         }
     }
 
@@ -154,9 +185,10 @@ public class Export {
         String tName = "";
         if (IsALL()){
             tName = "ALL";
-        }else if(IsFLOW()){
-            tName = Flow.GetFlowName(this.FLOW);
         }else{
+            if (this.FLOWExport){
+                tName = AppendName(tName, Flow.GetFlowName(this.FLOW));
+            }
             if (this.FLOWS){
                 tName = AppendName(tName, "FLOWS");
             }
@@ -171,9 +203,9 @@ public class Export {
             }
         }
         if (tName.equals("")){
-            return tName;
+            return "None";
         }else{
-            return util.PrintDateSortable() + "-" + tName;
+            return util.PrintDateSortable(ExportDateTime) + "-" + tName;
         }
     }
     private String AppendName(String Name, String AddText){
@@ -199,11 +231,12 @@ public class Export {
         if (ContinueProcessing){
 
             Properties ExportProps = new Properties();
-            ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime());
+            ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime(ExportDateTime));
             
             //add a single Flow to the export
-            if (IsFLOW()){
+            if (this.FLOWExport && IsFLOW()){
                 ExportProps.put(util.ExportType.FLOW.toString(), this.FLOW);
+                ExportProps.put(Const.ExportFlowName, Flow.GetFlowName(this.FLOW));
                 LoadAllProperties(Flow.GetFlowBaseProp(this.FLOW), ExportProps, Boolean.FALSE);
             }
             //add Menus to the export

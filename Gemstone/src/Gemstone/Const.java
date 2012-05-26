@@ -44,6 +44,7 @@ public class Const {
     public static final String ExportPropKey = "ExportProp";
     public static final String ExportDateTimeKey = "ExportDateTime";
     public static final String ExportPropName = "ExportPropName";
+    public static final String ExportFlowName = "FLOWName";
     
     public static final String ImageCacheMinSize = "ImageCacheMinSize";
     public static final String ImageCacheType = "ImageCacheType";

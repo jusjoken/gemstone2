@@ -33,6 +33,7 @@ public class Import {
     private Boolean WIDGETS = Boolean.FALSE;
     private Boolean GENERAL = Boolean.FALSE;
     private String FLOW = "";
+    private String FLOWName = "";
     
     public Import(String FilePath){
         this.FilePath = FilePath;
@@ -75,6 +76,7 @@ public class Import {
             }
             if (!this.Props.getProperty(util.ExportType.FLOW.toString(), util.OptionNotFound).equals(util.OptionNotFound)){
                 this.FLOW = this.Props.getProperty(util.ExportType.FLOW.toString(), util.OptionNotFound);
+                this.FLOWName = this.Props.getProperty(Const.ExportFlowName, util.OptionNotFound);
             }
             SetImportSettings();
         }else{
@@ -106,12 +108,15 @@ public class Import {
             IsValid = Boolean.TRUE;
             this.Name = "All Settings";
             this.Description = "This import will overwrite ALL settings for this plugin. Use with caution.";
-        }else if(IsFLOW()){
-            IsValid = Boolean.TRUE;
-            this.Name = Flow.GetFlowName(this.FLOW);
-            this.Description = "Import of this Flow will overwrite any existing Flow settings if the same Flow existed previously.";
         }else{
             Integer counter = 0;
+            if (IsFLOW()){
+                IsValid = Boolean.TRUE;
+                counter++;
+                tName = AppendName(tName, FLOWName);
+                this.Name = FLOWName;
+                this.Description = "Import of this Flow will overwrite any existing Flow settings if the same Flow existed previously.";
+            }
             if (this.FLOWS){
                 IsValid = Boolean.TRUE;
                 counter++;
@@ -269,11 +274,12 @@ public class Import {
                 tProp = Const.BaseProp;
                 util.RemovePropertyAndChildren(tProp);
                 LOG.debug("Load: removing old properties for ALL '" + tProp + "'");
-            }else if(IsFLOW()){
-                tProp = Flow.GetFlowBaseProp(this.FLOW);
-                util.RemovePropertyAndChildren(tProp);
-                LOG.debug("Load: removing old properties for specific Flow '" + tProp + "'");
             }else{
+                if (IsFLOW()){
+                    tProp = Flow.GetFlowBaseProp(this.FLOW);
+                    util.RemovePropertyAndChildren(tProp);
+                    LOG.debug("Load: removing old properties for specific Flow '" + tProp + "'");
+                }
                 if (this.FLOWS){
                     tProp = Const.BaseProp + Const.PropDivider + Const.FlowProp;
                     util.RemovePropertyAndChildren(tProp);
@@ -299,7 +305,7 @@ public class Import {
             Properties Menus = new Properties();
 
             for (String tPropertyKey : this.Props.stringPropertyNames()){
-                if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey)){
+                if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey) || tPropertyKey.equals(Const.ExportFlowName)){
                     LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
                 }else if(tPropertyKey.equals("FLOW") || tPropertyKey.equals("FLOWS") || tPropertyKey.equals("GENERAL") || tPropertyKey.equals("MENUS") || tPropertyKey.equals("WIDGETS")){
                     LOG.debug("Load: skipping type identifier '" + tPropertyKey + "'");

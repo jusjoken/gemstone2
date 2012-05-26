@@ -949,6 +949,16 @@ public class util {
         return df.format(new Date());  
     }      
 
+    public static String PrintDateSortable(Date myDate){  
+        DateFormat df = new SimpleDateFormat("yyyyMMdd-HHmm");  
+        return df.format(myDate);  
+    }      
+
+    public static String PrintDateTime(Date myDate){  
+        DateFormat df = new SimpleDateFormat("HHmm MMM dd yyyy");  
+        return df.format(myDate);  
+    }      
+    
     public static String UserDataLocation(){
         return GetSageTVRootDir() + File.separator + "userdata" + File.separator + "Gemstone";
     }
