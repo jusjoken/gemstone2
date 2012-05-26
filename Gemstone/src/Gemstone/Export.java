@@ -138,9 +138,16 @@ public class Export {
         this.FileName = FileName;
     }
 
+    //Function to use Export to Save the Menus to an external file
     public void SaveMenus(){
+        this.FLOWS = Boolean.FALSE;
+        this.WIDGETS = Boolean.FALSE;
+        this.GENERAL = Boolean.FALSE;
+        this.FLOW = "";
+
         this.FilePath = ADMMenuNode.GetDefaultMenuLocation();
-        
+        this.MENUS = Boolean.TRUE;
+        Execute();
     }
 
     private String BuildFileName(){
