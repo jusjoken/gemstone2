@@ -1538,7 +1538,7 @@ public class ADMMenuNode {
 
         //backup existing MenuItems before deleting
         if (MenuNodeList().size()>0){
-            ExportMenuItems(ADMutil.PropertyBackupFile);
+            Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
         }
         //clean up existing MenuItems from the SageTV properties file
         ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
@@ -1699,7 +1699,7 @@ public class ADMMenuNode {
         //backup existing MenuItems before processing the import if any exist
         if (MenuNodeList().size()>0){
             LOG.debug("ImportMenuItems: called Export");
-            ExportMenuItems(ADMutil.PropertyBackupFile);
+            Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
             LOG.debug("ImportMenuItems: Export returned to Import");
         }
         
@@ -1722,70 +1722,6 @@ public class ADMMenuNode {
         return true;
     }
  
-    //TODO: EXTERNAL MENU - ExportMenuItems
-    public static void ExportMenuItems(String ExportFile){
-        String PropLocation = "";
-        String ExportFilePath = util.UserDataLocation() + File.separator + ExportFile;
-        //LOG.debug("ExportMenuItems: Full Path = '" + ExportFilePath + "'");
-        
-        //iterate through all the MenuItems and save to a Property Collection
-        Properties MenuItemProps = new Properties();
-
-        for (String tName : MenuNodeList().keySet()){
-            if (!tName.equals(ADMutil.TopMenu)){
-                if (GetMenuItemIsCreatedNotLoaded(tName) && ADMutil.GetDefaultsWorkingMode()){
-                    //skip exporting this item as we are in DefaultsWorkingMode and this is a Created item so it should not be exported
-                }else if (GetMenuItemIsTemp(tName)){
-                    //skip exporting this item as it is a TEMP Menu Item and should not be exported
-                }else{
-                    PropLocation = ADMutil.SagePropertyLocation + tName;
-                    PropertyAdd(MenuItemProps,PropLocation + "/Action",GetMenuItemAction(tName));
-                    PropertyAdd(MenuItemProps,PropLocation + "/ActionType", GetMenuItemActionType(tName));
-                    PropertyAdd(MenuItemProps,PropLocation + "/BGImageFile", GetMenuItemBGImageFile(tName));
-                    PropertyAdd(MenuItemProps,PropLocation + "/ButtonText", GetMenuItemButtonText(tName));
-                    PropertyAdd(MenuItemProps,PropLocation + "/Name", tName);
-                    PropertyAdd(MenuItemProps,PropLocation + "/Parent", GetMenuItemParent(tName));
-                    PropertyAdd(MenuItemProps,PropLocation + "/SortKey", GetMenuItemSortKey(tName).toString());
-                    if (GetMenuItemSubMenu(tName)==null){
-                        //do nothing for null
-                    }else if (!GetMenuItemSubMenu(tName).equals(tName)){
-                        PropertyAdd(MenuItemProps,PropLocation + "/SubMenu", GetMenuItemSubMenu(tName));
-                    }
-                    PropertyAdd(MenuItemProps,PropLocation + "/IsDefault", GetMenuItemIsDefault(tName).toString());
-                    PropertyAdd(MenuItemProps,PropLocation + "/IsActive", GetMenuItemIsActive(tName).toString());
-                    if (GetMenuItemBlockedSageUsersListAsList(tName).size()>0){
-                        PropertyAdd(MenuItemProps,PropLocation + "/BlockedSageUsersList", GetMenuItemBlockedSageUsersList(tName));
-                    }
-                    if (ADMutil.GetDefaultsWorkingMode() && !GetMenuItemShowIF(tName).equals(ADMutil.OptionNotFound)){
-                        //in this mode the ShowIF property get's exported so it's available to build a new defaults file
-                        PropertyAdd(MenuItemProps,PropLocation + "/ShowIF", GetMenuItemShowIF(tName));
-                    }
-                    //if this is an external action then save out the external action properties
-                    if (GetMenuItemActionType(tName).equals(ADMAction.LaunchExternalApplication)){
-                        GetMenuItemActionExternal(tName).AddProperties(MenuItemProps);
-                    }
-                    //LOG.debug("ExportMenuItems: exported - '" + entry.getValue().getName() + "'");
-                }
-            }
-        }
-        //write the properties to the properties file
-        try {
-            FileOutputStream out = new FileOutputStream(ExportFilePath);
-            try {
-                MenuItemProps.store(out, ADMutil.ADMPropertyComment);
-                out.close();
-            } catch (IOException ex) {
-                LOG.debug("ExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
-            }
-        } catch (FileNotFoundException ex) {
-            LOG.debug("ExportMenuItems: error exporting menus " + ADMutil.class.getName() + ex);
-        }
-
-        LOG.debug("ExportMenuItems: exported " + MenuNodeList().size() + " MenuItems");
-        
-        return;
-    }
-
     //TODO: EXTERNAL MENU - needs updating to find a shared or client based menu file
     private static String CleanPathChars(String InPath){
         InPath = InPath.replaceAll("/", "");
@@ -1847,46 +1783,6 @@ public class ADMMenuNode {
                 LOG.debug("SetDefaultMenuLocation: '" + Location + "' not found so using default client menu");
             }
         }
-    }
-    
-    //Gemstone Menus SaveAll functions to replace previous solution that saved to the Sage properties file
-    public static void SaveAll(){
-        util.Export(Boolean.TRUE, GetDefaultMenuLocation(), ADMutil.SagePropertyLocation, util.ExportType.MENUS, "");
-    }
-    //used for Export IF a filename is passed in
-    public static void SaveAll(String ExportFile){
-        util.Export(ExportFile, ADMutil.SagePropertyLocation, util.ExportType.MENUS);
-        
-//        String ExportFilePath = "";
-//        if (ExportFile.equals(UseDefaultMenuLocation)){
-//            ExportFilePath = GetDefaultMenuLocation();
-//        }else{
-//            ExportFilePath = util.UserDataLocation() + File.separator + ExportFile;
-//        }
-//        LOG.debug("SaveAll: Full Path = '" + ExportFilePath + "'");
-//        
-//        //iterate through all the MenuItems and save to a Property Collection
-//        Properties MenuItemProps = new Properties();
-//
-//        //write the properties to the properties file
-//        PropertyLoad(MenuItemProps);
-//        util.LabelExport(MenuItemProps, ADMutil.SagePropertyLocation, util.ExportType.MENUS, "");
-//        
-//        try {
-//            FileOutputStream out = new FileOutputStream(ExportFilePath);
-//            try {
-//                MenuItemProps.store(out, Const.PropertyComment);
-//                out.close();
-//            } catch (IOException ex) {
-//                LOG.debug("SaveAll: error saving menus " + ADMutil.class.getName() + ex);
-//            }
-//        } catch (FileNotFoundException ex) {
-//            LOG.debug("SaveAll: error saving menus " + ADMutil.class.getName() + ex);
-//        }
-//
-//        LOG.debug("SaveAll: saved " + MenuNodeList().size() + " MenuItems");
-        
-        return;
     }
 
     public static void PropertyLoad(Properties MenuItemProps){

@@ -650,10 +650,8 @@ public class Source {
         String s = "";
         Properties MD5Props = new Properties();
         String PropLocation = Flow.GetFlowBaseProp(ViewName) +  Const.PropDivider;
-        util.LoadProperties(PropLocation + Const.FlowFilters, MD5Props);
-        util.LoadSubProperties(PropLocation + Const.FlowFilters, MD5Props);
-        util.LoadProperties(PropLocation + Const.FlowSourceUI, MD5Props);
-        util.LoadSubProperties(PropLocation + Const.FlowSourceUI, MD5Props);
+        Export.LoadAllProperties(PropLocation + Const.FlowFilters, MD5Props, Boolean.FALSE);
+        Export.LoadAllProperties(PropLocation + Const.FlowSourceUI, MD5Props, Boolean.FALSE);
         for (String Prop:MD5Props.stringPropertyNames()){
             s = s + Prop + "=" + MD5Props.getProperty(Prop) + "|";
         }

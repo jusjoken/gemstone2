@@ -402,7 +402,4 @@ public class Widget {
         return tHeight;
     }
     
-    public static void Export(String FileName){
-        util.Export(FileName, Const.BaseProp + Const.PropDivider + Const.WidgetProp, util.ExportType.WIDGETS);
-    }
 }

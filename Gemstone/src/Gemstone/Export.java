@@ -29,8 +29,24 @@ public class Export {
     private Boolean FLOWExport = Boolean.FALSE;
     private Date ExportDateTime = new Date();
 
-    public Export(String FilePath){
-        this.FilePath = FilePath;
+    public Export(String FileName){
+        this.FileName = FileName;
+    }
+
+    public Export(String FileName, util.ExportType SingleExportType){
+        this.FileName = FileName;
+        if (SingleExportType.equals(util.ExportType.FLOWS)){
+            this.FLOWS = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.GENERAL)){
+            this.GENERAL = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.MENUS)){
+            this.MENUS = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.WIDGETS)){
+            this.WIDGETS = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.ALL)){
+            this.ALLToggle();
+        }
+        Execute();
     }
 
     public Export(){
@@ -289,7 +305,7 @@ public class Export {
         }
     }
 
-    private static void LoadAllProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
+    public static void LoadAllProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
         LOG.debug("LoadAllProperties: started for '" + PropLocation + "' SkipEnabled '" + SkipEnabled + "'");
         LoadProperties(PropLocation, PropContainer, SkipEnabled);
         LoadSubProperties(PropLocation, PropContainer, SkipEnabled);

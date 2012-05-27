@@ -155,7 +155,7 @@ public class ADMutil {
 
         //backup existing MenuItems before clearing settings and menus
         if (ADMMenuNode.MenuNodeList().size()>0){
-            ADMMenuNode.ExportMenuItems(PropertyBackupFile);
+            Export tExport = new Export(PropertyBackupFile, util.ExportType.MENUS);
         }
         
         //clear all the Sage property settings for ADM

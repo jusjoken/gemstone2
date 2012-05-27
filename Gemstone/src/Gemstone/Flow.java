@@ -500,10 +500,4 @@ public class Flow {
 //        return MetadataCalls.DisplaySeasonEpisode(MediaObject, SEFormat);
 //    }
     
-    public static void Export(String FileName){
-        util.Export(FileName, Const.BaseProp + Const.PropDivider + Const.FlowProp, util.ExportType.FLOWS);
-    }
-    public static void Export(String FileName, String FlowName){
-        util.Export(FileName, GetFlowBaseProp(FlowName),util.ExportType.FLOW, GetFlowName(FlowName));
-    }
 }
