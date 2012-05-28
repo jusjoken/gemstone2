@@ -1354,6 +1354,14 @@ public class ADMMenuNode {
     }
     
     //TODO: EXTERNAL MENU - GetMenuItemsList
+    public static Collection<String> GetMenuItemsList(Properties MenuProps){
+        Collection<String> MenuList = new LinkedHashSet<String>();
+        //TODO: EXTERNAL MENU - write a new GetSubpropertiesThatAreBranches based on a Properties
+
+        //validate that each Menu Item is a fully valid menu item (has a Name property) and not just a remnant Sage property
+        
+        return MenuList;
+    }
     public static Collection<String> GetMenuItemsList(){
         Collection<String> MenuList = new LinkedHashSet<String>();
         String rUI = sagex.api.Global.GetUIContextName();
@@ -1570,7 +1578,16 @@ public class ADMMenuNode {
         String DefaultPropFile = "ADMDefault.properties";
         String DefaultsFullPath = util.DefaultsLocation() + File.separator + DefaultPropFile;
         
-        ImportMenuItems(DefaultsFullPath);
+        //backup existing MenuItems before processing the import if any exist
+        if (MenuNodeList().size()>0){
+            LOG.debug("LoadMenuItemDefaults: called Export");
+            Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
+            LOG.debug("LoadMenuItemDefaults: Export returned to Load Defaults");
+        }
+        //do an Import for MENUS only
+        Import tImport = new Import(DefaultsFullPath, util.ExportType.MENUS);
+        LOG.debug("LoadMenuItemDefaults: Import returned to Load Defaults");
+        
         ADMutil.ClearFocusStorage();
         
         //now build any dynamic submenus
@@ -1671,57 +1688,6 @@ public class ADMMenuNode {
         }
     }
     
-    //TODO: EXTERNAL MENU - ImportMenuItems
-    public static Boolean ImportMenuItems(String ImportPath){
-
-        if (ImportPath==null){
-            LOG.debug("ImportMenuItems: null ImportPath passed.");
-            return false;
-        }
-        
-        Properties MenuItemProps = new Properties();
-        
-        //read the properties from the properties file
-        try {
-            FileInputStream in = new FileInputStream(ImportPath);
-            try {
-                MenuItemProps.load(in);
-                in.close();
-            } catch (IOException ex) {
-                LOG.debug("ImportMenuItems: IO exception inporting menus " + ADMutil.class.getName() + ex);
-                return false;
-            }
-        } catch (FileNotFoundException ex) {
-            LOG.debug("ImportMenuItems: file not found inporting menus " + ADMutil.class.getName() + ex);
-            return false;
-        }
-        
-        //backup existing MenuItems before processing the import if any exist
-        if (MenuNodeList().size()>0){
-            LOG.debug("ImportMenuItems: called Export");
-            Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
-            LOG.debug("ImportMenuItems: Export returned to Import");
-        }
-        
-        if (MenuItemProps.size()>0){
-            //clean up existing MenuItems from the SageTV properties file before writing the new ones
-            ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
-            
-            //load MenuItems from the properties file and write to the Sage properties
-            for (String tPropertyKey : MenuItemProps.stringPropertyNames()){
-                ADMutil.SetProperty(tPropertyKey, MenuItemProps.getProperty(tPropertyKey));
-                
-                //LOG.debug("ImportMenuItems: imported - '" + tPropertyKey + "' = '" + MenuItemProps.getProperty(tPropertyKey) + "'");
-            }
-            
-            //now load the properties from the Sage properties file
-            LoadMenuItemsFromSage();
-
-        }
-        LOG.debug("ImportMenuItems: completed for '" + ImportPath + "'");
-        return true;
-    }
- 
     //TODO: EXTERNAL MENU - needs updating to find a shared or client based menu file
     private static String CleanPathChars(String InPath){
         InPath = InPath.replaceAll("/", "");

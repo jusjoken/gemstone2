@@ -5,6 +5,7 @@
 package Gemstone;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,8 +19,10 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,39 @@ public class util {
         //String test = StringNumberFormat("27.96903", 0, 2);
         //String test = StringNumberFormat("27.1", 0, 2);
         //LOG.debug(test);
-        api.InitLogger();
+        //api.InitLogger();
+        test1();
+        
+    }
+    
+    public static void test1(){
+        Properties Props = new Properties();
+        String FilePath = util.UserDataLocation() + File.separator + "menutest.properties";
+        Boolean KeepProcessing = Boolean.TRUE;
+        //read the properties from the properties file
+        try {
+            FileInputStream in = new FileInputStream(FilePath);
+            try {
+                Props.load(in);
+                in.close();
+            } catch (IOException ex) {
+                LOG.debug("test1: IO exception inporting properties " + util.class.getName() + ex);
+                KeepProcessing = Boolean.FALSE;
+            }
+        } catch (FileNotFoundException ex) {
+            LOG.debug("test1: file not found inporting properties " + util.class.getName() + ex);
+            KeepProcessing = Boolean.FALSE;
+        }
+        if (KeepProcessing){
+            LOG.debug("test1: start of BRANCHES");
+            for (String Key:GetSubpropertiesThatAreBranches(Props, "Gemstone/Widgets")){
+                LOG.debug("TEST item '" + Key + "'");
+            }
+            LOG.debug("test1: start of LEAVES");
+            for (String Key:GetSubpropertiesThatAreLeaves(Props, "Gemstone/Widgets")){
+                LOG.debug("TEST item '" + Key + "'");
+            }
+        }
         
     }
     
@@ -1009,6 +1044,47 @@ public class util {
             return Default;
         }
         return tValue;
+    }
+
+    //mimic the sage function to return a list of properties that have subproperties
+    public static Collection<String> GetSubpropertiesThatAreBranches(Properties Props, String PropertyKey){
+        return GetSubpropertiesThatAreLeavesOrBranches(Props, PropertyKey, Boolean.TRUE);
+    }
+    public static Collection<String> GetSubpropertiesThatAreLeaves(Properties Props, String PropertyKey){
+        return GetSubpropertiesThatAreLeavesOrBranches(Props, PropertyKey, Boolean.FALSE);
+    }
+    private static Collection<String> GetSubpropertiesThatAreLeavesOrBranches(Properties Props, String PropertyKey, Boolean Branches){
+        Collection<String> ReturnList = new LinkedHashSet<String>();
+        //make sure the PropertyKey ends in a "/" so we only find branches and NOT leaves
+        if (!PropertyKey.endsWith("/")){
+            PropertyKey = PropertyKey + "/";
+        }
+        for (String Key: Props.stringPropertyNames()){
+            if (Key.startsWith(PropertyKey)){
+                Integer startindex = PropertyKey.length();
+                Integer endindex = Key.indexOf("/", startindex);
+                if (endindex!=-1){
+                    if (Branches){
+                        ReturnList.add(Key.substring(startindex, endindex));
+                        //LOG.debug("GetSubpropertiesThatAreBranches: FOUND Key '" + Key.substring(startindex, endindex) + "'");
+                    }else{
+                        //LOG.debug("GetSubpropertiesThatAreBranches: SKIPPING as there are branches '" + Key + "'");
+                }
+                }else{
+                    if (Branches){
+                        //LOG.debug("GetSubpropertiesThatAreBranches: SKIPPING as no branches '" + Key + "'");
+                    }else{
+                        ReturnList.add(Key.substring(startindex));
+                        //LOG.debug("GetSubpropertiesThatAreBranches: FOUND Key '" + Key.substring(startindex) + "'");
+                    }
+                }
+            }else{
+                //LOG.debug("GetSubpropertiesThatAreBranches: SKIPPING Key '" + Key + "'");
+            }
+        }
+        LOG.debug("GetSubpropertiesThatAreBranches: PropertyKey '" + PropertyKey + "' found (" + ReturnList.size() + ") List '" + ReturnList + "'");
+        return ReturnList;
+        
     }
 }
 

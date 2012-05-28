@@ -35,6 +35,21 @@ public class Import {
     private String FLOW = "";
     private String FLOWName = "";
     
+    //constructor to pass a single ExportType and Import immediately - no user interaction
+    public Import(String FilePath, util.ExportType SingleExportType){
+        this(FilePath);
+        IsValid = Boolean.TRUE;
+        if (SingleExportType.equals(util.ExportType.FLOWS)){
+            this.FLOWS = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.GENERAL)){
+            this.GENERAL = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.MENUS)){
+            this.MENUS = Boolean.TRUE;
+        }else if (SingleExportType.equals(util.ExportType.WIDGETS)){
+            this.WIDGETS = Boolean.TRUE;
+        }
+        Load();
+    }
     public Import(String FilePath){
         this.FilePath = FilePath;
 
