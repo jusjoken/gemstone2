@@ -1536,13 +1536,13 @@ public class ADMMenuNode {
                     AddNode(Node);
                 }
                 //now update the sortkeys from the Tree structure
-                //TODO: EXTERNAL MENU - PropertyLoad need to continue from HERE and convert this function
                 SortKeyUpdate();
             }
             
         }else{
             //load a default Menu here.  Load a Diamond Menu if Diamond if active
             LOG.debug("LoadMenuItemsFromSage: no MenuItems found - loading default menu.");
+            //TODO: EXTERNAL MENU - PropertyLoad need to continue from HERE and convert this function
             LoadMenuItemDefaults();
         }
         LOG.debug("LoadMenuItemsFromSage: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
