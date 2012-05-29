@@ -64,7 +64,7 @@ public class util {
     }
     
     public static void test1(){
-        Properties Props = new Properties();
+        PropertiesExt Props = new PropertiesExt();
         String FilePath = util.UserDataLocation() + File.separator + "menutest.properties";
         Boolean KeepProcessing = Boolean.TRUE;
         //read the properties from the properties file
@@ -83,11 +83,11 @@ public class util {
         }
         if (KeepProcessing){
             LOG.debug("test1: start of BRANCHES");
-            for (String Key:GetSubpropertiesThatAreBranches(Props, "Gemstone/Widgets")){
+            for (String Key:Props.GetSubpropertiesThatAreBranches("Gemstone/Widgets")){
                 LOG.debug("TEST item '" + Key + "'");
             }
             LOG.debug("test1: start of LEAVES");
-            for (String Key:GetSubpropertiesThatAreLeaves(Props, "Gemstone/Widgets")){
+            for (String Key:Props.GetSubpropertiesThatAreLeaves("Gemstone/Widgets")){
                 LOG.debug("TEST item '" + Key + "'");
             }
         }
@@ -1046,45 +1046,5 @@ public class util {
         return tValue;
     }
 
-    //mimic the sage function to return a list of properties that have subproperties
-    public static Collection<String> GetSubpropertiesThatAreBranches(Properties Props, String PropertyKey){
-        return GetSubpropertiesThatAreLeavesOrBranches(Props, PropertyKey, Boolean.TRUE);
-    }
-    public static Collection<String> GetSubpropertiesThatAreLeaves(Properties Props, String PropertyKey){
-        return GetSubpropertiesThatAreLeavesOrBranches(Props, PropertyKey, Boolean.FALSE);
-    }
-    private static Collection<String> GetSubpropertiesThatAreLeavesOrBranches(Properties Props, String PropertyKey, Boolean Branches){
-        Collection<String> ReturnList = new LinkedHashSet<String>();
-        //make sure the PropertyKey ends in a "/" so we only find branches and NOT leaves
-        if (!PropertyKey.endsWith("/")){
-            PropertyKey = PropertyKey + "/";
-        }
-        for (String Key: Props.stringPropertyNames()){
-            if (Key.startsWith(PropertyKey)){
-                Integer startindex = PropertyKey.length();
-                Integer endindex = Key.indexOf("/", startindex);
-                if (endindex!=-1){
-                    if (Branches){
-                        ReturnList.add(Key.substring(startindex, endindex));
-                        //LOG.debug("GetSubpropertiesThatAreBranches: FOUND Key '" + Key.substring(startindex, endindex) + "'");
-                    }else{
-                        //LOG.debug("GetSubpropertiesThatAreBranches: SKIPPING as there are branches '" + Key + "'");
-                }
-                }else{
-                    if (Branches){
-                        //LOG.debug("GetSubpropertiesThatAreBranches: SKIPPING as no branches '" + Key + "'");
-                    }else{
-                        ReturnList.add(Key.substring(startindex));
-                        //LOG.debug("GetSubpropertiesThatAreBranches: FOUND Key '" + Key.substring(startindex) + "'");
-                    }
-                }
-            }else{
-                //LOG.debug("GetSubpropertiesThatAreBranches: SKIPPING Key '" + Key + "'");
-            }
-        }
-        LOG.debug("GetSubpropertiesThatAreBranches: PropertyKey '" + PropertyKey + "' found (" + ReturnList.size() + ") List '" + ReturnList + "'");
-        return ReturnList;
-        
-    }
 }
 
