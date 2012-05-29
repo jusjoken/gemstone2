@@ -258,7 +258,7 @@ public class Export {
             //add Menus to the export
             if (this.MENUS){
                 ExportProps.put(util.ExportType.MENUS.toString(), "true");
-                ADMMenuNode.PropertyLoad(ExportProps);
+                ADMMenuNode.PropertySave(ExportProps);
             }
             if (IsALL()){
                 //this will also load FLOWS and WIDGETS so do it in a single call

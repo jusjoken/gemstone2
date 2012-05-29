@@ -1354,12 +1354,14 @@ public class ADMMenuNode {
     }
     
     //TODO: EXTERNAL MENU - GetMenuItemsList
-    public static Collection<String> GetMenuItemsList(Properties MenuProps){
+    public static Collection<String> GetMenuItemsList(Properties MenuItemProps){
         Collection<String> MenuList = new LinkedHashSet<String>();
-        //TODO: EXTERNAL MENU - write a new GetSubpropertiesThatAreBranches based on a Properties
-
         //validate that each Menu Item is a fully valid menu item (has a Name property) and not just a remnant Sage property
-        
+        for (String Key:util.GetSubpropertiesThatAreBranches(MenuItemProps, ADMutil.SagePropertyLocation)){
+            if (MenuItemProps.containsKey(ADMutil.SagePropertyLocation + Key + "/Name")){
+                MenuList.add(Key);
+            }
+        }
         return MenuList;
     }
     public static Collection<String> GetMenuItemsList(){
@@ -1437,6 +1439,71 @@ public class ADMMenuNode {
                 if (!tMenuItemName.equals(ADMutil.TopMenu)){
                     PropLocation = ADMutil.SagePropertyLocation + tMenuItemName;
                     //check the hidden ShowIF property and skip if it is FALSE
+                    if (ADMutil.GetPropertyEvalAsBoolean(PropLocation + "/ShowIF", Boolean.TRUE) || ADMutil.GetDefaultsWorkingMode()){
+                        ADMMenuNode NewMenuItem = new ADMMenuNode(tMenuItemName);
+                        NewMenuItem.ActionAttribute = ADMutil.GetProperty(PropLocation + "/Action", null);
+                        NewMenuItem.ActionType = ADMutil.GetProperty(PropLocation + "/ActionType", ADMutil.ActionTypeDefault);
+                        NewMenuItem.SetBGImageFileandPath(ADMutil.GetProperty(PropLocation + "/BGImageFile", null));
+                        NewMenuItem.ButtonText = ADMutil.GetProperty(PropLocation + "/ButtonText", ADMutil.ButtonTextDefault);
+                        NewMenuItem.Name = ADMutil.GetProperty(PropLocation + "/Name", tMenuItemName);
+                        NewMenuItem.Parent = ADMutil.GetProperty(PropLocation + "/Parent", "xTopMenu");
+                        NewMenuItem.setSortKey(ADMutil.GetProperty(PropLocation + "/SortKey", "0")); 
+                        NewMenuItem.SubMenu = ADMutil.GetProperty(PropLocation + "/SubMenu", null);
+                        NewMenuItem.IsDefault = Boolean.parseBoolean(ADMutil.GetProperty(PropLocation + "/IsDefault", "false"));
+                        NewMenuItem.IsTemp = Boolean.parseBoolean(ADMutil.GetProperty(PropLocation + "/IsTemp", "false"));
+                        NewMenuItem.IsActive = ADMutil.GetPropertyAsTriState(PropLocation + "/IsActive", ADMutil.TriState.YES);
+                        NewMenuItem.BlockedSageUsersList = ADMutil.GetPropertyAsList(PropLocation + "/BlockedSageUsersList");
+                        if (ADMutil.GetDefaultsWorkingMode()){
+                            NewMenuItem.ShowIF = ADMutil.GetProperty(PropLocation + "/ShowIF", ADMutil.OptionNotFound);
+                        }
+                        NewMenuItem.ActionExternal.Load();
+                        LOG.debug("LoadMenuItemsFromSage: loaded - '" + tMenuItemName + "' = '" + NewMenuItem.ButtonText + "'");
+                    }else{
+                        LOG.debug("LoadMenuItemsFromSage: skipped - '" + tMenuItemName + "' due to ShowIF ");
+                    }
+                }else{
+                    LOG.debug("LoadMenuItemsFromSage: skipping - '" + tMenuItemName + "' - should not load a TopMenu item");
+                }
+            }
+            if (MenuNodeList().size()>0){
+                //create the tree nodes
+                for (ADMMenuNode Node : MenuNodeList().values()){
+                    //check if the current node exists yet
+                    AddNode(Node);
+                }
+                //now update the sortkeys from the Tree structure
+                SortKeyUpdate();
+            }
+            
+        }else{
+            //load a default Menu here.  Load a Diamond Menu if Diamond if active
+            LOG.debug("LoadMenuItemsFromSage: no MenuItems found - loading default menu.");
+            LoadMenuItemDefaults();
+        }
+        LOG.debug("LoadMenuItemsFromSage: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
+        
+        return;
+    }
+
+    //TODO: EXTERNAL MENU - LoadMenuItemsFromSage
+    public static void PropertyLoad(Properties MenuItemProps){
+        String PropLocation = "";
+
+        //cleanup the Nodes and the Tree prior to loading
+        CleanMenuNodeListandTree();
+        
+        //find all MenuItem Name entries from the properties file
+        Collection<String> MenuItemNames = GetMenuItemsList(MenuItemProps);
+
+        if (MenuItemNames.size()>0){
+            
+            //load MenuItems
+            for (String tMenuItemName : MenuItemNames){
+                //make sure you do not load a TopMenu item - it should never be saved but this is just an extra check
+                if (!tMenuItemName.equals(ADMutil.TopMenu)){
+                    PropLocation = ADMutil.SagePropertyLocation + tMenuItemName;
+                    //check the hidden ShowIF property and skip if it is FALSE
+                    //TODO: EXTERNAL MENU - PropertyLoad need to continue from HERE and convert this function
                     if (ADMutil.GetPropertyEvalAsBoolean(PropLocation + "/ShowIF", Boolean.TRUE) || ADMutil.GetDefaultsWorkingMode()){
                         ADMMenuNode NewMenuItem = new ADMMenuNode(tMenuItemName);
                         NewMenuItem.ActionAttribute = ADMutil.GetProperty(PropLocation + "/Action", null);
@@ -1751,7 +1818,7 @@ public class ADMMenuNode {
         }
     }
 
-    public static void PropertyLoad(Properties MenuItemProps){
+    public static void PropertySave(Properties MenuItemProps){
         String PropLocation = "";
         for (String tName : MenuNodeList().keySet()){
             if (!tName.equals(ADMutil.TopMenu)){
