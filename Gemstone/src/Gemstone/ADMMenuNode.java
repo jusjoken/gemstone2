@@ -1575,6 +1575,13 @@ public class ADMMenuNode {
         return;
     }
  
+    //save the current menus to the defined menus external file
+    public static void SaveMenus(){
+        Export tExport = new Export();
+        tExport.SaveMenus();
+        LOG.debug("SaveMenus: save completed for current menu items");
+    }
+    
     //TODO: EXTERNAL MENU - SaveMenuItemToSage
     public static void SaveMenuItemToSage(ADMMenuNode tMenu){
         if (!tMenu.Name.equals(ADMutil.TopMenu)){
@@ -1650,8 +1657,8 @@ public class ADMMenuNode {
             Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
             LOG.debug("LoadMenuItemDefaults: Export returned to Load Defaults");
         }
-        //do an Import for MENUS only
-        Import tImport = new Import(DefaultsFullPath, util.ExportType.MENUS);
+        //do an Import for MENUS only but skip writing as we are still going to modify this and then save
+        Import tImport = new Import(DefaultsFullPath, util.ExportType.MENUS, Boolean.TRUE);
         LOG.debug("LoadMenuItemDefaults: Import returned to Load Defaults");
         
         ADMutil.ClearFocusStorage();
@@ -1688,7 +1695,7 @@ public class ADMMenuNode {
         ValidateSubMenuDefault(SageTVMenuVideos);
         SortKeyUpdate(SageTVMenuVideos);
 
-        //TODO: likely need to save the menus that were just created from the defaults loaded
+        SaveMenus();
         LOG.debug("LoadMenuItemDefaults: loading default menu items from '" + DefaultsFullPath + "'");
     }
     

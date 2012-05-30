@@ -33,7 +33,7 @@ public class Export {
     public Export(Boolean ConvertedADMMenus){
         if (ConvertedADMMenus){
             this.FilePath = ADMutil.ConvertedADMMenusFilePath;
-            ConvertedADMMenus = Boolean.TRUE;
+            this.ConvertedADMMenus = Boolean.TRUE;
             Execute();
         }
     }
@@ -242,6 +242,7 @@ public class Export {
     }
     
     public void Execute(){
+        LOG.debug("Execute: MENUS '" + this.MENUS + "' FLOWS '" + this.FLOWS + "' GENERAL '" + this.GENERAL + "' WIDGETS '" + this.WIDGETS + "' ConvertedADMMenus '" + this.ConvertedADMMenus + "'");
         Boolean ContinueProcessing = Boolean.TRUE;
         if (this.FilePath.equals("")){
             if (this.FileName.equals("")){
@@ -255,6 +256,8 @@ public class Export {
         }
         if (ContinueProcessing){
 
+            LOG.debug("Execute: starting export to '" + this.FilePath + "'");
+            
             Properties ExportProps = new Properties();
             ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime(ExportDateTime));
             
@@ -312,6 +315,7 @@ public class Export {
                 } catch (FileNotFoundException ex) {
                     LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
                 }
+                LOG.debug("Execute: properties saved to '" + this.FilePath + "'");
             }else{
                 LOG.debug("Execute: no properties to export");
             }
@@ -322,6 +326,7 @@ public class Export {
 
     public static void LoadAllProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
         LOG.debug("LoadAllProperties: started for '" + PropLocation + "' SkipEnabled '" + SkipEnabled + "'");
+        PropLocation = CleanPropLocation(PropLocation);
         LoadProperties(PropLocation, PropContainer, SkipEnabled);
         LoadSubProperties(PropLocation, PropContainer, SkipEnabled);
         LOG.debug("LoadAllProperties: completed for '" + PropLocation + "'");
@@ -329,6 +334,7 @@ public class Export {
     
     private static void LoadProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
         String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreLeaves(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
+        //LOG.debug("LoadProperties: for PropLocation '" + PropLocation + "' PropNames size = '" + PropNames.length + "'");
         for (String PropItem: PropNames){
             String tProp = PropLocation + Const.PropDivider + PropItem;
             if (SkipEnabled && (tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.FlowProp) || tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.WidgetProp))){
@@ -343,10 +349,18 @@ public class Export {
     }
     private static void LoadSubProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
         String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreBranches(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);
+        //LOG.debug("LoadSubProperties: for PropLocation '" + PropLocation + "' PropNames size = '" + PropNames.length + "'");
         for (String PropItem: PropNames){
             String tProp = PropLocation + Const.PropDivider + PropItem;
             LoadProperties(tProp, PropContainer, SkipEnabled);
             LoadSubProperties(tProp, PropContainer, SkipEnabled);
+        }
+    }
+    private static String CleanPropLocation(String PropLocation){
+        if (PropLocation.endsWith("/")){
+            return PropLocation.substring(0, PropLocation.length()-1);
+        }else{
+            return PropLocation;
         }
     }
     

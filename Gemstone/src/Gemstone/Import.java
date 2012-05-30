@@ -7,9 +7,11 @@ package Gemstone;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Properties;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
@@ -35,6 +37,7 @@ public class Import {
     private String FLOW = "";
     private String FLOWName = "";
     private Boolean MenusLoaded = Boolean.FALSE;
+    private Boolean MenusSkipWrite = Boolean.FALSE;
     
     public Import(Boolean MenuLoad){
         this(ADMMenuNode.GetDefaultMenuLocation());
@@ -44,12 +47,16 @@ public class Import {
             this.GENERAL = Boolean.FALSE;
             this.FLOW = "";
             this.MENUS = Boolean.TRUE;
+            this.MenusSkipWrite = Boolean.TRUE;
             Load();
         }
     }
 
     //constructor to pass a single ExportType and Import immediately - no user interaction
     public Import(String FilePath, util.ExportType SingleExportType){
+        this(FilePath, SingleExportType, Boolean.FALSE);
+    }
+    public Import(String FilePath, util.ExportType SingleExportType, Boolean SkipMenuWrite){
         this(FilePath);
         IsValid = Boolean.TRUE;
         if (SingleExportType.equals(util.ExportType.FLOWS)){
@@ -61,6 +68,7 @@ public class Import {
         }else if (SingleExportType.equals(util.ExportType.WIDGETS)){
             this.WIDGETS = Boolean.TRUE;
         }
+        this.MenusSkipWrite = SkipMenuWrite;
         Load();
     }
     public Import(String FilePath){
@@ -299,6 +307,7 @@ public class Import {
 
     public void Load(){
         //load the properties to the SageTV properties file or menus file
+        LOG.debug("Load: MENUS '" + this.MENUS + "' FLOWS '" + this.FLOWS + "' GENERAL '" + this.GENERAL + "' WIDGETS '" + this.WIDGETS + "'");
         if (this.Props.size()>0 && this.IsValid){
             //clean up existing Properties from the SageTV properties file before writing the new ones
             String tProp = "";
@@ -351,13 +360,44 @@ public class Import {
             }
             if (Menus.size()>0){
                 //handle the Menus imports differently from other imports
-                //TODO: EXTERNAL MENU - call the Menu Import here from the generic import class
                 this.MenusLoaded = ADMMenuNode.PropertyLoad(Menus);
-                LOG.debug("Load: processing menus import");
+                if (this.MenusLoaded){
+                    if (MenusSkipWrite){
+                        LOG.debug("Load: menus imported - write skipped");
+                    }else{
+                        WriteMenuProperties(Menus);
+                        LOG.debug("Load: menus imported and written");
+                    }
+                }else{
+                    LOG.debug("Load: menus not imported");
+                }
             }
         }
     }
 
+    private void WriteMenuProperties(PropertiesExt ExportProps){
+        String tFilePath = ADMMenuNode.GetDefaultMenuLocation();
+        if (ExportProps.size()>0){
+            ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime(new Date()));
+            ExportProps.put(util.ExportType.MENUS.toString(), "true");
+            //write the properties to the properties file
+            try {
+                FileOutputStream out = new FileOutputStream(tFilePath);
+                try {
+                    ExportProps.store(out, Const.PropertyComment);
+                    out.close();
+                } catch (IOException ex) {
+                    LOG.debug("WriteMenuProperties: error exporting properties " + util.class.getName() + ex);
+                }
+            } catch (FileNotFoundException ex) {
+                LOG.debug("WriteMenuProperties: error exporting properties " + util.class.getName() + ex);
+            }
+        }else{
+            LOG.debug("WriteMenuProperties: no properties to export");
+        }
+        
+    }
+    
     private static void SafeRemoveAllProperties(String PropLocation){
         //remove any property as long as it is not a Flow or Widget property
         String[] PropNames = sagex.api.Configuration.GetSubpropertiesThatAreLeaves(new UIContext(sagex.api.Global.GetUIContextName()),PropLocation);

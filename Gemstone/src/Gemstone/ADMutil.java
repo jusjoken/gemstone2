@@ -116,6 +116,17 @@ public class ADMutil {
                     LOG.debug("LoadADM - error creating '" + util.UserDataLocation() + "'" + ex.getMessage());
                 }
             
+            //ensure the ADM menus location exists
+            try{
+                boolean success = (new File(util.MenusLocation())).mkdirs();
+                if (success) {
+                    LOG.debug("LoadADM - Directories created for '" + util.MenusLocation() + "'");
+                   }
+
+                }catch (Exception ex){//Catch exception if any
+                    LOG.debug("LoadADM - error creating '" + util.MenusLocation() + "'" + ex.getMessage());
+                }
+            
             //also load the BGVariables for BG Images on Top Level Menus
             LoadSageBGVariablesList();
             SageBGVariablesKeys.add(ListNone);
@@ -145,22 +156,16 @@ public class ADMutil {
         //Load the menu items
         Import tImport = new Import(Boolean.TRUE);
         if (!tImport.getMenusLoaded()){
-            //TODO: need to determine if we need to convert Sage ADM Menus
-            if (Boolean.FALSE){
-                //do a conversion of old ADM menus to Gemstone style
-                Export tExport = new Export(Boolean.TRUE);
-                Import cImport = new Import(ConvertedADMMenusFilePath, util.ExportType.MENUS);
-                if (cImport.getMenusLoaded()){
-                    //TODO: call Save here to save the newly loaded converted menu items
-                    LOG.debug("LoadADM: ADM MenuItems converted and saved.");
-                }else{
-                    LOG.debug("LoadADM: no ADM MenuItems found to convert - loading default menu.");
-                    ADMMenuNode.LoadMenuItemDefaults();
-                }
+            //determine if we need to convert Sage ADM Menus
+            //do a conversion of old ADM menus to Gemstone style
+            Export tExport = new Export(Boolean.TRUE);
+            Import cImport = new Import(ConvertedADMMenusFilePath, util.ExportType.MENUS);
+            if (cImport.getMenusLoaded()){
+                LOG.debug("LoadADM: ADM MenuItems converted and saved.");
+            }else{
+                LOG.debug("LoadADM: no ADM MenuItems found to convert - loading default menu.");
+                ADMMenuNode.LoadMenuItemDefaults();
             }
-            
-            LOG.debug("LoadADM: no MenuItems found - loading default menu.");
-            ADMMenuNode.LoadMenuItemDefaults();
         }
         //ADMMenuNode.LoadMenuItemsFromSage();
         LOG.debug("LoadADM - UI level initialization complete.");
