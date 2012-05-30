@@ -1180,16 +1180,6 @@ public class ADMAction {
             ADMutil.SetProperty(PropLocation + "SageStatus", sageStatus.toString());
         }
         
-        //TODO: EXTERNAL MENU - External action load
-        public void Load(){
-            //load all variables from the sage Properties
-            String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
-            this.command = ADMutil.GetProperty(PropLocation + "Application", "");
-            this.arguments = ADMutil.GetProperty(PropLocation + "Arguments", "");
-            this.windowType = ADMutil.GetPropertyAsInteger(PropLocation + "WindowType", 0);
-            this.waitForExit = ADMutil.GetPropertyAsBoolean(PropLocation + "WaitForExit", Boolean.TRUE);
-            this.sageStatus = ADMutil.GetPropertyAsInteger(PropLocation + "SageStatus", 0);
-        }
         public void Load(PropertiesExt inProp){
             //load all variables from the sage Properties
             String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
@@ -1200,7 +1190,6 @@ public class ADMAction {
             this.sageStatus = inProp.GetPropertyAsInteger(PropLocation + "SageStatus", 0);
         }
 
-        //TODO: EXTERNAL MENU - External action ???
         public void AddProperties(Properties inProp){
             String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
             inProp.setProperty(PropLocation + "Application", command);

@@ -1353,7 +1353,6 @@ public class ADMMenuNode {
         
     }
     
-    //TODO: EXTERNAL MENU - GetMenuItemsList
     public static Collection<String> GetMenuItemsList(PropertiesExt MenuItemProps){
         Collection<String> MenuList = new LinkedHashSet<String>();
         //validate that each Menu Item is a fully valid menu item (has a Name property) and not just a remnant Sage property
@@ -1364,128 +1363,7 @@ public class ADMMenuNode {
         }
         return MenuList;
     }
-    public static Collection<String> GetMenuItemsList(){
-        Collection<String> MenuList = new LinkedHashSet<String>();
-        String rUI = sagex.api.Global.GetUIContextName();
-        UIContext cUI = new UIContext(rUI);
-        //get the list of menu items from Sage
-        String[] MenuItemNames = sagex.api.Configuration.GetSubpropertiesThatAreBranches(cUI,ADMutil.SagePropertyLocation);
-        if (MenuItemNames.length>0){
-            //validate that each Menu Item is a fully valid menu item and not just a remnant Sage property
-            //for RemoteUI's use a modified process for validation as the GetProperty for a RemoteUI will 
-            //  misleadingly return the Servers property if the client property is not set
-            if (sagex.api.Global.IsRemoteUI(cUI)){
-                //process the RemoteUI's property file directly
-                LOG.debug("GetMenuItemsList: Remote UI '" + rUI + "'");
-                //make sure the properties file has been saved first
-                sagex.api.Configuration.SaveProperties(cUI);
-                //get the RemoteUI properties file
-                String pFile = sagex.api.Utility.GetWorkingDirectory(cUI) + File.separator + "clients" + File.separator + rUI + ".properties";
 
-                Properties MenuItemProps = new Properties();
-
-                //read the properties from the properties file
-                try {
-                    FileInputStream in = new FileInputStream(pFile);
-                    try {
-                        MenuItemProps.load(in);
-                        in.close();
-                    } catch (IOException ex) {
-                        LOG.debug("GetMenuItemsList: IO exception loading properties " + ADMutil.class.getName() + ex);
-                        return MenuList;
-                    }
-                } catch (FileNotFoundException ex) {
-                    LOG.debug("GetMenuItemsList: file not found loading properties " + ADMutil.class.getName() + ex);
-                    return MenuList;
-                }
-                
-                for (String tMenuItemName : MenuItemNames){
-                    if (MenuItemProps.getProperty(ADMutil.SagePropertyLocation + tMenuItemName + "/Name",ADMutil.OptionNotFound).equals(tMenuItemName)){
-                        MenuList.add(tMenuItemName);
-                    }else{
-                        LOG.debug("GetMenuItemsList: skipping invalid menuitem '" + tMenuItemName + "'");
-                    }
-                }
-            }else{
-                //process the clients's properties using Sage functions
-                LOG.debug("GetMenuItemsList: Client UI '" + rUI + "'");
-                for (String tMenuItemName : MenuItemNames){
-                    if (ADMutil.HasProperty(ADMutil.SagePropertyLocation + tMenuItemName + "/Name")){
-                        MenuList.add(tMenuItemName);
-                    }else{
-                        LOG.debug("GetMenuItemsList: skipping invalid menuitem '" + tMenuItemName + "'");
-                    }
-                }
-            }
-        }
-        return MenuList;
-    }
-    
-    //TODO: EXTERNAL MENU - LoadMenuItemsFromSage
-    public static void LoadMenuItemsFromSage(){
-        String PropLocation = "";
-
-        //cleanup the Nodes and the Tree prior to loading
-        CleanMenuNodeListandTree();
-        
-        //find all MenuItem Name entries from the SageTV properties file
-        Collection<String> MenuItemNames = GetMenuItemsList();
-
-        if (MenuItemNames.size()>0){
-            
-            //load MenuItems
-            for (String tMenuItemName : MenuItemNames){
-                //make sure you do not load a TopMenu item - it should never be saved but this is just an extra check
-                if (!tMenuItemName.equals(ADMutil.TopMenu)){
-                    PropLocation = ADMutil.SagePropertyLocation + tMenuItemName;
-                    //check the hidden ShowIF property and skip if it is FALSE
-                    if (ADMutil.GetPropertyEvalAsBoolean(PropLocation + "/ShowIF", Boolean.TRUE) || ADMutil.GetDefaultsWorkingMode()){
-                        ADMMenuNode NewMenuItem = new ADMMenuNode(tMenuItemName);
-                        NewMenuItem.ActionAttribute = ADMutil.GetProperty(PropLocation + "/Action", null);
-                        NewMenuItem.ActionType = ADMutil.GetProperty(PropLocation + "/ActionType", ADMutil.ActionTypeDefault);
-                        NewMenuItem.SetBGImageFileandPath(ADMutil.GetProperty(PropLocation + "/BGImageFile", null));
-                        NewMenuItem.ButtonText = ADMutil.GetProperty(PropLocation + "/ButtonText", ADMutil.ButtonTextDefault);
-                        NewMenuItem.Name = ADMutil.GetProperty(PropLocation + "/Name", tMenuItemName);
-                        NewMenuItem.Parent = ADMutil.GetProperty(PropLocation + "/Parent", "xTopMenu");
-                        NewMenuItem.setSortKey(ADMutil.GetProperty(PropLocation + "/SortKey", "0")); 
-                        NewMenuItem.SubMenu = ADMutil.GetProperty(PropLocation + "/SubMenu", null);
-                        NewMenuItem.IsDefault = Boolean.parseBoolean(ADMutil.GetProperty(PropLocation + "/IsDefault", "false"));
-                        NewMenuItem.IsTemp = Boolean.parseBoolean(ADMutil.GetProperty(PropLocation + "/IsTemp", "false"));
-                        NewMenuItem.IsActive = ADMutil.GetPropertyAsTriState(PropLocation + "/IsActive", ADMutil.TriState.YES);
-                        NewMenuItem.BlockedSageUsersList = ADMutil.GetPropertyAsList(PropLocation + "/BlockedSageUsersList");
-                        if (ADMutil.GetDefaultsWorkingMode()){
-                            NewMenuItem.ShowIF = ADMutil.GetProperty(PropLocation + "/ShowIF", ADMutil.OptionNotFound);
-                        }
-                        NewMenuItem.ActionExternal.Load();
-                        LOG.debug("LoadMenuItemsFromSage: loaded - '" + tMenuItemName + "' = '" + NewMenuItem.ButtonText + "'");
-                    }else{
-                        LOG.debug("LoadMenuItemsFromSage: skipped - '" + tMenuItemName + "' due to ShowIF ");
-                    }
-                }else{
-                    LOG.debug("LoadMenuItemsFromSage: skipping - '" + tMenuItemName + "' - should not load a TopMenu item");
-                }
-            }
-            if (MenuNodeList().size()>0){
-                //create the tree nodes
-                for (ADMMenuNode Node : MenuNodeList().values()){
-                    //check if the current node exists yet
-                    AddNode(Node);
-                }
-                //now update the sortkeys from the Tree structure
-                SortKeyUpdate();
-            }
-            
-        }else{
-            //load a default Menu here.  Load a Diamond Menu if Diamond if active
-            LOG.debug("LoadMenuItemsFromSage: no MenuItems found - loading default menu.");
-            LoadMenuItemDefaults();
-        }
-        LOG.debug("LoadMenuItemsFromSage: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
-        
-        return;
-    }
-
-    //TODO: EXTERNAL MENU - LoadMenuItemsFromSage
     public static Boolean PropertyLoad(PropertiesExt MenuItemProps){
         String PropLocation = "";
         Boolean LoadSuccess = Boolean.FALSE;
@@ -1810,13 +1688,17 @@ public class ADMMenuNode {
     }
     public static void SetDefaultMenuLocation(String Location){
         //first see if this is a change
+        //TODO: EXTERNAL MENU - determine if this should be a folder location or a file
+        //if a file... then how do we get that file there to begin with ????
+        //if a Folder... then just save the menus to a default menu file name!!!!
         String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", util.OptionNotFound);
         if (!rLocation.equals(Location)){
             Boolean FileExists = (new File(Location)).exists();
             if (FileExists){
                 util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", Location);
                 //TODO: EXTERNAL MENU - load new menus here
-                LOG.debug("SetDefaultMenuLocation: setting to '" + Location + "' and loading new Menus");
+                //Import tImport = new Import
+                LOG.debug("SetDefaultMenuLocation: setting to '" + Location + "' and loaded new Menus");
             }else{
                 util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
                 util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", GetDefaultMenuLocation());
