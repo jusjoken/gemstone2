@@ -28,6 +28,15 @@ public class Export {
     private String FLOW = "";
     private Boolean FLOWExport = Boolean.FALSE;
     private Date ExportDateTime = new Date();
+    private Boolean ConvertedADMMenus = Boolean.FALSE;
+
+    public Export(Boolean ConvertedADMMenus){
+        if (ConvertedADMMenus){
+            this.FilePath = ADMutil.ConvertedADMMenusFilePath;
+            ConvertedADMMenus = Boolean.TRUE;
+            Execute();
+        }
+    }
 
     public Export(String FileName){
         this.FileName = FileName;
@@ -254,6 +263,12 @@ public class Export {
                 ExportProps.put(util.ExportType.FLOW.toString(), this.FLOW);
                 ExportProps.put(Const.ExportFlowName, Flow.GetFlowName(this.FLOW));
                 LoadAllProperties(Flow.GetFlowBaseProp(this.FLOW), ExportProps, Boolean.FALSE);
+            }
+            //add ConvertedADMMenus to the export
+            if (this.ConvertedADMMenus){
+                //treat this like any menu export even though it's source is the Sage Properties
+                ExportProps.put(util.ExportType.MENUS.toString(), "true");
+                LoadAllProperties(ADMutil.SagePropertyLocation, ExportProps, Boolean.FALSE);
             }
             //add Menus to the export
             if (this.MENUS){

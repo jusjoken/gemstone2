@@ -32,6 +32,7 @@ public class ADMutil {
     //ADMPropertyComment is used to identify previous Menu exports so they can be imported
     public static final String ADMPropertyComment = "---ADM MenuItem Properties - Do Not Manually Edit---";
     public static final String PropertyBackupFile = "MenusBackup.properties";
+    public static final String ConvertedADMMenusFilePath = util.UserDataLocation() + File.separator + "ConvertedADMMenus.properties";
     //TODO: need to change the base location to Gemstone/MenuManager !!!!
     //TODO: need a convert to load the old ADM properties and create Gemstone/MenuManager properties ???
     public static final String SageADMBasePropertyLocation = "ADM/";
@@ -141,7 +142,27 @@ public class ADMutil {
 
         }
         //initiate items that may differ per UIContext - the UI needs to ensure this only gets loaded once
-        ADMMenuNode.LoadMenuItemsFromSage();
+        //Load the menu items
+        Import tImport = new Import(Boolean.TRUE);
+        if (!tImport.getMenusLoaded()){
+            //TODO: need to determine if we need to convert Sage ADM Menus
+            if (Boolean.FALSE){
+                //do a conversion of old ADM menus to Gemstone style
+                Export tExport = new Export(Boolean.TRUE);
+                Import cImport = new Import(ConvertedADMMenusFilePath, util.ExportType.MENUS);
+                if (cImport.getMenusLoaded()){
+                    //TODO: call Save here to save the newly loaded converted menu items
+                    LOG.debug("LoadADM: ADM MenuItems converted and saved.");
+                }else{
+                    LOG.debug("LoadADM: no ADM MenuItems found to convert - loading default menu.");
+                    ADMMenuNode.LoadMenuItemDefaults();
+                }
+            }
+            
+            LOG.debug("LoadADM: no MenuItems found - loading default menu.");
+            ADMMenuNode.LoadMenuItemDefaults();
+        }
+        //ADMMenuNode.LoadMenuItemsFromSage();
         LOG.debug("LoadADM - UI level initialization complete.");
 
     }

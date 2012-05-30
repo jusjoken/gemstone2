@@ -34,7 +34,20 @@ public class Import {
     private Boolean GENERAL = Boolean.FALSE;
     private String FLOW = "";
     private String FLOWName = "";
+    private Boolean MenusLoaded = Boolean.FALSE;
     
+    public Import(Boolean MenuLoad){
+        this(ADMMenuNode.GetDefaultMenuLocation());
+        if (MenuLoad){
+            this.FLOWS = Boolean.FALSE;
+            this.WIDGETS = Boolean.FALSE;
+            this.GENERAL = Boolean.FALSE;
+            this.FLOW = "";
+            this.MENUS = Boolean.TRUE;
+            Load();
+        }
+    }
+
     //constructor to pass a single ExportType and Import immediately - no user interaction
     public Import(String FilePath, util.ExportType SingleExportType){
         this(FilePath);
@@ -225,7 +238,11 @@ public class Import {
         }
         return OldADMExportFound;
     }
-    
+
+    public Boolean getMenusLoaded() {
+        return MenusLoaded;
+    }
+
     public String GetName(){
         return this.Name;
     }
@@ -317,7 +334,7 @@ public class Import {
             }
             
             //need a properties to store potential Menus properties
-            Properties Menus = new Properties();
+            PropertiesExt Menus = new PropertiesExt();
 
             for (String tPropertyKey : this.Props.stringPropertyNames()){
                 if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey) || tPropertyKey.equals(Const.ExportFlowName)){
@@ -335,6 +352,7 @@ public class Import {
             if (Menus.size()>0){
                 //handle the Menus imports differently from other imports
                 //TODO: EXTERNAL MENU - call the Menu Import here from the generic import class
+                this.MenusLoaded = ADMMenuNode.PropertyLoad(Menus);
                 LOG.debug("Load: processing menus import");
             }
         }

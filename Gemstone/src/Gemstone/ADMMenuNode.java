@@ -1486,9 +1486,9 @@ public class ADMMenuNode {
     }
 
     //TODO: EXTERNAL MENU - LoadMenuItemsFromSage
-    public static void PropertyLoad(PropertiesExt MenuItemProps){
+    public static Boolean PropertyLoad(PropertiesExt MenuItemProps){
         String PropLocation = "";
-
+        Boolean LoadSuccess = Boolean.FALSE;
         //cleanup the Nodes and the Tree prior to loading
         CleanMenuNodeListandTree();
         
@@ -1521,12 +1521,12 @@ public class ADMMenuNode {
                             NewMenuItem.ShowIF = MenuItemProps.getProperty(PropLocation + "/ShowIF", ADMutil.OptionNotFound);
                         }
                         NewMenuItem.ActionExternal.Load(MenuItemProps);
-                        LOG.debug("LoadMenuItemsFromSage: loaded - '" + tMenuItemName + "' = '" + NewMenuItem.ButtonText + "'");
+                        LOG.debug("PropertyLoad: loaded - '" + tMenuItemName + "' = '" + NewMenuItem.ButtonText + "'");
                     }else{
-                        LOG.debug("LoadMenuItemsFromSage: skipped - '" + tMenuItemName + "' due to ShowIF ");
+                        LOG.debug("PropertyLoad: skipped - '" + tMenuItemName + "' due to ShowIF ");
                     }
                 }else{
-                    LOG.debug("LoadMenuItemsFromSage: skipping - '" + tMenuItemName + "' - should not load a TopMenu item");
+                    LOG.debug("PropertyLoad: skipping - '" + tMenuItemName + "' - should not load a TopMenu item");
                 }
             }
             if (MenuNodeList().size()>0){
@@ -1537,17 +1537,16 @@ public class ADMMenuNode {
                 }
                 //now update the sortkeys from the Tree structure
                 SortKeyUpdate();
+                LoadSuccess = Boolean.TRUE;
+                LOG.debug("PropertyLoad: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
             }
             
         }else{
-            //load a default Menu here.  Load a Diamond Menu if Diamond if active
-            LOG.debug("LoadMenuItemsFromSage: no MenuItems found - loading default menu.");
-            //TODO: EXTERNAL MENU - PropertyLoad need to continue from HERE and convert this function
-            LoadMenuItemDefaults();
+            LoadSuccess = Boolean.FALSE;
+            LOG.debug("PropertyLoad: no MenuItems found - loading default menu.");
         }
-        LOG.debug("LoadMenuItemsFromSage: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
         
-        return;
+        return LoadSuccess;
     }
     
     //TODO: EXTERNAL MENU - SaveMenuItemsToSage
@@ -1689,6 +1688,7 @@ public class ADMMenuNode {
         ValidateSubMenuDefault(SageTVMenuVideos);
         SortKeyUpdate(SageTVMenuVideos);
 
+        //TODO: likely need to save the menus that were just created from the defaults loaded
         LOG.debug("LoadMenuItemDefaults: loading default menu items from '" + DefaultsFullPath + "'");
     }
     
