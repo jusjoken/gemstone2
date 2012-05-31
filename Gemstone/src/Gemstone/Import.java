@@ -39,19 +39,6 @@ public class Import {
     private Boolean MenusLoaded = Boolean.FALSE;
     private Boolean MenusSkipWrite = Boolean.FALSE;
     
-    public Import(Boolean MenuLoad){
-        this(ADMMenuNode.GetDefaultMenuLocation());
-        if (MenuLoad){
-            this.FLOWS = Boolean.FALSE;
-            this.WIDGETS = Boolean.FALSE;
-            this.GENERAL = Boolean.FALSE;
-            this.FLOW = "";
-            this.MENUS = Boolean.TRUE;
-            this.MenusSkipWrite = Boolean.TRUE;
-            Load();
-        }
-    }
-
     //constructor to pass a single ExportType and Import immediately - no user interaction
     public Import(String FilePath, util.ExportType SingleExportType){
         this(FilePath, SingleExportType, Boolean.FALSE);
@@ -272,7 +259,7 @@ public class Import {
 
     public void Load(){
         //load the properties to the SageTV properties file or menus file
-        LOG.debug("Load: MENUS '" + this.MENUS + "' FLOWS '" + this.FLOWS + "' GENERAL '" + this.GENERAL + "' WIDGETS '" + this.WIDGETS + "'");
+        //LOG.debug("Load: MENUS '" + this.MENUS + "' FLOWS '" + this.FLOWS + "' GENERAL '" + this.GENERAL + "' WIDGETS '" + this.WIDGETS + "'");
         if (this.Props.size()>0 && this.IsValid){
             //clean up existing Properties from the SageTV properties file before writing the new ones
             String tProp = "";
@@ -312,15 +299,15 @@ public class Import {
 
             for (String tPropertyKey : this.Props.stringPropertyNames()){
                 if (tPropertyKey.equals(Const.ExportPropKey) || tPropertyKey.equals(Const.ExportTypeKey) || tPropertyKey.equals(Const.ExportPropName) || tPropertyKey.equals(Const.ExportDateTimeKey) || tPropertyKey.equals(Const.ExportFlowName)){
-                    LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                    //LOG.debug("Load: skipping '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
                 }else if(tPropertyKey.equals("FLOW") || tPropertyKey.equals("FLOWS") || tPropertyKey.equals("GENERAL") || tPropertyKey.equals("MENUS") || tPropertyKey.equals("WIDGETS")){
-                    LOG.debug("Load: skipping type identifier '" + tPropertyKey + "'");
+                    //LOG.debug("Load: skipping type identifier '" + tPropertyKey + "'");
                 }else if(tPropertyKey.startsWith(ADMutil.SagePropertyLocation)){
                     Menus.put(tPropertyKey, this.Props.getProperty(tPropertyKey));
-                    LOG.debug("Load: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                    //LOG.debug("Load: processing menuitem '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
                 }else{
                     util.SetProperty(tPropertyKey, this.Props.getProperty(tPropertyKey));
-                    LOG.debug("Load: loading '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
+                    //LOG.debug("Load: loading '" + tPropertyKey + "' = '" + this.Props.getProperty(tPropertyKey) + "'");
                 }
             }
             if (Menus.size()>0){

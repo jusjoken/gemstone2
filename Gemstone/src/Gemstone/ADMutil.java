@@ -154,20 +154,7 @@ public class ADMutil {
         }
         //initiate items that may differ per UIContext - the UI needs to ensure this only gets loaded once
         //Load the menu items
-        Import tImport = new Import(Boolean.TRUE);
-        if (!tImport.getMenusLoaded()){
-            //determine if we need to convert Sage ADM Menus
-            //do a conversion of old ADM menus to Gemstone style
-            Export tExport = new Export(Boolean.TRUE);
-            Import cImport = new Import(ConvertedADMMenusFilePath, util.ExportType.MENUS);
-            if (cImport.getMenusLoaded()){
-                LOG.debug("LoadADM: ADM MenuItems converted and saved.");
-            }else{
-                LOG.debug("LoadADM: no ADM MenuItems found to convert - loading default menu.");
-                ADMMenuNode.LoadMenuItemDefaults();
-            }
-        }
-        //ADMMenuNode.LoadMenuItemsFromSage();
+        ADMMenuNode.LoadMenus();
         LOG.debug("LoadADM - UI level initialization complete.");
 
     }

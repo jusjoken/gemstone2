@@ -30,14 +30,6 @@ public class Export {
     private Date ExportDateTime = new Date();
     private Boolean ConvertedADMMenus = Boolean.FALSE;
 
-    public Export(Boolean ConvertedADMMenus){
-        if (ConvertedADMMenus){
-            this.FilePath = ADMutil.ConvertedADMMenusFilePath;
-            this.ConvertedADMMenus = Boolean.TRUE;
-            Execute();
-        }
-    }
-
     public Export(String FileName){
         this.FileName = FileName;
     }
@@ -206,6 +198,31 @@ public class Export {
         Execute();
     }
 
+    //Function to use Export to Backup the Menus to an external file
+    public void BackupMenus(){
+        this.FLOWS = Boolean.FALSE;
+        this.WIDGETS = Boolean.FALSE;
+        this.GENERAL = Boolean.FALSE;
+        this.FLOW = "";
+
+        this.FilePath = util.PrintDateSortable(ExportDateTime) + "-" + ADMutil.PropertyBackupFile;
+        this.MENUS = Boolean.TRUE;
+        Execute();
+    }
+    
+    //Function to use Export to Backup the Menus to an external file
+    public void ConvertADMMenus(){
+        this.FLOWS = Boolean.FALSE;
+        this.WIDGETS = Boolean.FALSE;
+        this.GENERAL = Boolean.FALSE;
+        this.FLOW = "";
+        this.MENUS = Boolean.FALSE;
+
+        this.FilePath = ADMutil.ConvertedADMMenusFilePath;
+        this.ConvertedADMMenus = Boolean.TRUE;
+        Execute();
+    }
+    
     private String BuildFileName(){
         String tName = "";
         if (IsALL()){
@@ -242,7 +259,7 @@ public class Export {
     }
     
     public void Execute(){
-        LOG.debug("Execute: MENUS '" + this.MENUS + "' FLOWS '" + this.FLOWS + "' GENERAL '" + this.GENERAL + "' WIDGETS '" + this.WIDGETS + "' ConvertedADMMenus '" + this.ConvertedADMMenus + "'");
+        //LOG.debug("Execute: MENUS '" + this.MENUS + "' FLOWS '" + this.FLOWS + "' GENERAL '" + this.GENERAL + "' WIDGETS '" + this.WIDGETS + "' ConvertedADMMenus '" + this.ConvertedADMMenus + "'");
         Boolean ContinueProcessing = Boolean.TRUE;
         if (this.FilePath.equals("")){
             if (this.FileName.equals("")){
@@ -256,7 +273,7 @@ public class Export {
         }
         if (ContinueProcessing){
 
-            LOG.debug("Execute: starting export to '" + this.FilePath + "'");
+            //LOG.debug("Execute: starting export to '" + this.FilePath + "'");
             
             Properties ExportProps = new Properties();
             ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime(ExportDateTime));
@@ -325,7 +342,7 @@ public class Export {
     }
 
     public static void LoadAllProperties(String PropLocation, Properties PropContainer, Boolean SkipEnabled){
-        LOG.debug("LoadAllProperties: started for '" + PropLocation + "' SkipEnabled '" + SkipEnabled + "'");
+        //LOG.debug("LoadAllProperties: started for '" + PropLocation + "' SkipEnabled '" + SkipEnabled + "'");
         PropLocation = CleanPropLocation(PropLocation);
         LoadProperties(PropLocation, PropContainer, SkipEnabled);
         LoadSubProperties(PropLocation, PropContainer, SkipEnabled);
@@ -339,11 +356,11 @@ public class Export {
             String tProp = PropLocation + Const.PropDivider + PropItem;
             if (SkipEnabled && (tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.FlowProp) || tProp.startsWith(Const.BaseProp + Const.PropDivider + Const.WidgetProp))){
                 //skip this property
-                LOG.debug("LoadProperties: skipping '" + tProp + "'");
+                //LOG.debug("LoadProperties: skipping '" + tProp + "'");
             }else{
                 String tValue = util.GetProperty(tProp, util.OptionNotFound);
                 PropContainer.put(tProp, tValue);
-                LOG.debug("LoadProperties: '" + tProp + "' = '" + tValue + "'");
+                //LOG.debug("LoadProperties: '" + tProp + "' = '" + tValue + "'");
             }
         }
     }
@@ -364,5 +381,4 @@ public class Export {
         }
     }
     
-
 }

@@ -5,10 +5,6 @@
 package Gemstone;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +29,7 @@ public class ADMMenuNode {
     //public static DefaultMutableTreeNode Testing;
 
     static private final Logger LOG = Logger.getLogger(ADMMenuNode.class);
+    private Boolean IsDirty = Boolean.FALSE;
     private String Parent = "";
     public String Name = "";
     private String ButtonText = "";
@@ -124,6 +121,21 @@ public class ADMMenuNode {
     public static void SetMenuItemActionObject(String Name, Object Setting){
         //this is saved in memory only and not written to the properties file
         MenuNodeList().get(Name).ActionObject = Setting;
+    }
+
+    public static Boolean GetMenuItemIsDirty(String Name){
+        LOG.debug("GetMenuItemIsDirty for '" + Name + "' = '" + MenuNodeList().get(Name).IsDirty + "'");
+        try {
+            return MenuNodeList().get(Name).IsDirty;
+        } catch (Exception e) {
+            LOG.debug("GetMenuItemIsDirty ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            return Boolean.FALSE;
+        }
+    }
+
+    public static void SetMenuItemIsDirty(String Name, Boolean Setting){
+        //this is saved in memory only and not written to the properties file
+        MenuNodeList().get(Name).IsDirty = Setting;
     }
 
     public static String GetMenuItemActionType(String Name){
@@ -1458,6 +1470,41 @@ public class ADMMenuNode {
         Export tExport = new Export();
         tExport.SaveMenus();
         LOG.debug("SaveMenus: save completed for current menu items");
+        //clear the dirty flag as these menus are now saved
+        ClearDirty();
+    }
+
+    public static void BackupMenus(){
+        //create a menus backup file
+        if (MenuNodeList().size()>0){
+            Export tExport = new Export();
+            tExport.BackupMenus();
+            LOG.debug("BackupMenus: backup completed for current menu items");
+        }else{
+            LOG.debug("BackupMenus: no backup completed as no menu items were found");
+        }
+    }
+
+    
+    //load the current menus from the defined menus external file
+    public static void LoadMenus(){
+        Import tImport = new Import(ADMMenuNode.GetDefaultMenuLocation(), util.ExportType.MENUS);
+        if (!tImport.getMenusLoaded()){
+            //determine if we need to convert Sage ADM Menus
+            //do a conversion of old ADM menus to Gemstone style
+            Export tExport = new Export();
+            tExport.ConvertADMMenus();
+            //import the converted ADM menus
+            Import cImport = new Import(ADMutil.ConvertedADMMenusFilePath, util.ExportType.MENUS);
+            if (cImport.getMenusLoaded()){
+                LOG.debug("LoadMenus: ADM MenuItems converted and saved.");
+            }else{
+                LOG.debug("LoadMenus: no ADM MenuItems found to convert - loading default menu.");
+                ADMMenuNode.LoadMenuItemDefaults();
+            }
+        }
+
+        LOG.debug("LoadMenus: load completed for current menu items");
     }
     
     //TODO: EXTERNAL MENU - SaveMenuItemToSage
@@ -1479,7 +1526,8 @@ public class ADMMenuNode {
         }
     }
     
-    public static void DeleteMenuItem(String Name){
+    //TODO: EXTERNAL MENU - DeleteMenuItem - remove OLD after testing
+    public static void DeleteMenuItemOld(String Name){
         //store the parent for later cleanup
         String OldParent = GetMenuItemParent(Name);
         //do all the deletes first
@@ -1491,8 +1539,22 @@ public class ADMMenuNode {
         SaveMenuItemsToSage();
         LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
     }
+
+    //TODO: EXTERNAL MENU - DeleteMenuItem - new version to test
+    public static void DeleteMenuItem(String Name){
+        //store the parent for later cleanup
+        String OldParent = GetMenuItemParent(Name);
+        //do all the deletes first
+        MenuNodeList().get(Name).NodeItem.removeAllChildren();
+        MenuNodeList().get(Name).NodeItem.removeFromParent();
+        //Make sure there is still one default Menu Item
+        ValidateSubMenuDefault(OldParent);
+        //rebuild any lists
+        SaveMenus();
+        LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
+    }
     
-    //TODO: EXTERNAL MENU - DeleteAllMenuItems
+    //TODO: EXTERNAL MENU - DeleteAllMenuItems - updated and ready for testing
     public static void DeleteAllMenuItems(){
 
         //backup existing MenuItems before deleting
@@ -1500,21 +1562,26 @@ public class ADMMenuNode {
             Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
         }
         //clean up existing MenuItems from the SageTV properties file
-        ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
+        //ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
         //clean the environment
         CleanMenuNodeListandTree();
         //Create 1 new MenuItem at the TopMenu level
         NewMenuItem(ADMutil.TopMenu, 1) ;
-
+        SaveMenus();
         LOG.debug("DeleteAllMenuItems: completed");
     }
     
     public static String NewMenuItem(String Parent, Integer SortKey){
+        //anything that calls this needs to make sure a SaveMenus occurs
         String tMenuItemName = GetNewMenuItemName();
 
         //Create a new MenuItem with defaults
         ADMMenuNode NewMenuItem = new ADMMenuNode(Parent,tMenuItemName,SortKey,ADMutil.ButtonTextDefault,null,ADMutil.ActionTypeDefault,null,null,Boolean.FALSE,ADMutil.TriState.YES);
-        SaveMenuItemToSage(NewMenuItem);
+        NewMenuItem.IsDirty = Boolean.TRUE;
+        
+        //removed as no longer saving to Sage properties
+        //SaveMenuItemToSage(NewMenuItem);
+        
         //add the Node to the Tree
         InsertNode(MenuNodeList().get(Parent).NodeItem, NewMenuItem, Boolean.TRUE);
         //ensure there is 1 default item
@@ -1578,10 +1645,15 @@ public class ADMMenuNode {
     }
     
     public static String CreateDynamicMenuItem(String dKey, String dParent, String dActionType, Integer dSortKey){
+        //anything that calls this needs to make sure a SaveMenus occurs
         String tMenuItemName = GetNewMenuItemName();
         //Create a new MenuItem with defaults
         ADMMenuNode NewMenuItem = new ADMMenuNode(dParent,tMenuItemName,dSortKey,ADMutil.ButtonTextDefault,null,ADMutil.ActionTypeDefault,null,null,Boolean.FALSE,ADMutil.TriState.YES);
-        SaveMenuItemToSage(NewMenuItem);
+        NewMenuItem.IsDirty = Boolean.TRUE;
+        
+        //removed as no longer saving to Sage Properties
+        //SaveMenuItemToSage(NewMenuItem);
+        
         //add the Node to the Tree
         InsertNode(MenuNodeList().get(dParent).NodeItem, NewMenuItem, dSortKey);
 
@@ -1601,11 +1673,16 @@ public class ADMMenuNode {
 
     //used for temp menu items created during the display of Dynamic Lists
     public static void CreateTempMenuItem(String tMenuItemName, String dParent, String dActionType, String dActionAttribute, String dButtonText, Integer dSortKey){
+        //anything that calls this needs to make sure a SaveMenus occurs
         //see if this parent already has a menu item with this ActionType and ActionAttribute
         //String tMenuItemName = FindMatchingAction(MenuNodeList().get(dParent).NodeItem, dActionType, dActionAttribute);
             //Create a new MenuItem with defaults
         ADMMenuNode NewMenuItem = new ADMMenuNode(dParent,tMenuItemName,dSortKey,ADMutil.ButtonTextDefault,null,ADMutil.ActionTypeDefault,null,null,Boolean.FALSE,ADMutil.TriState.YES);
-        SaveMenuItemToSage(NewMenuItem);
+        NewMenuItem.IsDirty = Boolean.TRUE;
+        
+        //removed as no longer saving to Sage Properties
+        //SaveMenuItemToSage(NewMenuItem);
+        
         //add the Node to the Tree
         InsertNode(MenuNodeList().get(dParent).NodeItem, NewMenuItem, dSortKey);
 
@@ -1643,7 +1720,7 @@ public class ADMMenuNode {
     //TODO: EXTERNAL MENU - needs updating to find a shared or client based menu file
     private static String CleanPathChars(String InPath){
         InPath = InPath.replaceAll("/", "");
-        InPath = InPath.replaceAll(File.separator, "");
+        InPath = InPath.replaceAll("\\\\", "");
         InPath = InPath.replaceAll(":", "");
         InPath = InPath.replaceAll("\\.", "");
         return InPath.toLowerCase();
@@ -1654,7 +1731,7 @@ public class ADMMenuNode {
         if (Override){
             String rID = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", tID);
             if (!rID.equals(tID)){
-                rID = CleanPathChars(rID);
+                rID = CleanPathChars(rID + File.separator + Const.MenuSharedfileName);
             }
             LOG.debug("GetMenuID: returning '" + rID + "'");
             return rID;
@@ -1669,7 +1746,7 @@ public class ADMMenuNode {
         if (Override){
             String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", tLocation);
             LOG.debug("GetDefaultMenuLocation: returning '" + rLocation + "'");
-            return rLocation;
+            return rLocation + File.separator + Const.MenuSharedfileName;
         }else{
             LOG.debug("GetDefaultMenuLocation: returning '" + tLocation + "'");
             return tLocation;
@@ -1681,9 +1758,8 @@ public class ADMMenuNode {
             LOG.debug("GetDefaultMenuLocationPath: returning '" + util.UserDataLocation() + "'");
             return util.UserDataLocation();
         }else{
-            String tLocation = (new File(rLocation)).getParent();
-            LOG.debug("GetDefaultMenuLocationPath: returning '" + tLocation + "'");
-            return tLocation;
+            LOG.debug("GetDefaultMenuLocationPath: returning '" + rLocation + "'");
+            return rLocation;
         }
     }
     public static void SetDefaultMenuLocation(String Location){
@@ -1691,22 +1767,56 @@ public class ADMMenuNode {
         //TODO: EXTERNAL MENU - determine if this should be a folder location or a file
         //if a file... then how do we get that file there to begin with ????
         //if a Folder... then just save the menus to a default menu file name!!!!
-        String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", util.OptionNotFound);
-        if (!rLocation.equals(Location)){
-            Boolean FileExists = (new File(Location)).exists();
-            if (FileExists){
+        if (Location==null || Location.isEmpty()){
+            LOG.debug("SetDefaultMenuLocation: null Location passed - no changes made to override location");
+        }else{
+            String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", util.OptionNotFound);
+            LOG.debug("SetDefaultMenuLocation: old location '" + rLocation + "'");
+            LOG.debug("SetDefaultMenuLocation: new location '" + Location + "'");
+            if (!rLocation.equals(Location)){
+                //save the new path setting
                 util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", Location);
-                //TODO: EXTERNAL MENU - load new menus here
-                //Import tImport = new Import
-                LOG.debug("SetDefaultMenuLocation: setting to '" + Location + "' and loaded new Menus");
-            }else{
-                util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
-                util.SetOption(Const.MenuManagerProp, "MenuLocationFullPath", GetDefaultMenuLocation());
-                LOG.debug("SetDefaultMenuLocation: '" + Location + "' not found so using default client menu");
+                ChangeDefaultMenuLocation();
             }
         }
     }
 
+    public static void ChangeDefaultMenuLocation(){
+        String FullFilePath = GetDefaultMenuLocation();
+        Boolean Override = util.GetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+        if (Override){
+            //overridden menus so load or save dependent on if the file exists
+            Boolean FileExists = (new File(FullFilePath)).exists();
+            if (FileExists){
+                BackupMenus();
+                //as the menu file exists - load menus from this file
+                LoadMenus();
+                LOG.debug("ChangeDefaultMenuLocation: loading menus from existing override location '" + FullFilePath + "'");
+            }else{
+                //as the menu file does not exist - save the current menus to this file
+                SaveMenus();
+                LOG.debug("ChangeDefaultMenuLocation: saving current menus to override location '" + FullFilePath + "'");
+            }
+        }else{
+            //client based menus file so just save the current menus to make sure they are up-to-date
+            SaveMenus();
+            LOG.debug("ChangeDefaultMenuLocation: saving current menus to client based location '" + FullFilePath + "'");
+        }
+    }
+    
+    public static void ClearDirty(){
+        Integer counter = 0;
+        for (String tName : MenuNodeList().keySet()){
+            if (!tName.equals(ADMutil.TopMenu)){
+                if (GetMenuItemIsDirty(tName)){
+                    counter++;
+                    SetMenuItemIsDirty(tName, Boolean.FALSE);
+                }
+            }
+        }
+        LOG.debug("ClearDirty: cleared Dirty Flag from '" + counter + "' menu items. Total Items '" + MenuNodeList().size() + "'");
+    }
+    
     public static void PropertySave(Properties MenuItemProps){
         String PropLocation = "";
         for (String tName : MenuNodeList().keySet()){
@@ -1928,8 +2038,13 @@ public class ADMMenuNode {
     //TODO: EXTERNAL MENU - Save
     public static void Save(String Name, String PropType, String Setting){
         if (!Name.equals(ADMutil.TopMenu)){
-            String PropLocation = ADMutil.SagePropertyLocation + Name;
-            ADMutil.SetProperty(PropLocation + "/" + PropType, Setting);
+            //set the menuitem to Dirty
+            MenuNodeList().get(Name).IsDirty = Boolean.TRUE;
+            
+            //TODO: EXTERNAL MENU - removed the saving of changes to the properties with a Dirty Flag
+            //String PropLocation = ADMutil.SagePropertyLocation + Name;
+            //ADMutil.SetProperty(PropLocation + "/" + PropType, Setting);
+            
             //now save the specifc node field change
             if (PropType.equals("Action")){
                 MenuNodeList().get(Name).ActionAttribute = Setting;

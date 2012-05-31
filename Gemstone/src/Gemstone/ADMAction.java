@@ -1162,22 +1162,16 @@ public class ADMAction {
         
         //TODO: EXTERNAL MENU DONE - External action save
         public void Save(){
+            //set the menuitem as dirty so it can later be saved
+            ADMMenuNode.SetMenuItemIsDirty(MenuItemName, Boolean.TRUE);
+            
+            //TODO: EXTERNAL MENU - removed the specific saving of the menu items to the properties
             //save all variables to the sage Properties
-            ADMMenuNode.Save(MenuItemName, "ExternalAction/Application", command);
-            ADMMenuNode.Save(MenuItemName, "ExternalAction/Arguments", arguments);
-            ADMMenuNode.Save(MenuItemName, "ExternalAction/WindowType", windowType.toString());
-            ADMMenuNode.Save(MenuItemName, "ExternalAction/WaitForExit", waitForExit.toString());
-            ADMMenuNode.Save(MenuItemName, "ExternalAction/SageStatus", sageStatus.toString());
-        }
-        //TODO: REMOVE after testing new external menu
-        public void SaveOld(){
-            //save all variables to the sage Properties
-            String PropLocation = ADMutil.SagePropertyLocation + MenuItemName + "/ExternalAction/";
-            ADMutil.SetProperty(PropLocation + "Application", command);
-            ADMutil.SetProperty(PropLocation + "Arguments", arguments);
-            ADMutil.SetProperty(PropLocation + "WindowType", windowType.toString());
-            ADMutil.SetProperty(PropLocation + "WaitForExit", waitForExit.toString());
-            ADMutil.SetProperty(PropLocation + "SageStatus", sageStatus.toString());
+//            ADMMenuNode.Save(MenuItemName, "ExternalAction/Application", command);
+//            ADMMenuNode.Save(MenuItemName, "ExternalAction/Arguments", arguments);
+//            ADMMenuNode.Save(MenuItemName, "ExternalAction/WindowType", windowType.toString());
+//            ADMMenuNode.Save(MenuItemName, "ExternalAction/WaitForExit", waitForExit.toString());
+//            ADMMenuNode.Save(MenuItemName, "ExternalAction/SageStatus", sageStatus.toString());
         }
         
         public void Load(PropertiesExt inProp){
