@@ -1673,12 +1673,12 @@ public class ADMMenuNode {
 
     //used for temp menu items created during the display of Dynamic Lists
     public static void CreateTempMenuItem(String tMenuItemName, String dParent, String dActionType, String dActionAttribute, String dButtonText, Integer dSortKey){
-        //anything that calls this needs to make sure a SaveMenus occurs
         //see if this parent already has a menu item with this ActionType and ActionAttribute
         //String tMenuItemName = FindMatchingAction(MenuNodeList().get(dParent).NodeItem, dActionType, dActionAttribute);
             //Create a new MenuItem with defaults
         ADMMenuNode NewMenuItem = new ADMMenuNode(dParent,tMenuItemName,dSortKey,ADMutil.ButtonTextDefault,null,ADMutil.ActionTypeDefault,null,null,Boolean.FALSE,ADMutil.TriState.YES);
-        NewMenuItem.IsDirty = Boolean.TRUE;
+        //TODO: EXTERNAL MENU - Likely do not need to make this Dirty as these get recreated on the fly
+        //NewMenuItem.IsDirty = Boolean.TRUE;
         
         //removed as no longer saving to Sage Properties
         //SaveMenuItemToSage(NewMenuItem);
