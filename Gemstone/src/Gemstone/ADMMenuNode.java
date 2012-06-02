@@ -846,6 +846,7 @@ public class ADMMenuNode {
             ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
             if (!tMenu.Name.equals(ADMutil.TopMenu)){
                 tMenu.SortKey = child.getParent().getIndex(child);
+                //TODO: EXTERNAL MENU - Save causes new menu items to be Dirty - find another solution
                 Save(tMenu.Name, "SortKey", tMenu.SortKey.toString());
                 //LOG.debug("SortKeyUpdate: Child = '" + child + "' SortKey = '" + tMenu.SortKey + "' Parent = '" + child.getParent() + "'"  );
             }
@@ -1106,7 +1107,6 @@ public class ADMMenuNode {
         
     }
     
-    //TODO: EXTERNAL MENU - Delete Temp Menu Items
     private static void DeleteAllTempMenuItems(){
         List<String> TempItems = new LinkedList<String>();
         //Get Temp Items for deletion
@@ -1117,16 +1117,11 @@ public class ADMMenuNode {
                 //LOG.debug("DeleteAllTempMenuItems for '" + tMenu.ButtonText + "' : Name = '" + tMenu.Name + "'");
             }
         }
-        String PropLocation = "";
         for (String TempItem : TempItems){
             MenuNodeList().remove(TempItem);
-            //remove them from the SageTV Properties
-            PropLocation = ADMutil.SagePropertyLocation + TempItem;
-            ADMutil.RemovePropertyAndChildren(PropLocation);
         }
         LOG.debug("DeleteAllTempMenuItems : Deleted '" + TempItems.size() + "' items");
     }
-    //TODO: EXTERNAL MENU - Delete Temp Menu Items
     private static void DeleteAllTempMenuItems(Integer Level){
         List<String> TempItems = new LinkedList<String>();
         //Get Temp Items for deletion
@@ -1141,12 +1136,8 @@ public class ADMMenuNode {
                 }
             }
         }
-        String PropLocation = "";
         for (String TempItem : TempItems){
             MenuNodeList().remove(TempItem);
-            //remove them from the SageTV Properties
-            PropLocation = ADMutil.SagePropertyLocation + TempItem;
-            ADMutil.RemovePropertyAndChildren(PropLocation);
         }
         LOG.debug("DeleteAllTempMenuItems for Level " + Level + " : Deleted '" + TempItems.size() + "' items");
     }
@@ -1395,6 +1386,7 @@ public class ADMMenuNode {
                     //check the hidden ShowIF property and skip if it is FALSE
                     if (MenuItemProps.GetPropertyEvalAsBoolean(PropLocation + "/ShowIF", Boolean.TRUE) || ADMutil.GetDefaultsWorkingMode()){
                         ADMMenuNode NewMenuItem = new ADMMenuNode(tMenuItemName);
+                        NewMenuItem.IsDirty = Boolean.FALSE;
                         NewMenuItem.ActionAttribute = MenuItemProps.getProperty(PropLocation + "/Action", null);
                         NewMenuItem.ActionType = MenuItemProps.getProperty(PropLocation + "/ActionType", ADMutil.ActionTypeDefault);
                         NewMenuItem.SetBGImageFileandPath(MenuItemProps.getProperty(PropLocation + "/BGImageFile", null));
@@ -1441,29 +1433,29 @@ public class ADMMenuNode {
     
     //TODO: EXTERNAL MENU - SaveMenuItemsToSage
     //saves all MenuItems to Sage properties
-    @SuppressWarnings("unchecked")
-    public static void SaveMenuItemsToSage(){
-        
-        //clean up existing MenuItems from the SageTV properties file before writing the new ones
-        ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
-        //clear the MenuNodeList and rebuild it while saving
-        MenuNodeList().clear();
-        
-        //iterate through all the MenuItems and save to SageTV properties
-        Enumeration<DefaultMutableTreeNode> en = root().preorderEnumeration();
-        while (en.hasMoreElements())   {
-            DefaultMutableTreeNode child = en.nextElement();
-            ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
-            if (!tMenu.Name.equals(ADMutil.TopMenu)){
-                SaveMenuItemToSage(tMenu);
-            }
-            //add the item into the MenuNodeList
-            MenuNodeList().put(tMenu.Name, tMenu);
-        }         
-        LOG.debug("SaveMenuItemsToSage: saved " + MenuNodeList().size() + " MenuItems");
-        
-        return;
-    }
+//    @SuppressWarnings("unchecked")
+//    public static void SaveMenuItemsToSage(){
+//        
+//        //clean up existing MenuItems from the SageTV properties file before writing the new ones
+//        ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
+//        //clear the MenuNodeList and rebuild it while saving
+//        MenuNodeList().clear();
+//        
+//        //iterate through all the MenuItems and save to SageTV properties
+//        Enumeration<DefaultMutableTreeNode> en = root().preorderEnumeration();
+//        while (en.hasMoreElements())   {
+//            DefaultMutableTreeNode child = en.nextElement();
+//            ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
+//            if (!tMenu.Name.equals(ADMutil.TopMenu)){
+//                SaveMenuItemToSage(tMenu);
+//            }
+//            //add the item into the MenuNodeList
+//            MenuNodeList().put(tMenu.Name, tMenu);
+//        }         
+//        LOG.debug("SaveMenuItemsToSage: saved " + MenuNodeList().size() + " MenuItems");
+//        
+//        return;
+//    }
  
     //save the current menus to the defined menus external file
     public static void SaveMenus(){
@@ -1474,6 +1466,24 @@ public class ADMMenuNode {
         ClearDirty();
     }
 
+    public static void SaveMenusIfDirty(){
+        Boolean found = Boolean.FALSE;
+        for (String tName : MenuNodeList().keySet()){
+            if (!tName.equals(ADMutil.TopMenu)){
+                if (GetMenuItemIsDirty(tName)){
+                    found = Boolean.TRUE;
+                    break;
+                }
+            }
+        }
+        if (found){
+            LOG.debug("SaveMenusIfDirty: menus are Dirty so save called");
+            SaveMenus();
+        }else{
+            LOG.debug("SaveMenusIfDirty: no Dirty Menu Items found - no Save required");
+        }
+    }
+    
     public static void BackupMenus(){
         //create a menus backup file
         if (MenuNodeList().size()>0){
@@ -1507,38 +1517,38 @@ public class ADMMenuNode {
         LOG.debug("LoadMenus: load completed for current menu items");
     }
     
-    //TODO: EXTERNAL MENU - SaveMenuItemToSage
-    public static void SaveMenuItemToSage(ADMMenuNode tMenu){
-        if (!tMenu.Name.equals(ADMutil.TopMenu)){
-            String PropLocation = "";
-            PropLocation = ADMutil.SagePropertyLocation + tMenu.Name;
-            ADMutil.SetProperty(PropLocation + "/Action", tMenu.ActionAttribute);
-            ADMutil.SetProperty(PropLocation + "/ActionType", tMenu.ActionType);
-            ADMutil.SetProperty(PropLocation + "/BGImageFile", tMenu.BGImageFile);
-            ADMutil.SetProperty(PropLocation + "/ButtonText", tMenu.ButtonText);
-            ADMutil.SetProperty(PropLocation + "/Name", tMenu.Name);
-            ADMutil.SetProperty(PropLocation + "/Parent", tMenu.Parent);
-            ADMutil.SetProperty(PropLocation + "/SortKey", tMenu.SortKey.toString());
-            ADMutil.SetProperty(PropLocation + "/SubMenu", tMenu.SubMenu);
-            ADMutil.SetProperty(PropLocation + "/IsDefault", tMenu.IsDefault.toString());
-            ADMutil.SetProperty(PropLocation + "/IsActive", tMenu.IsActive.toString());
-            ADMutil.SetPropertyAsList(PropLocation + "/BlockedSageUsersList", tMenu.BlockedSageUsersList);
-        }
-    }
+//    //TODO: EXTERNAL MENU - SaveMenuItemToSage
+//    public static void SaveMenuItemToSage(ADMMenuNode tMenu){
+//        if (!tMenu.Name.equals(ADMutil.TopMenu)){
+//            String PropLocation = "";
+//            PropLocation = ADMutil.SagePropertyLocation + tMenu.Name;
+//            ADMutil.SetProperty(PropLocation + "/Action", tMenu.ActionAttribute);
+//            ADMutil.SetProperty(PropLocation + "/ActionType", tMenu.ActionType);
+//            ADMutil.SetProperty(PropLocation + "/BGImageFile", tMenu.BGImageFile);
+//            ADMutil.SetProperty(PropLocation + "/ButtonText", tMenu.ButtonText);
+//            ADMutil.SetProperty(PropLocation + "/Name", tMenu.Name);
+//            ADMutil.SetProperty(PropLocation + "/Parent", tMenu.Parent);
+//            ADMutil.SetProperty(PropLocation + "/SortKey", tMenu.SortKey.toString());
+//            ADMutil.SetProperty(PropLocation + "/SubMenu", tMenu.SubMenu);
+//            ADMutil.SetProperty(PropLocation + "/IsDefault", tMenu.IsDefault.toString());
+//            ADMutil.SetProperty(PropLocation + "/IsActive", tMenu.IsActive.toString());
+//            ADMutil.SetPropertyAsList(PropLocation + "/BlockedSageUsersList", tMenu.BlockedSageUsersList);
+//        }
+//    }
     
     //TODO: EXTERNAL MENU - DeleteMenuItem - remove OLD after testing
-    public static void DeleteMenuItemOld(String Name){
-        //store the parent for later cleanup
-        String OldParent = GetMenuItemParent(Name);
-        //do all the deletes first
-        MenuNodeList().get(Name).NodeItem.removeAllChildren();
-        MenuNodeList().get(Name).NodeItem.removeFromParent();
-        //Make sure there is still one default Menu Item
-        ValidateSubMenuDefault(OldParent);
-        //rebuild any lists
-        SaveMenuItemsToSage();
-        LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
-    }
+//    public static void DeleteMenuItemOld(String Name){
+//        //store the parent for later cleanup
+//        String OldParent = GetMenuItemParent(Name);
+//        //do all the deletes first
+//        MenuNodeList().get(Name).NodeItem.removeAllChildren();
+//        MenuNodeList().get(Name).NodeItem.removeFromParent();
+//        //Make sure there is still one default Menu Item
+//        ValidateSubMenuDefault(OldParent);
+//        //rebuild any lists
+//        SaveMenuItemsToSage();
+//        LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
+//    }
 
     //TODO: EXTERNAL MENU - DeleteMenuItem - new version to test
     public static void DeleteMenuItem(String Name){
@@ -1717,7 +1727,6 @@ public class ADMMenuNode {
         }
     }
     
-    //TODO: EXTERNAL MENU - needs updating to find a shared or client based menu file
     private static String CleanPathChars(String InPath){
         InPath = InPath.replaceAll("/", "");
         InPath = InPath.replaceAll("\\\\", "");
@@ -1763,10 +1772,6 @@ public class ADMMenuNode {
         }
     }
     public static void SetDefaultMenuLocation(String Location){
-        //first see if this is a change
-        //TODO: EXTERNAL MENU - determine if this should be a folder location or a file
-        //if a file... then how do we get that file there to begin with ????
-        //if a Folder... then just save the menus to a default menu file name!!!!
         if (Location==null || Location.isEmpty()){
             LOG.debug("SetDefaultMenuLocation: null Location passed - no changes made to override location");
         }else{
@@ -1815,6 +1820,22 @@ public class ADMMenuNode {
             }
         }
         LOG.debug("ClearDirty: cleared Dirty Flag from '" + counter + "' menu items. Total Items '" + MenuNodeList().size() + "'");
+    }
+
+    public static String LogDirty(){
+        Integer counter = 0;
+        String ReturnString = "";
+        for (String tName : MenuNodeList().keySet()){
+            if (!tName.equals(ADMutil.TopMenu)){
+                if (GetMenuItemIsDirty(tName)){
+                    counter++;
+                    ReturnString = ReturnString + "Item (" + counter + ") = '" + tName + "' Name '" + GetMenuItemButtonText(tName) + "' \n";
+                }
+            }
+        }
+        ReturnString = "TOTALS: " + counter + "' Dirty items. Total Items '" + MenuNodeList().size() + "' \n" + ReturnString;
+        LOG.debug("LogDirty: found \n" + ReturnString);
+        return ReturnString;
     }
     
     public static void PropertySave(Properties MenuItemProps){
@@ -2094,7 +2115,9 @@ public class ADMMenuNode {
 
     @SuppressWarnings("unchecked")
     public static Map<String,ADMMenuNode> MenuNodeList(){
-        String UIContext = sagex.api.Global.GetUIContextName();
+        //changed to use new "shared" ID
+        String UIContext = GetMenuID();
+        //String UIContext = sagex.api.Global.GetUIContextName();
         if (!UIMenuNodeList.containsKey(UIContext)){
             //create the MenuNodeList for this UIContext
             LOG.debug("MenuNodeList: creating MenuNodeList for '" + UIContext + "'");
@@ -2111,7 +2134,9 @@ public class ADMMenuNode {
     }
 
     public static DefaultMutableTreeNode root(){
-        String UIContext = sagex.api.Global.GetUIContextName();
+        //changed to use new "shared" ID
+        String UIContext = GetMenuID();
+        //String UIContext = sagex.api.Global.GetUIContextName();
         if (!UIroot.containsKey(UIContext)){
             LOG.debug("root: creating root for '" + UIContext + "'");
             ADMMenuNode rootNode = new ADMMenuNode(ADMutil.TopMenu);
@@ -2123,16 +2148,16 @@ public class ADMMenuNode {
         return UIroot.get(UIContext);
     }
 
-    public static DefaultMutableTreeNode root(String UIContext){
-        if (!UIroot.containsKey(UIContext)){
-            LOG.debug("root: creating root for '" + UIContext + "'");
-            ADMMenuNode rootNode = new ADMMenuNode(ADMutil.TopMenu);
-            UIroot.put(UIContext,new DefaultMutableTreeNode(rootNode));
-            rootNode.NodeItem = UIroot.get(UIContext);
-            rootNode.ButtonText = "Top Level";
-        }
-        //LOG.debug("root: '" + UIContext + "'");
-        return UIroot.get(UIContext);
-    }
+//    public static DefaultMutableTreeNode root(String UIContext){
+//        if (!UIroot.containsKey(UIContext)){
+//            LOG.debug("root: creating root for '" + UIContext + "'");
+//            ADMMenuNode rootNode = new ADMMenuNode(ADMutil.TopMenu);
+//            UIroot.put(UIContext,new DefaultMutableTreeNode(rootNode));
+//            rootNode.NodeItem = UIroot.get(UIContext);
+//            rootNode.ButtonText = "Top Level";
+//        }
+//        //LOG.debug("root: '" + UIContext + "'");
+//        return UIroot.get(UIContext);
+//    }
     
 }
