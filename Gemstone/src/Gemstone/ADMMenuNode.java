@@ -124,7 +124,7 @@ public class ADMMenuNode {
     }
 
     public static Boolean GetMenuItemIsDirty(String Name){
-        LOG.debug("GetMenuItemIsDirty for '" + Name + "' = '" + MenuNodeList().get(Name).IsDirty + "'");
+        //LOG.debug("GetMenuItemIsDirty for '" + Name + "' = '" + MenuNodeList().get(Name).IsDirty + "'");
         try {
             return MenuNodeList().get(Name).IsDirty;
         } catch (Exception e) {
@@ -365,6 +365,9 @@ public class ADMMenuNode {
     }
 
     public static String GetMenuItemButtonText(String Name){
+        if (Name==null){
+            return null;
+        }
         //LOG.debug("GetMenuItemButtonText: Name '" + Name + "' NodeListCount = '" + (MenuNode) UIMenuNodeList.get("SAGETV_PROCESS_LOCAL_UI").get(Name) + "' root = '" + UIroot.get("SAGETV_PROCESS_LOCAL_UI").getChildCount() + "'");
         if (Name.equals(ADMutil.TopMenu)){
             return "Top Level";
@@ -846,8 +849,9 @@ public class ADMMenuNode {
             ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
             if (!tMenu.Name.equals(ADMutil.TopMenu)){
                 tMenu.SortKey = child.getParent().getIndex(child);
+                tMenu.IsDirty = Boolean.TRUE;
                 //TODO: EXTERNAL MENU - Save causes new menu items to be Dirty - find another solution
-                Save(tMenu.Name, "SortKey", tMenu.SortKey.toString());
+                //Save(tMenu.Name, "SortKey", tMenu.SortKey.toString());
                 //LOG.debug("SortKeyUpdate: Child = '" + child + "' SortKey = '" + tMenu.SortKey + "' Parent = '" + child.getParent() + "'"  );
             }
         }         
@@ -1167,7 +1171,7 @@ public class ADMMenuNode {
             return 0;
         }
     }
-    
+
     //Get the count of MenuItems for a parent that are active and do not include SageSubMenus
     public static int GetMenuItemCountQLM(){
         String UIContext = sagex.api.Global.GetUIContextName();
@@ -1386,7 +1390,6 @@ public class ADMMenuNode {
                     //check the hidden ShowIF property and skip if it is FALSE
                     if (MenuItemProps.GetPropertyEvalAsBoolean(PropLocation + "/ShowIF", Boolean.TRUE) || ADMutil.GetDefaultsWorkingMode()){
                         ADMMenuNode NewMenuItem = new ADMMenuNode(tMenuItemName);
-                        NewMenuItem.IsDirty = Boolean.FALSE;
                         NewMenuItem.ActionAttribute = MenuItemProps.getProperty(PropLocation + "/Action", null);
                         NewMenuItem.ActionType = MenuItemProps.getProperty(PropLocation + "/ActionType", ADMutil.ActionTypeDefault);
                         NewMenuItem.SetBGImageFileandPath(MenuItemProps.getProperty(PropLocation + "/BGImageFile", null));
@@ -1419,6 +1422,8 @@ public class ADMMenuNode {
                 }
                 //now update the sortkeys from the Tree structure
                 SortKeyUpdate();
+                //as SortKeyUpdate will make all items Dirty we need to Clear that setting
+                ClearDirty();
                 LoadSuccess = Boolean.TRUE;
                 LOG.debug("PropertyLoad: loaded " + MenuNodeList().size() + " MenuItems = '" + MenuNodeList() + "'");
             }
@@ -1550,7 +1555,24 @@ public class ADMMenuNode {
 //        LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
 //    }
 
-    //TODO: EXTERNAL MENU - DeleteMenuItem - new version to test
+    @SuppressWarnings("unchecked")
+    public static void RebuildMenuNodeList(){
+        
+        //clear the MenuNodeList and rebuild
+        MenuNodeList().clear();
+        
+        //iterate through all the MenuItems and rebuild the MenuNodeList
+        Enumeration<DefaultMutableTreeNode> en = root().preorderEnumeration();
+        while (en.hasMoreElements())   {
+            DefaultMutableTreeNode child = en.nextElement();
+            ADMMenuNode tMenu = (ADMMenuNode)child.getUserObject();
+            //add the item into the MenuNodeList
+            MenuNodeList().put(tMenu.Name, tMenu);
+        }         
+        LOG.debug("RebuildMenuNodeList: added " + MenuNodeList().size() + " MenuItems");
+        return;
+    }
+    
     public static void DeleteMenuItem(String Name){
         //store the parent for later cleanup
         String OldParent = GetMenuItemParent(Name);
@@ -1559,20 +1581,16 @@ public class ADMMenuNode {
         MenuNodeList().get(Name).NodeItem.removeFromParent();
         //Make sure there is still one default Menu Item
         ValidateSubMenuDefault(OldParent);
-        //rebuild any lists
+        //rebuild the MenuNodeList
+        RebuildMenuNodeList();
         SaveMenus();
         LOG.debug("DeleteMenuItem: deleted '" + Name + "'");
     }
     
-    //TODO: EXTERNAL MENU - DeleteAllMenuItems - updated and ready for testing
     public static void DeleteAllMenuItems(){
 
         //backup existing MenuItems before deleting
-        if (MenuNodeList().size()>0){
-            Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
-        }
-        //clean up existing MenuItems from the SageTV properties file
-        //ADMutil.RemovePropertyAndChildren(ADMutil.SagePropertyLocation);
+        BackupMenus();
         //clean the environment
         CleanMenuNodeListandTree();
         //Create 1 new MenuItem at the TopMenu level
@@ -1719,6 +1737,9 @@ public class ADMMenuNode {
     }
     
     public static Boolean IsSageSubmenuAllowed(String Name){
+        if (Name==null){
+            return Boolean.FALSE;
+        }
         //check if this MenuItem should be allowed to have a SageSubmenu
         if (GetMenuItemLevel(Name)<3 && !GetMenuItemHasSubMenu(Name) && !GetMenuItemActionType(Name).equals(ADMAction.DynamicList)){
             return Boolean.TRUE;
@@ -1742,10 +1763,10 @@ public class ADMMenuNode {
             if (!rID.equals(tID)){
                 rID = CleanPathChars(rID + File.separator + Const.MenuSharedfileName);
             }
-            LOG.debug("GetMenuID: returning '" + rID + "'");
+            //LOG.debug("GetMenuID: returning '" + rID + "'");
             return rID;
         }else{
-            LOG.debug("GetMenuID: returning '" + tID + "'");
+            //LOG.debug("GetMenuID: returning '" + tID + "'");
             return tID;
         }
     }
