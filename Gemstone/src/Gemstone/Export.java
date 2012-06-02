@@ -200,12 +200,19 @@ public class Export {
 
     //Function to use Export to Backup the Menus to an external file
     public void BackupMenus(){
+        this.BackupMenus("");
+    }
+    public void BackupMenus(String FileNameOverride){
         this.FLOWS = Boolean.FALSE;
         this.WIDGETS = Boolean.FALSE;
         this.GENERAL = Boolean.FALSE;
         this.FLOW = "";
 
-        this.FilePath = util.PrintDateSortable(ExportDateTime) + "-" + ADMutil.PropertyBackupFile;
+        if (FileNameOverride.isEmpty()){
+            this.FilePath = util.PrintDateSortable(ExportDateTime) + "-" + ADMutil.PropertyBackupFile;
+        }else{
+            this.FilePath = util.PrintDateSortable(ExportDateTime) + "-" + FileNameOverride;
+        }
         this.MENUS = Boolean.TRUE;
         Execute();
     }

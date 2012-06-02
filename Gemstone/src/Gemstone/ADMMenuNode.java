@@ -1490,10 +1490,13 @@ public class ADMMenuNode {
     }
     
     public static void BackupMenus(){
+        BackupMenus("");
+    }
+    public static void BackupMenus(String FileNameOverride){
         //create a menus backup file
         if (MenuNodeList().size()>0){
             Export tExport = new Export();
-            tExport.BackupMenus();
+            tExport.BackupMenus(FileNameOverride);
             LOG.debug("BackupMenus: backup completed for current menu items");
         }else{
             LOG.debug("BackupMenus: no backup completed as no menu items were found");
@@ -1625,11 +1628,7 @@ public class ADMMenuNode {
         String DefaultsFullPath = util.DefaultsLocation() + File.separator + DefaultPropFile;
         
         //backup existing MenuItems before processing the import if any exist
-        if (MenuNodeList().size()>0){
-            LOG.debug("LoadMenuItemDefaults: called Export");
-            Export tExport = new Export(ADMutil.PropertyBackupFile, util.ExportType.MENUS);
-            LOG.debug("LoadMenuItemDefaults: Export returned to Load Defaults");
-        }
+        BackupMenus();
         //do an Import for MENUS only but skip writing as we are still going to modify this and then save
         Import tImport = new Import(DefaultsFullPath, util.ExportType.MENUS, Boolean.TRUE);
         LOG.debug("LoadMenuItemDefaults: Import returned to Load Defaults");

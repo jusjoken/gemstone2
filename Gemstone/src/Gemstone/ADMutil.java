@@ -167,26 +167,23 @@ public class ADMutil {
     public static void ClearAll(){
 
         //backup existing MenuItems before clearing settings and menus
-        if (ADMMenuNode.MenuNodeList().size()>0){
-            Export tExport = new Export(PropertyBackupFile, util.ExportType.MENUS);
-        }
+        ADMMenuNode.BackupMenus("ClearAll-" + PropertyBackupFile);
         
-        //clear all the Sage property settings for ADM
-        
-        //TODO: can likely removed these once converted to the new MenuManager properties for Gemstone
-        LOG.debug("ClearAll: clear Sage Properties");
+        //clear all the old ADM Sage property settings (these settings are not used with Gemstone anymore)
+        LOG.debug("ClearAll: clear Old ADM style Sage Properties");
         RemovePropertyAndChildren(SageADMBasePropertyLocation);
         LOG.debug("ClearAll: clear Sage Server Properties");
         RemoveServerPropertyAndChildren(SageADMBasePropertyLocation);
 
+        //clear all the Menu Manager property settings
         LOG.debug("ClearAll: clear MenuManager Properties");
         RemovePropertyAndChildren(MenuManagerBaseProp);
         LOG.debug("ClearAll: clear MenuManager Server Properties");
         RemoveServerPropertyAndChildren(MenuManagerBaseProp);
         
         ADMInitComplete = Boolean.FALSE;
-        LOG.debug("ClearAll: load default menus");
-        ADMMenuNode.LoadMenuItemDefaults();
+        //LOG.debug("ClearAll: load default menus");
+        //ADMMenuNode.LoadMenuItemDefaults();
         LOG.debug("ClearAll: initialize settings");
         LoadADM();
         LOG.debug("ClearAll: complete - settings restored to defaults");
