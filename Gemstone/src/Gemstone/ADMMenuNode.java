@@ -1726,6 +1726,18 @@ public class ADMMenuNode {
         ADMMenuNode.SetMenuItemIsActive(tMenuItemName,ADMutil.TriState.YES);
     }
 
+    public static Boolean IsValidMenuItem(String Name){
+        if (Name==null){
+            return Boolean.FALSE;
+        }
+        try {
+            return MenuNodeList().containsKey(Name);
+        } catch (Exception e) {
+            LOG.debug("GetMenuItemSubMenu ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            return Boolean.FALSE;
+        }
+    }
+
     public static Boolean IsEditAllowed(String Name){
         //check if this MenuItem should be allowed to be edited in the ADM Manager interface
         //Temp items are created and then deleted so they should not be allowed to be edited
