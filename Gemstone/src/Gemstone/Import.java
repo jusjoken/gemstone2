@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
 
@@ -255,6 +256,15 @@ public class Import {
     }
     public util.ExportType Type(){
         return this.eType;
+    }
+    
+    public String PreviewProps(){
+        String Preview = "";
+        TreeSet<String> PreviewKeys = new TreeSet<String>(Props.stringPropertyNames());
+        for (String key:PreviewKeys){
+            Preview = Preview + key + "=" + Props.getProperty(key) + "\n";
+        }
+        return Preview;
     }
 
     public void Load(){
