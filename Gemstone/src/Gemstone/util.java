@@ -530,6 +530,9 @@ public class util {
     }
 
     //Set of functions for Get/Set of generic True/False values with passed in test names to display
+    public static Boolean GetTrueFalseOption(String PropSection, String PropName){
+        return GetTrueFalseOptionBase(Boolean.FALSE, PropSection, PropName, Boolean.FALSE);
+    }
     public static Boolean GetTrueFalseOption(String PropSection, String PropName, Boolean DefaultValue){
         return GetTrueFalseOptionBase(Boolean.FALSE, PropSection, PropName, DefaultValue);
     }
