@@ -172,14 +172,16 @@ public class ADMutil {
         //clear all the old ADM Sage property settings (these settings are not used with Gemstone anymore)
         LOG.debug("ClearAll: clear Old ADM style Sage Properties");
         RemovePropertyAndChildren(SageADMBasePropertyLocation);
-        LOG.debug("ClearAll: clear Sage Server Properties");
-        RemoveServerPropertyAndChildren(SageADMBasePropertyLocation);
+        //TODO: ClearAll not sure I should be clearing ALL Server properties for this
+        //LOG.debug("ClearAll: clear Sage Server Properties");
+        //RemoveServerPropertyAndChildren(SageADMBasePropertyLocation);
 
         //clear all the Menu Manager property settings
         LOG.debug("ClearAll: clear MenuManager Properties");
         RemovePropertyAndChildren(MenuManagerBaseProp);
-        LOG.debug("ClearAll: clear MenuManager Server Properties");
-        RemoveServerPropertyAndChildren(MenuManagerBaseProp);
+        //TODO: ClearAll not sure I should be clearing ALL Server properties for this
+        //LOG.debug("ClearAll: clear MenuManager Server Properties");
+        //RemoveServerPropertyAndChildren(MenuManagerBaseProp);
         
         ADMInitComplete = Boolean.FALSE;
         //LOG.debug("ClearAll: load default menus");
