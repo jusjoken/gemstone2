@@ -7,6 +7,7 @@ package Gemstone;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
@@ -1046,5 +1047,50 @@ public class util {
         return tValue;
     }
 
+    public static void BuildActions(){
+        UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+        Properties Props = new Properties();
+        Object[] Menus = sagex.api.WidgetAPI.GetWidgetsByType(tUI,"Menu");
+        for (Object item: Menus){
+            String tName = sagex.api.WidgetAPI.GetWidgetName(item);
+            //LOG.debug("BuildActions: Menu '" + tName + "'");
+            if (tName.startsWith("PlayOn::")){
+                String tTitle = tName.substring(8);
+                if (tTitle.startsWith("Custom")){
+                    continue;
+                }
+                String ActionName = tTitle.replaceAll("::", "_");
+                String ActionVal = tTitle.replaceAll("::", " ");
+                ActionName = "xItemPlayOn_" + ActionName.replaceAll(" ", "_");
+                String ActionTitle = tTitle.replaceAll("::", " - ");
+                LOG.debug("BuildActions: Item '" + ActionName + "' Title '" + ActionTitle + "'");
+                String Start = "ADM/custom_actions/";
+                Props.put(Start + ActionName + "/ActionCategory/1", "Online");
+                Props.put(Start + ActionName + "/ActionCategory/2", "PlayOn");
+                Props.put(Start + ActionName + "/ButtonText", ActionTitle);
+                Props.put(Start + ActionName + "/WidgetSymbol", "KMWIY-932161");
+                Props.put(Start + ActionName + "/ActionVariables/1/Val", ActionVal);
+                Props.put(Start + ActionName + "/ActionVariables/1/Var", "PlayOnMenuItem");
+                Props.put(Start + ActionName + "/ActionVariables/1/VarType", "VarTypeGlobal");
+                Props.put(Start + ActionName + "/CopyModeAttributeVar", "ThisItem");
+            }
+        }
+        String FilePath = util.UserDataLocation() +  File.separator + "ActionTemp.properties";
+        if (Props.size()>0){
+            try {
+                FileOutputStream out = new FileOutputStream(FilePath);
+                try {
+                    Props.store(out, Const.PropertyComment);
+                    out.close();
+                } catch (IOException ex) {
+                    LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
+                }
+            } catch (FileNotFoundException ex) {
+                LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
+            }
+            
+        }
+    }
+    
 }
 
