@@ -511,6 +511,7 @@ public class ADMutil {
     }
 
     public static void SaveSageBackground(String BackgroundFile){
+        //TODO: SaveSageBackground - should update to save as a relative path if part of the SageTV path - otherwise save the full path
         if (BackgroundFile==null || BackgroundFile.equals("") || BackgroundFile.equals(ListNone)){
             //do nothing
             LOG.debug("SaveSageBackground for '" + BackgroundFile + "' NOTHING FOUND");
