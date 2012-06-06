@@ -1128,11 +1128,15 @@ public class ImageCache {
                 if (central!=null) {
                     if (def.startsWith(central)) {
                         f = new File(def);
+                        //LOG.debug("getDefaultArtifact: starts with central '" + central + "' file '" + f + "'");
                     }else{
-                        f = new File(phoenix.fanart.GetFanartCentralFolder(), def);
+                        //f = new File(phoenix.fanart.GetFanartCentralFolder(), def);
+                        f = new File(central, def);
+                        //LOG.debug("getDefaultArtifact: not start with central '" + central + "' file '" + f + "'");
                     }
                 } else {
                     f = new File(def);
+                    //LOG.debug("getDefaultArtifact: not central - file '" + f + "'");
                 }
 
                 if (f.exists() && f.isFile()) {

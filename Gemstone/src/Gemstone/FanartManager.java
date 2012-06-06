@@ -434,12 +434,15 @@ public class FanartManager {
     
     public Boolean IsDefault(String FanartItem){
         if (this.DefaultFanart==null){
+            //LOG.debug("IsDefault: DefaultFanart = null: CurrentItem '" + FanartItem + "' Default '" + this.DefaultFanart + "'");
             return Boolean.FALSE;
         }
         if (this.DefaultFanart.isEmpty()){
+            //LOG.debug("IsDefault: DefaultFanart = isEmpty: CurrentItem '" + FanartItem + "' Default '" + this.DefaultFanart + "'");
             return Boolean.FALSE;
         }
         if (this.DefaultFanart.equals(FanartItem)){
+            //LOG.debug("IsDefault: match found: CurrentItem '" + FanartItem + "' Default '" + this.DefaultFanart + "'");
             return Boolean.TRUE;
         }
         //LOG.debug("IsDefault: no match found: CurrentItem '" + FanartItem + "' Default '" + this.DefaultFanart + "'");
