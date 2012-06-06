@@ -22,6 +22,8 @@ public class Const {
     public static final String OptionsTitle = "OptionsTitle";
     public static final String OptionsTitleName = "OptionsTitleName";
     public static final String OptionsIteration = "OptionsIteration";
+    public static final String FlowInfo = "FlowInfo";
+    public static final String FlowInfoEpisodeSimpleList = "FlowInfoEpisodeSimpleList";
     public static final String FlowName = "FlowName";
     public static final String FlowType = "FlowType";
     public static final String FlowSource = "FlowSource";
