@@ -41,9 +41,11 @@ public class InfoSettings {
         String tMode = Flow.GetOptionName(FlowID, PropBase("Mode"), util.OptionNotFound);
         if (tMode.equals(util.OptionNotFound)){
             //return the default dependent on the FlowType
-            if (this.FlowType.equals("Sage Flow")){
+            if (this.EpisodeLevel){
                 return ModeAlwaysOn;
             }else if (this.FlowType.equals("Sage Flow")){
+                return ModeAlwaysOn;
+            }else if (this.FlowType.equals("Center Flow")){
                 return ModeAlwaysOn;
             }else{
                 return ModeOff;
