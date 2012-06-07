@@ -18,6 +18,7 @@ public class InfoSettings {
     private String ModeList = "Off:&&:Auto:&&:AlwaysOn";
     private static enum Styles{Background,Poster,Split,Simple};
     private String StyleList = "Background:&&:Poster:&&:Split:&&:Simple";
+    private String StyleListNoSplit = "Background:&&:Poster:&&:Simple";
     //TODO: InfoSettings Mode - default based on FlowType
     
     public InfoSettings(String FlowID, Boolean EpisodeLevel) {
@@ -91,7 +92,19 @@ public class InfoSettings {
         }
     }
     public void StyleNext(){
-        Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleList);
+        if (this.EpisodeLevel){
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
+        }else if (this.FlowType.equals("Sage Flow")){
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
+        }else if (this.FlowType.equals("List Flow")){
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
+        }else if (this.FlowType.equals("Fanart Flow")){
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
+        }else if (this.FlowType.equals("Wall Flow")){
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
+        }else{
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleList);
+        }
     }
     
     public Integer Delay(){
