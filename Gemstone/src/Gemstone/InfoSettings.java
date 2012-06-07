@@ -12,12 +12,12 @@ package Gemstone;
 public class InfoSettings {
     private Boolean EpisodeLevel = Boolean.FALSE;
     private String FlowID = "";
-    private String Mode = "Off"; //can be Off, Auto or AlwaysOn
-    private static final String ModeOff = "Off";
-    private static final String ModeAuto = "Auto";
-    private static final String ModeAlwaysOn = "AlwaysOn";
-    private String ModeList = "Off:&&:Auto:&&:AlwaysOn";
     private String FlowType = "";
+    
+    private static enum Modes{Off,Auto,AlwaysOn};
+    private String ModeList = "Off:&&:Auto:&&:AlwaysOn";
+    private static enum Styles{Background,Poster,Split,Simple};
+    private String StyleList = "Background:&&:Poster:&&:Split:&&:Simple";
     //TODO: InfoSettings Mode - default based on FlowType
     
     public InfoSettings(String FlowID, Boolean EpisodeLevel) {
@@ -29,7 +29,11 @@ public class InfoSettings {
         this.FlowType = Flow.GetFlowType(this.FlowID);
     }
     
-    private String PropBase(String PropName){
+    public Boolean IsEpisodeLevel(){
+        return this.EpisodeLevel;
+    }
+    
+    public String PropBase(String PropName){
         if (EpisodeLevel){
             return Const.FlowInfoEpisodeSimpleList + Const.PropDivider + PropName;
         }else{
@@ -37,25 +41,62 @@ public class InfoSettings {
         }
     }
     
+    //return the full property string including the Flow Base
+    public String PropBaseFull(String PropName){
+        if (EpisodeLevel){
+            return Flow.GetFlowBaseProp(FlowID) + Const.PropDivider + Const.FlowInfoEpisodeSimpleList + Const.PropDivider + PropName;
+        }else{
+            return Flow.GetFlowBaseProp(FlowID) + Const.PropDivider + Const.FlowInfo + Const.PropDivider + PropName;
+        }
+    }
+    
     public String Mode(){
-        String tMode = Flow.GetOptionName(FlowID, PropBase("Mode"), util.OptionNotFound);
-        if (tMode.equals(util.OptionNotFound)){
+        String tValue = Flow.GetOptionName(FlowID, PropBase("Mode"), util.OptionNotFound);
+        if (tValue.equals(util.OptionNotFound)){
             //return the default dependent on the FlowType
             if (this.EpisodeLevel){
-                return ModeAlwaysOn;
+                return Modes.AlwaysOn.toString();
             }else if (this.FlowType.equals("Sage Flow")){
-                return ModeAlwaysOn;
+                return Modes.AlwaysOn.toString();
             }else if (this.FlowType.equals("Center Flow")){
-                return ModeAlwaysOn;
+                return Modes.AlwaysOn.toString();
             }else{
-                return ModeOff;
+                return Modes.Off.toString();
             }
         }else{
-            return tMode;
+            return tValue;
         }
     }
     public void ModeNext(){
         Flow.SetListOptionNext(FlowID, PropBase("Mode"), ModeList);
     }
+
+    public String Style(){
+        String tValue = Flow.GetOptionName(FlowID, PropBase("Style"), util.OptionNotFound);
+        if (tValue.equals(util.OptionNotFound)){
+            //return the default dependent on the FlowType
+            if (this.EpisodeLevel){
+                return Styles.Background.toString();
+            }else if (this.FlowType.equals("Center Flow")){
+                return Styles.Split.toString();
+            }else if (this.FlowType.equals("Fanart Flow")){
+                return Styles.Poster.toString();
+            }else if (this.FlowType.equals("Sage Flow")){
+                return Styles.Poster.toString();
+            }else{
+                return Styles.Background.toString();
+            }
+        }else{
+            return tValue;
+        }
+    }
+    public void StyleNext(){
+        Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleList);
+    }
+    
+    public Integer Delay(){
+        return util.GetPropertyAsInteger(PropBaseFull("Delay"), 5000);
+    }
+    
     
 }

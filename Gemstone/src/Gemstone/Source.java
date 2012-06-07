@@ -936,6 +936,13 @@ public class Source {
         return Boolean.FALSE;
     }
     
+    public static Boolean UseEpisodeSimpleList(String FlowName, ViewFolder view){
+        if (Flow.GetTrueFalseOption(FlowName, "EpisodeSimpleList", Boolean.FALSE)){
+            return HasTVEpisodes(view);
+        }else{
+            return Boolean.FALSE;
+        }
+    }
     
     //check for the type of the 1st child if any for TV
     public static Boolean IsChildTV(IMediaResource imediaresource){
