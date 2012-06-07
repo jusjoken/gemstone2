@@ -61,6 +61,8 @@ public class InfoSettings {
                 return Modes.AlwaysOn.toString();
             }else if (this.FlowType.equals("Center Flow")){
                 return Modes.AlwaysOn.toString();
+            }else if (this.FlowType.equals("Simplified Flow")){
+                return Modes.AlwaysOn.toString();
             }else{
                 return Modes.Off.toString();
             }
