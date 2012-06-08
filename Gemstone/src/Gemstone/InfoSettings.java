@@ -104,6 +104,8 @@ public class InfoSettings {
             Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
         }else if (this.FlowType.equals("Wall Flow")){
             Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
+        }else if (this.FlowType.equals("Simplified Flow")){
+            Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleListNoSplit);
         }else{
             Flow.SetListOptionNext(FlowID, PropBase("Style"), StyleList);
         }
