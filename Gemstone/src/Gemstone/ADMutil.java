@@ -516,8 +516,18 @@ public class ADMutil {
             //do nothing
             LOG.debug("SaveSageBackground for '" + BackgroundFile + "' NOTHING FOUND");
         }else{
-            File tBackground = sagex.api.Utility.CreateFilePath(BackgroundFile, "");
-            String tBackgroundPath = tBackground.toString();
+            String tBackgroundPath = "";
+            String LocalDir = util.GetLocalWorkingDir();
+            if (BackgroundFile.startsWith(LocalDir)){
+                //this is a local file to Sage so only store the relative part so it can be loaded from ANY client
+                tBackgroundPath = BackgroundFile.substring(LocalDir.length()+1);
+                tBackgroundPath = "." + File.separator + tBackgroundPath;
+                LOG.debug("SaveSageBackground: path local to Sage '" + tBackgroundPath + "'");
+            }else{
+                File tBackground = sagex.api.Utility.CreateFilePath(BackgroundFile, "");
+                tBackgroundPath = tBackground.toString();
+                LOG.debug("SaveSageBackground: path not local to Sage '" + tBackgroundPath + "'");
+            }
             String tBackgroundKey = GetNewBackgroundKey();
             SetServerProperty(SageBackgroundsPropertyLocation + tBackgroundKey, tBackgroundPath);
             LOG.debug("SaveSageBackground completed for '" + BackgroundFile + "'");

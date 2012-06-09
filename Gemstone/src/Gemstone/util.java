@@ -925,6 +925,12 @@ public class util {
     public static String GetSageTVRootDir(){
         return sagex.phoenix.Phoenix.getInstance().getSageTVRootDir().toString();
     }
+    
+    public static String GetLocalWorkingDir(){
+        String tSTV = sagex.api.WidgetAPI.GetCurrentSTVFile(new UIContext(sagex.api.Global.GetUIContextName()));
+        File tFileSTV = new File(tSTV).getParentFile().getParentFile().getParentFile();
+        return tFileSTV.toString();
+    }
 
     public static Boolean IsADM(){
         String ADMPluginID = "jusjokenADM";
