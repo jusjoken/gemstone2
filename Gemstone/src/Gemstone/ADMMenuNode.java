@@ -1470,6 +1470,20 @@ public class ADMMenuNode {
         //clear the dirty flag as these menus are now saved
         ClearDirty();
     }
+    public static void SaveMenusLocal(){
+        Export tExport = new Export();
+        tExport.SaveMenusLocal();
+        LOG.debug("SaveMenusLocal: save completed for current menu items");
+        //clear the dirty flag as these menus are now saved
+        ClearDirty();
+    }
+    public static void SaveMenusOverride(){
+        Export tExport = new Export();
+        tExport.SaveMenusOverride();
+        LOG.debug("SaveMenusOverride: save completed for current menu items");
+        //clear the dirty flag as these menus are now saved
+        ClearDirty();
+    }
 
     public static void SaveMenusIfDirty(){
         Boolean found = Boolean.FALSE;
@@ -1793,6 +1807,18 @@ public class ADMMenuNode {
             return tLocation;
         }
     }
+    public static String GetDefaultMenuLocationLocal(){
+        String tID = sagex.api.Global.GetUIContextName();
+        String tLocation = util.MenusLocation() + File.separator + tID + ".properties";
+        LOG.debug("GetDefaultMenuLocationLocal: returning '" + tLocation + "'");
+        return tLocation;
+    }
+    public static String GetDefaultMenuLocationOverride(){
+        String tLocation = util.MenusLocation() + File.separator + GetMenuID() + ".properties";
+        String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", tLocation);
+        LOG.debug("GetDefaultMenuLocationOverride: returning '" + rLocation + "'");
+        return rLocation + File.separator + Const.MenuSharedfileName;
+    }
     public static String GetDefaultMenuLocationPath(){
         String rLocation = util.GetOptionName(Const.MenuManagerProp, "MenuLocationFullPath", util.OptionNotFound);
         if (rLocation.equals(util.OptionNotFound)){
@@ -1841,6 +1867,40 @@ public class ADMMenuNode {
         }
     }
     
+    //call this to change from client to Override or visa versa
+    public static void ChangeMenuLocationOverride(){
+        //get the current Override mode that needs switching
+        Boolean Override = util.GetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+        
+        if (!Override){
+            //switching from Client to Override
+            String OverrideFilePath = GetDefaultMenuLocationOverride();
+            Boolean FileExists = (new File(OverrideFilePath)).exists();
+            if (FileExists){
+                //backup the Client based before switching
+                BackupMenus();
+                //cleanup the current menu items as the client key will be changing
+                CleanMenuNodeListandTree();
+                //as the menu file exists - load menus from this file
+                util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.TRUE);
+                LoadMenus();
+                LOG.debug("ChangeMenuLocationOverride: loading menus from existing override location '" + OverrideFilePath + "'");
+            }else{
+                //as the menu file does not exist - save the current menus to this file
+                SaveMenusOverride();
+                util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.TRUE);
+                LOG.debug("ChangeMenuLocationOverride: saving current menus to override location '" + OverrideFilePath + "'");
+            }
+        }else{
+            //switching from Override to Client
+            //client based menus file so just save the current menus to make sure they are up-to-date
+            SaveMenusLocal();
+            util.SetTrueFalseOption(Const.MenuManagerProp, "MenuLocationOverride", Boolean.FALSE);
+            LoadMenus();
+            LOG.debug("ChangeMenuLocationOverride: saving current menus to client based location '" + GetDefaultMenuLocation() + "'");
+        }
+    }
+    
     public static void ClearDirty(){
         Integer counter = 0;
         for (String tName : MenuNodeList().keySet()){
@@ -1872,7 +1932,9 @@ public class ADMMenuNode {
     
     public static void PropertySave(Properties MenuItemProps){
         String PropLocation = "";
+        LOG.debug("PropertySave: starting - Menu Items '" + MenuNodeList().keySet() + "'");
         for (String tName : MenuNodeList().keySet()){
+            LOG.debug("PropertySave: tName '" + tName + "'");
             if (!tName.equals(ADMutil.TopMenu)){
                 if (GetMenuItemIsCreatedNotLoaded(tName) && ADMutil.GetDefaultsWorkingMode()){
                     //skip exporting this item as we are in DefaultsWorkingMode and this is a Created item so it should not be exported
@@ -2168,6 +2230,7 @@ public class ADMMenuNode {
     public static DefaultMutableTreeNode root(){
         //changed to use new "shared" ID
         String UIContext = GetMenuID();
+        LOG.debug("root: GetMenuID '" + UIContext + "'");
         //String UIContext = sagex.api.Global.GetUIContextName();
         if (!UIroot.containsKey(UIContext)){
             LOG.debug("root: creating root for '" + UIContext + "'");

@@ -197,6 +197,26 @@ public class Export {
         this.MENUS = Boolean.TRUE;
         Execute();
     }
+    public void SaveMenusLocal(){
+        this.FLOWS = Boolean.FALSE;
+        this.WIDGETS = Boolean.FALSE;
+        this.GENERAL = Boolean.FALSE;
+        this.FLOW = "";
+
+        this.FilePath = ADMMenuNode.GetDefaultMenuLocationLocal();
+        this.MENUS = Boolean.TRUE;
+        Execute();
+    }
+    public void SaveMenusOverride(){
+        this.FLOWS = Boolean.FALSE;
+        this.WIDGETS = Boolean.FALSE;
+        this.GENERAL = Boolean.FALSE;
+        this.FLOW = "";
+
+        this.FilePath = ADMMenuNode.GetDefaultMenuLocationOverride();
+        this.MENUS = Boolean.TRUE;
+        Execute();
+    }
 
     //Function to use Export to Backup the Menus to an external file
     public void BackupMenus(){
@@ -280,7 +300,7 @@ public class Export {
         }
         if (ContinueProcessing){
 
-            //LOG.debug("Execute: starting export to '" + this.FilePath + "'");
+            LOG.debug("Execute: starting export to '" + this.FilePath + "'");
             
             Properties ExportProps = new Properties();
             ExportProps.put(Const.ExportDateTimeKey, util.PrintDateTime(ExportDateTime));
@@ -300,7 +320,9 @@ public class Export {
             //add Menus to the export
             if (this.MENUS){
                 ExportProps.put(util.ExportType.MENUS.toString(), "true");
+                LOG.debug("Execute: calling PropertySave - count before '" + ExportProps.size() + "'");
                 ADMMenuNode.PropertySave(ExportProps);
+                LOG.debug("Execute: returning from PropertySave - count after '" + ExportProps.size() + "'");
             }
             if (IsALL()){
                 //this will also load FLOWS and WIDGETS so do it in a single call
@@ -327,6 +349,7 @@ public class Export {
             }
 
             if (ExportProps.size()>0){
+                LOG.debug("Execute: attempting properties Write - count '" + ExportProps.size() + "'");
                 //write the properties to the properties file
                 try {
                     FileOutputStream out = new FileOutputStream(this.FilePath);
