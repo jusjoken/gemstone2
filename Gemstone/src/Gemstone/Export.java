@@ -217,6 +217,16 @@ public class Export {
         this.MENUS = Boolean.TRUE;
         Execute();
     }
+    public void SaveMenusOverride(String OverrideFilePath){
+        this.FLOWS = Boolean.FALSE;
+        this.WIDGETS = Boolean.FALSE;
+        this.GENERAL = Boolean.FALSE;
+        this.FLOW = "";
+
+        this.FilePath = OverrideFilePath;
+        this.MENUS = Boolean.TRUE;
+        Execute();
+    }
 
     //Function to use Export to Backup the Menus to an external file
     public void BackupMenus(){
@@ -320,9 +330,7 @@ public class Export {
             //add Menus to the export
             if (this.MENUS){
                 ExportProps.put(util.ExportType.MENUS.toString(), "true");
-                LOG.debug("Execute: calling PropertySave - count before '" + ExportProps.size() + "'");
                 ADMMenuNode.PropertySave(ExportProps);
-                LOG.debug("Execute: returning from PropertySave - count after '" + ExportProps.size() + "'");
             }
             if (IsALL()){
                 //this will also load FLOWS and WIDGETS so do it in a single call
