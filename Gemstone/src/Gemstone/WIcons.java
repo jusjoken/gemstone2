@@ -69,6 +69,8 @@ public class WIcons {
         AddIcon("tsra", "35", "35");
         AddIcon("nscttsra", "35", "35");
         AddIcon("scttsra", "35", "35");
+        AddIcon("hi_tsra", "37", "37");
+        AddIcon("hi_ntsra", "47", "47");
         AddIcon("nwind", "24", "24");
         AddIcon("wind", "23", "24");
         AddIcon("nfg", "20", "20");

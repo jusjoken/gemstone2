@@ -41,7 +41,7 @@ public class Const {
     public static final String Weather = "Weather";
     public static final String FlowSourceUI = "SourceUI";
     public static final String FlowPresentation = "FlowPresentation";
-    
+   
     public static final String ExportTypeKey = "ExportType";
     public static final String ExportPropKey = "ExportProp";
     public static final String ExportDateTimeKey = "ExportDateTime";
@@ -68,6 +68,7 @@ public class Const {
     public static final String FlowProp = "Flow";
     public static final String MainMenuProp = "MainMenu";
     public static final String WidgetProp = "Widgets";
+    public static final String WeatherProp = "Widgets/Weather";
     public static final String MenuManagerProp = "MenuManager";
     public static final String MenuSharedfileName = "menus.properties";
     public static final String UnknownName = "-UnknownName-";
