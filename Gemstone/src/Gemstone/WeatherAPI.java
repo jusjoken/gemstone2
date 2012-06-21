@@ -13,11 +13,13 @@ import tv.sage.weather.WeatherDotCom;
 public class WeatherAPI {
     private static enum APITypes{GOOGLE,WEATHERCOM};
     private APITypes APIType = APITypes.GOOGLE;
+    private GoogleWeather gWeather = null;
+    private WeatherDotCom wWeather = null;
     private Object APIInstance = null;
     
     public WeatherAPI(String APIType) {
-        setAPIType(APIType);
-        this.APIType = getAPIType();
+        //used for temporarily getting a WeatherAPI object without saving the type
+        this.APIType = getAPIType(APIType);
     }
     public WeatherAPI() {
         this.APIType = getAPIType();
@@ -34,7 +36,17 @@ public class WeatherAPI {
             return APITypes.GOOGLE;
         }
     }
-    public String getAPITypeName() {
+    private APITypes getAPIType(String tAPIType) {
+        APITypes tempAPIType = APITypes.GOOGLE;
+        if (tAPIType.equals(APITypes.GOOGLE.toString())){
+            tempAPIType = APITypes.GOOGLE;
+        }else if (tAPIType.equals(APITypes.WEATHERCOM.toString())){
+            tempAPIType = APITypes.WEATHERCOM;
+        }
+        return tempAPIType;
+    }
+    //get a name for menu items/settings
+    public String GetAPITypeName() {
         String tAPIType = util.GetOptionName(Const.WeatherProp, "APIType", APITypes.GOOGLE.toString());
         if (tAPIType.equals(APITypes.GOOGLE.toString())){
             return "Google Weather";
@@ -42,6 +54,15 @@ public class WeatherAPI {
             return "Weather.com";
         }else{
             return "Google Weather";
+        }
+    }
+    //change to the next valid WeatherAPI type
+    public void APITypeNext() {
+        APITypes tempAPIType = getAPIType();
+        if (tempAPIType.equals(APITypes.GOOGLE)){
+            setAPIType(APITypes.WEATHERCOM);
+        }else{
+            setAPIType(APITypes.GOOGLE);
         }
     }
 
@@ -54,22 +75,13 @@ public class WeatherAPI {
             InitAPI();
         }
     }
-    public void setAPIType(String tAPIType) {
-        APITypes tempAPIType = APITypes.GOOGLE;
-        if (tAPIType.equals(APITypes.GOOGLE.toString())){
-            tempAPIType = APITypes.GOOGLE;
-        }else if (tAPIType.equals(APITypes.WEATHERCOM.toString())){
-            tempAPIType = APITypes.WEATHERCOM;
-        }
-        setAPIType(tempAPIType);
-    }
     
     private void InitAPI(){
         if (APIType.equals(APITypes.WEATHERCOM)){
-            APIInstance = WeatherDotCom.getInstance();
+            wWeather = WeatherDotCom.getInstance();
         }else{
             //default to GOOGLE
-            APIInstance = GoogleWeather.getInstance();
+            gWeather = GoogleWeather.getInstance();
         }
     }
     
