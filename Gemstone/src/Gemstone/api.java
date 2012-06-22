@@ -42,6 +42,9 @@ public class api {
         
         ADMutil.LoadADM();
         
+        //Init the common Weather interface
+        Weather.Init();
+        
         //generate symbols to be used for new names
         for (int idx = 0; idx < 10; ++idx)
             util.symbols[idx] = (char) ('0' + idx);
