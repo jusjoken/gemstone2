@@ -76,5 +76,11 @@ public class Weather {
     public static String GetHumidity(){
         return GemstoneWeather.GetHumidity();
     }
+    public static String GetCondition(){
+        return GemstoneWeather.GetCondition();
+    }
+    public static String GetWind(){
+        return GemstoneWeather.GetWind();
+    }
     
 }

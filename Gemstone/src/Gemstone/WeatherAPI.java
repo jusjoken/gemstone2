@@ -4,6 +4,7 @@
  */
 package Gemstone;
 
+import java.util.StringTokenizer;
 import sage.google.weather.GoogleWeather;
 import tv.sage.weather.WeatherDotCom;
 /**
@@ -181,6 +182,26 @@ public class WeatherAPI {
             return wWeather.getCurrentCondition("curr_humidity");
         }else{
             return gWeather.getGWCurrentCondition("HumidText").replaceAll("Humidity:", "").trim();
+        }
+    }
+    public String GetCondition(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_conditions");
+        }else{
+            return gWeather.getGWCurrentCondition("CondText");
+        }
+    }
+    public String GetWind(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tWind = wWeather.getCurrentCondition("curr_wind");
+            if (tWind.startsWith("CALM")){
+                return "CALM";
+            }
+            String WindDir = tWind.substring(0, tWind.indexOf(" "));
+            String WindSpeed = tWind.substring(tWind.indexOf(" ")+1);
+            return WindDir + "/" + WindSpeed;
+        }else{
+            return gWeather.getGWCurrentCondition("WindText").replaceAll("Wind:", "").trim().replaceFirst(" at ", "/");
         }
     }
     
