@@ -106,6 +106,9 @@ public class WeatherAPI {
             return Boolean.FALSE;
         }
     }
+    public String GetType() {
+        return util.GetOptionName(Const.WeatherProp, "APIType", APITypes.GOOGLE.toString());
+    }
     //get a name for menu items/settings
     public String GetTypeName() {
         String tAPIType = util.GetOptionName(Const.WeatherProp, "APIType", APITypes.GOOGLE.toString());
@@ -124,6 +127,60 @@ public class WeatherAPI {
             setAPIType(APITypes.WEATHERCOM);
         }else{
             setAPIType(APITypes.GOOGLE);
+        }
+    }
+
+    public String GetTemp(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            //need to strip off the degree and unit from the temp
+            String tTemp = wWeather.getCurrentCondition("curr_temp");
+            return tTemp.substring(0, tTemp.length()-2);
+        }else{
+            return gWeather.getGWCurrentCondition("Temp");
+        }
+    }
+    //return the temp with the degrees and units as part of the display
+    public String GetTempFull(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            //this already has the units so just return the results
+            return wWeather.getCurrentCondition("curr_temp");
+        }else{
+            return gWeather.getGWCurrentCondition("Temp") + GetUnitsDisplay();
+        }
+    }
+    public void SetUnits(String Value){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            wWeather.setUnits(Value);
+        }else{
+            gWeather.setUnits(Value);
+        }
+    }
+    public String GetUnits(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getUnits();
+        }else{
+            return gWeather.getUnits();
+        }
+    }
+    public String GetUnitsDisplay(){
+        if (GetUnits().equals("s")){
+            return "\u00B0" + "F";
+        }else{
+            return "\u00B0" + "C";
+        }
+    }
+    public String GetIcon(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return WIcons.GetWeatherIconByNumber(wWeather.getCurrentCondition("curr_icon"));
+        }else{
+            return WIcons.GetWeatherIconURL(gWeather.getGWCurrentCondition("iconURL"));
+        }
+    }
+    public String GetHumidity(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_humidity");
+        }else{
+            return gWeather.getGWCurrentCondition("HumidText").replaceAll("Humidity:", "").trim();
         }
     }
     

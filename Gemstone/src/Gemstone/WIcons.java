@@ -142,6 +142,9 @@ public class WIcons {
             return "WeatherIcons\\Images\\" + tCondition + ".png";
         }
     }
+    public static String GetWeatherIconByNumber(String ConditionNumber){
+        return "WeatherIcons\\Images\\" + ConditionNumber + ".png";
+    }
 
     public static String GetWeatherIconNoURLDay(String ConditionURL){
         String tCondition = ConvertURLtoCondition(ConditionURL, Boolean.TRUE);

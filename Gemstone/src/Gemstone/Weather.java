@@ -4,6 +4,9 @@
  */
 package Gemstone;
 
+import org.apache.log4j.Logger;
+
+
 /**
  *
  * @author jusjoken
@@ -11,6 +14,7 @@ package Gemstone;
  */
 public class Weather {
     private static WeatherAPI GemstoneWeather = null;
+    static private final Logger LOG = Logger.getLogger(Weather.class);
 
     //always call Init first - should be called in the Gemstone Init 
     public static void Init(){
@@ -29,21 +33,48 @@ public class Weather {
             GemstoneWeather.Update();
         }
     }
-    public Boolean IsWeatherDotCom(){
+    public static Boolean IsWeatherDotCom(){
         return GemstoneWeather.IsWeatherDotCom();
     }
-    public Boolean IsGoogleWeather(){
+    public static Boolean IsGoogleWeather(){
         return GemstoneWeather.IsGoogleWeather();
     }
+    public static String GetType() {
+        return GemstoneWeather.GetType();
+    }
     //get a name for menu items/settings
-    public String GetTypeName() {
+    public static String GetTypeName() {
         return GemstoneWeather.GetTypeName();
     }
     //change to the next valid WeatherAPI type
-    public void NextType() {
+    public static void NextType() {
         GemstoneWeather.NextType();
         GemstoneWeather.Init();
         GemstoneWeather.Update();
+    }
+
+    public static String GetTemp(){
+        //LOG.debug("GetTemp: returning '" + GemstoneWeather.GetTemp() + "'");
+        return GemstoneWeather.GetTemp();
+    }
+    public static String GetTempFull(){
+        //LOG.debug("GetTempFull: returning '" + GemstoneWeather.GetTempFull() + "'");
+        return GemstoneWeather.GetTempFull();
+    }
+    public static void SetUnits(String Value){
+        GemstoneWeather.SetUnits(Value);
+    }
+    public static String GetUnits(){
+        return GemstoneWeather.GetUnits();
+    }
+    public static String GetUnitsDisplay(){
+        return GemstoneWeather.GetUnitsDisplay();
+    }
+    public static String GetIcon(){
+        return GemstoneWeather.GetIcon();
+    }
+    public static String GetHumidity(){
+        return GemstoneWeather.GetHumidity();
     }
     
 }
