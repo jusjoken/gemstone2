@@ -369,14 +369,14 @@ public class util {
         return GetInteger(tValue, DefaultValue);
     }
 
-    public static Integer GetInteger(String Value, Integer DefaultValue){
+    public static Integer GetInteger(Object Value, Integer DefaultValue){
         //force a string to an integer or return the default
         if (Value==null){
             return DefaultValue;
         }
         Integer tInteger = DefaultValue;
         try {
-            tInteger = Integer.valueOf(Value);
+            tInteger = Integer.valueOf(Value.toString());
         } catch (NumberFormatException ex) {
             //use DefaultValue
             return DefaultValue;

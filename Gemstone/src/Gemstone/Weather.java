@@ -94,17 +94,12 @@ public class Weather {
     public static String GetUpdateTimeExt(){
         return GemstoneWeather.GetUpdateTimeExt();
     }
-    public static String GetFCDayName(String DayNumber){
+    public static String GetFCDayName(Object DayNumber){
         return GemstoneWeather.GetFCDayName(DayNumber);
     }
-    public static String GetFCDayName(Integer DayNumber){
-        return GemstoneWeather.GetFCDayName(DayNumber + "");
-    }
-    public static String GetFCDayNameFull(String DayNumber){
+    public static String GetFCDayNameFull(Object DayNumber){
+        //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
         return GemstoneWeather.GetFCDayNameFull(DayNumber);
-    }
-    public static String GetFCDayNameFull(Integer DayNumber){
-        return GemstoneWeather.GetFCDayNameFull(DayNumber + "");
     }
     
 }

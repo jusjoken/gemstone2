@@ -239,7 +239,7 @@ public class WeatherAPI {
             return sagex.api.Utility.PrintDateLong(tTime) + " at " + sagex.api.Utility.PrintTimeShort(tTime);
         }
     }
-    public String GetFCDayName(String DayNumber){
+    public String GetFCDayName(Object DayNumber){
         //return a short dayname like Sun, Mon, Tues etc (first 3 letters)
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
@@ -249,7 +249,7 @@ public class WeatherAPI {
             return gWeather.getGWForecastCondition(iDay, "name");
         }
     }
-    public String GetFCDayNameFull(String DayNumber){
+    public String GetFCDayNameFull(Object DayNumber){
         //return the full dayname that is available
         //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
         Integer iDay = util.GetInteger(DayNumber, 0);
