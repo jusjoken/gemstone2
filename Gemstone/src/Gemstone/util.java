@@ -362,13 +362,21 @@ public class util {
     
     public static Integer GetPropertyAsInteger(String Property, Integer DefaultValue){
         //read in the Sage Property and force convert it to an Integer
-        Integer tInteger = DefaultValue;
         String tValue = sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
         if (tValue==null || tValue.equals(OptionNotFound)){
             return DefaultValue;
         }
+        return GetInteger(tValue, DefaultValue);
+    }
+
+    public static Integer GetInteger(String Value, Integer DefaultValue){
+        //force a string to an integer or return the default
+        if (Value==null){
+            return DefaultValue;
+        }
+        Integer tInteger = DefaultValue;
         try {
-            tInteger = Integer.valueOf(tValue);
+            tInteger = Integer.valueOf(Value);
         } catch (NumberFormatException ex) {
             //use DefaultValue
             return DefaultValue;

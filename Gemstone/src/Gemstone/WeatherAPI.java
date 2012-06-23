@@ -4,7 +4,7 @@
  */
 package Gemstone;
 
-import java.util.StringTokenizer;
+import org.apache.log4j.Logger;
 import sage.google.weather.GoogleWeather;
 import tv.sage.weather.WeatherDotCom;
 /**
@@ -16,6 +16,7 @@ public class WeatherAPI {
     private APITypes APIType = APITypes.GOOGLE;
     private GoogleWeather gWeather = null;
     private WeatherDotCom wWeather = null;
+    static private final Logger LOG = Logger.getLogger(WeatherAPI.class);
     
     public WeatherAPI(String APIType) {
         //used for temporarily getting a WeatherAPI object without saving the type
@@ -46,26 +47,25 @@ public class WeatherAPI {
         return tempAPIType;
     }
 
-    private void setAPIType(APITypes APIType) {
+    private void setAPIType(APITypes newAPIType) {
         APITypes currAPIType = getAPIType();
-        if (!APIType.equals(currAPIType)){
+        //LOG.debug("setAPIType: current '" + currAPIType + "' changing to '" + newAPIType + "'");
+        if (!newAPIType.equals(currAPIType)){
             //change the type
-            util.SetOption(Const.WeatherProp, "APIType", APIType.toString());
+            util.SetOption(Const.WeatherProp, "APIType", newAPIType.toString());
+            APIType = newAPIType;
         }
     }
     
     public void Init(){
+        LOG.debug("Init: Type '" + APIType + "'");
         if (APIType.equals(APITypes.WEATHERCOM)){
-            if (wWeather==null){
-                wWeather = WeatherDotCom.getInstance();
-                gWeather = null;
-            }
+            wWeather = WeatherDotCom.getInstance();
+            gWeather = null;
         }else{
             //default to GOOGLE
-            if (gWeather==null){
-                gWeather = GoogleWeather.getInstance();
-                wWeather = null;
-            }
+            gWeather = GoogleWeather.getInstance();
+            wWeather = null;
         }
     }
     public void Update(){
@@ -201,7 +201,62 @@ public class WeatherAPI {
             String WindSpeed = tWind.substring(tWind.indexOf(" ")+1);
             return WindDir + "/" + WindSpeed;
         }else{
-            return gWeather.getGWCurrentCondition("WindText").replaceAll("Wind:", "").trim().replaceFirst(" at ", "/");
+            String tWind = gWeather.getGWCurrentCondition("WindText");
+            if (tWind.contains("0 mph")){
+                return "CALM";
+            }else{
+                return tWind.replaceAll("Wind:", "").trim().replaceFirst(" at ", "/");
+            }
+        }
+    }
+    public String GetLocation(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getLocationInfo("curr_location");
+        }else{
+            return gWeather.getGWCityName();
+        }
+    }
+    public String GetRecordedAtLocation(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_recorded_at");
+        }else{
+            return gWeather.getGWCityName();
+        }
+    }
+    public String GetUpdateTime(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_updated");
+        }else{
+            Long tTime = gWeather.getLastUpdateTimeGW();
+            return sagex.api.Utility.PrintDateLong(tTime) + " at " + sagex.api.Utility.PrintTimeShort(tTime);
+        }
+    }
+    public String GetUpdateTimeExt(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_updated");
+        }else{
+            Long tTime = gWeather.getLastUpdateTimeNWS();
+            return sagex.api.Utility.PrintDateLong(tTime) + " at " + sagex.api.Utility.PrintTimeShort(tTime);
+        }
+    }
+    public String GetFCDayName(String DayNumber){
+        //return a short dayname like Sun, Mon, Tues etc (first 3 letters)
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tName = wWeather.getForecastCondition("date" + iDay);
+            return tName.substring(0, 3);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "name");
+        }
+    }
+    public String GetFCDayNameFull(String DayNumber){
+        //return the full dayname that is available
+        //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("date" + iDay);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "name");
         }
     }
     

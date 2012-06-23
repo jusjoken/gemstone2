@@ -82,5 +82,29 @@ public class Weather {
     public static String GetWind(){
         return GemstoneWeather.GetWind();
     }
+    public static String GetLocation(){
+        return GemstoneWeather.GetLocation();
+    }
+    public static String GetRecordedAtLocation(){
+        return GemstoneWeather.GetRecordedAtLocation();
+    }
+    public static String GetUpdateTime(){
+        return GemstoneWeather.GetUpdateTime();
+    }
+    public static String GetUpdateTimeExt(){
+        return GemstoneWeather.GetUpdateTimeExt();
+    }
+    public static String GetFCDayName(String DayNumber){
+        return GemstoneWeather.GetFCDayName(DayNumber);
+    }
+    public static String GetFCDayName(Integer DayNumber){
+        return GemstoneWeather.GetFCDayName(DayNumber + "");
+    }
+    public static String GetFCDayNameFull(String DayNumber){
+        return GemstoneWeather.GetFCDayNameFull(DayNumber);
+    }
+    public static String GetFCDayNameFull(Integer DayNumber){
+        return GemstoneWeather.GetFCDayNameFull(DayNumber + "");
+    }
     
 }
