@@ -101,5 +101,20 @@ public class Weather {
         //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
         return GemstoneWeather.GetFCDayNameFull(DayNumber);
     }
+    public static String GetFCHigh(Object DayNumber){
+        return GemstoneWeather.GetFCHigh(DayNumber);
+    }
+    public static String GetFCHighFull(Object DayNumber){
+        return GemstoneWeather.GetFCHighFull(DayNumber);
+    }
+    public static String GetFCLow(Object DayNumber){
+        return GemstoneWeather.GetFCLow(DayNumber);
+    }
+    public static String GetFCLowFull(Object DayNumber){
+        return GemstoneWeather.GetFCLowFull(DayNumber);
+    }
+    public static Boolean FCHasTodaysHigh(){
+        return GemstoneWeather.FCHasTodaysHigh();
+    }
     
 }

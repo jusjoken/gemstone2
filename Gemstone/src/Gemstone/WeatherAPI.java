@@ -259,5 +259,54 @@ public class WeatherAPI {
             return gWeather.getGWForecastCondition(iDay, "name");
         }
     }
+    public String GetFCHigh(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            //need to strip off the degree and unit from the temp
+            String tTemp = wWeather.getForecastCondition("hi"+iDay);
+            return tTemp.substring(0, tTemp.length()-2);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "high");
+        }
+    }
+    //return the temp with the degrees and units as part of the display
+    public String GetFCHighFull(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("hi"+iDay);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "high") + GetUnitsDisplay();
+        }
+    }
+    public String GetFCLow(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tTemp = wWeather.getForecastCondition("low"+iDay);
+            return tTemp.substring(0, tTemp.length()-2);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "low");
+        }
+    }
+    //return the temp with the degrees and units as part of the display
+    public String GetFCLowFull(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("low"+iDay);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "low") + GetUnitsDisplay();
+        }
+    }
+    public Boolean FCHasTodaysHigh(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tHigh = wWeather.getForecastCondition("hi0");
+            if (tHigh.startsWith("N/A")){
+                return Boolean.FALSE;
+            }else{
+                return Boolean.TRUE;
+            }
+        }else{
+            return Boolean.TRUE;
+        }
+    }
     
 }
