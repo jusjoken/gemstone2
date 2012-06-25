@@ -273,6 +273,66 @@ public class WeatherAPI {
             return gWeather.getGWForecastCondition(iDay, "name");
         }
     }
+    public String GetFCDayNamePeriod(Integer Period){
+        //return a short dayname like Sun, Mon, Tues etc (first 3 letters)
+        Integer iDay = GetDayFromPeriod(Period);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tName = wWeather.getForecastCondition("date" + iDay);
+            return tName.substring(0, 3);
+        }else{
+            if (IsGoogleNWSWeather()){
+                String tDateName = gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "name");
+                if (tDateName.toLowerCase().equals("monday")){
+                    return tDateName.substring(0, 3);
+                }else if (tDateName.toLowerCase().equals("tuesday")){
+                    return tDateName.substring(0, 3);
+                }else if (tDateName.toLowerCase().equals("wednesday")){
+                    return tDateName.substring(0, 3);
+                }else if (tDateName.toLowerCase().equals("thursday")){
+                    return tDateName.substring(0, 3);
+                }else if (tDateName.toLowerCase().equals("friday")){
+                    return tDateName.substring(0, 3);
+                }else if (tDateName.toLowerCase().equals("saturday")){
+                    return tDateName.substring(0, 3);
+                }else if (tDateName.toLowerCase().equals("sunday")){
+                    return tDateName.substring(0, 3);
+                }else{
+                    //return the first word to keep it short
+                    return tDateName.substring(0, tDateName.indexOf(" "));
+                }
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "name");
+            }
+        }
+    }
+    public String GetFCDayNameFullPeriod(Integer Period){
+        //return the full dayname that is available
+        if (IsGoogleNWSWeather()){
+            return gWeather.getNWSForecastCondition(Period, "name");
+        }
+        Integer iDay = GetDayFromPeriod(Period);
+        String DayPart = GetDayPartFromPeriod(Period);
+        //special handling for Today and Tonight
+        if (iDay==0){
+            if (DayPart.equals("d")){
+                return "Today";
+            }else{
+                return "Tonight";
+            }
+        }else{
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                String DayName = wWeather.getForecastCondition("date" + iDay);
+                DayName = DayName.substring(0, DayName.indexOf(" "));
+                if (DayPart.equals("n")){
+                    return DayName + " Night";
+                }else{
+                    return DayName;
+                }
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "name");
+            }
+        }
+    }
     public String GetFCHigh(Object DayNumber){
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
@@ -361,7 +421,7 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
-                return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "forecast_text");
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "summary");
             }else{
                 //without NWS, Google only has one condition
                 return gWeather.getGWForecastCondition(iDay, "CondText");
@@ -370,6 +430,48 @@ public class WeatherAPI {
     }
     //get a forecst condition for a specified period
     public String GetFCConditionPeriod(Integer Period){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("conditions" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period));
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return gWeather.getNWSForecastCondition(Period, "summary");
+            }else{
+                //without NWS, Google only has one condition
+                return gWeather.getGWForecastCondition(GetDayFromPeriod(Period), "CondText");
+            }
+        }
+        
+    }
+    public Boolean HasFCDescription(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return Boolean.FALSE;
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return Boolean.TRUE;
+            }else{
+                //without NWS, Google only has one condition
+                return Boolean.FALSE;
+            }
+        }
+    }
+    public String GetFCDescription(Object DayNumber, String DayPart){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("conditions" + ValidateDayPart(DayPart) + iDay);
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "forecast_text");
+            }else{
+                //without NWS, Google only has one condition
+                return gWeather.getGWForecastCondition(iDay, "CondText");
+            }
+        }
+    }
+    //get a forecst condition for a specified period
+    public String GetFCDescriptionPeriod(Integer Period){
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getForecastCondition("conditions" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period));
         }else{
@@ -403,6 +505,18 @@ public class WeatherAPI {
         }
         
     }
+    public Integer GetFCPeriodCount(){
+        if (IsGoogleNWSWeather()){
+            return gWeather.getNWSPeriodCount();
+        }else{
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                return 10;
+            }else{
+                return gWeather.getGWDayCount()*2;
+            }
+        }
+    }
+    
     private Integer GetPeriod(Integer DayNumber, String DayPart){
         //will return -1 if the period is not valid
         //find offset by checking period 0 for "l" or "h"

@@ -101,6 +101,12 @@ public class Weather {
         //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
         return GemstoneWeather.GetFCDayNameFull(DayNumber);
     }
+    public static String GetFCDayNamePeriod(Integer Period){
+        return GemstoneWeather.GetFCDayNamePeriod(Period);
+    }
+    public static String GetFCDayNameFullPeriod(Integer Period){
+        return GemstoneWeather.GetFCDayNameFullPeriod(Period);
+    }
     public static String GetFCHigh(Object DayNumber){
         return GemstoneWeather.GetFCHigh(DayNumber);
     }
@@ -131,8 +137,20 @@ public class Weather {
     public static String GetFCConditionPeriod(Integer Period){
         return GemstoneWeather.GetFCConditionPeriod(Period);
     }
+    public static Boolean HasFCDescription(){
+        return GemstoneWeather.HasFCDescription();
+    }
+    public static String GetFCDescription(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCDescription(DayNumber, DayPart);
+    }
+    public static String GetFCDescriptionPeriod(Integer Period){
+        return GemstoneWeather.GetFCDescriptionPeriod(Period);
+    }
     public static String GetFCTempTypeText(Integer Period){
         return GemstoneWeather.GetFCTempTypeText(Period);
+    }
+    public static Integer GetFCPeriodCount(){
+        return GemstoneWeather.GetFCPeriodCount();
     }
     
 }
