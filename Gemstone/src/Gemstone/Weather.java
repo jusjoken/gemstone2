@@ -113,6 +113,12 @@ public class Weather {
     public static String GetFCLowFull(Object DayNumber){
         return GemstoneWeather.GetFCLowFull(DayNumber);
     }
+    public static String GetFCTempPeriod(Integer Period){
+        return GemstoneWeather.GetFCTempPeriod(Period);
+    }
+    public static String GetFCTempFullPeriod(Integer Period){
+        return GemstoneWeather.GetFCTempFullPeriod(Period);
+    }
     public static Boolean FCHasTodaysHigh(){
         return GemstoneWeather.FCHasTodaysHigh();
     }
@@ -124,6 +130,9 @@ public class Weather {
     }
     public static String GetFCConditionPeriod(Integer Period){
         return GemstoneWeather.GetFCConditionPeriod(Period);
+    }
+    public static String GetFCTempTypeText(Integer Period){
+        return GemstoneWeather.GetFCTempTypeText(Period);
     }
     
 }

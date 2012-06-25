@@ -310,6 +310,28 @@ public class WeatherAPI {
             return gWeather.getGWForecastCondition(iDay, "low") + GetUnitsDisplay();
         }
     }
+    //get a forecst temp for a specified period
+    public String GetFCTempPeriod(Integer Period){
+        if (IsGoogleNWSWeather()){
+            return gWeather.getNWSForecastCondition(Period, "temp");
+        }
+        LOG.debug("GetFCTempPeriod: for Period '" + Period + "'");
+        if (GetDayPartFromPeriod(Period).equals("d")){
+            return GetFCHigh(GetDayFromPeriod(Period));
+        }else{
+            return GetFCLow(GetDayFromPeriod(Period));
+        }
+    }
+    public String GetFCTempFullPeriod(Integer Period){
+        if (IsGoogleNWSWeather()){
+            return gWeather.getNWSForecastCondition(Period, "temp") + GetUnitsDisplay();
+        }
+        if (GetDayPartFromPeriod(Period).equals("d")){
+            return GetFCHighFull(GetDayFromPeriod(Period));
+        }else{
+            return GetFCLowFull(GetDayFromPeriod(Period));
+        }
+    }
     public Boolean FCHasTodaysHigh(){
         if (APIType.equals(APITypes.WEATHERCOM)){
             String tHigh = wWeather.getForecastCondition("hi0");
@@ -361,6 +383,26 @@ public class WeatherAPI {
         }
         
     }
+    public String GetFCTempTypeText(Integer Period){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            if (GetDayPartFromPeriod(Period).equals("d")){
+                return "High";
+            }else{
+                return "Low";
+            }
+        }else{
+            if (IsGoogleNWSWeather()){
+                if (gWeather.getNWSForecastCondition(Period, "tempType").equals("h")){
+                    return "High";
+                }else{
+                    return "Low";
+                }
+            }else{
+                return "High";
+            }
+        }
+        
+    }
     private Integer GetPeriod(Integer DayNumber, String DayPart){
         //will return -1 if the period is not valid
         //find offset by checking period 0 for "l" or "h"
@@ -376,33 +418,53 @@ public class WeatherAPI {
         }
     }
     private Integer GetDayFromPeriod(Integer Period){
-        String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
-        if (checkPeriod.equals("h")){
-            return Period/2; 
+        if (IsGoogleNWSWeather()){
+            String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+            if (checkPeriod.equals("h")){
+                return Period/2; 
+            }else{
+                return (Period + 1)/2; 
+            }
         }else{
-            return (Period + 1)/2; 
+            return Period/2; 
         }
     }
     private String GetDayPartFromPeriod(Integer Period){
-        String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
-        if (checkPeriod.equals("h")){
-            if (Period%2==0){
-                return "d";
+        if (IsGoogleNWSWeather()){
+            String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+            if (checkPeriod.equals("h")){
+                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "'");
+                if (Period%2==0){
+                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'd'");
+                    return "d";
+                }else{
+                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'n'");
+                    return "n";
+                }
             }else{
-                return "n";
+                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "'");
+                if (Period%2==0){
+                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'n'");
+                    return "n";
+                }else{
+                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'd'");
+                    return "d";
+                }
             }
         }else{
             if (Period%2==0){
-                return "n";
-            }else{
+                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
                 return "d";
+            }else{
+                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
+                return "n";
             }
         }
     }
     private String ValidateDayPart(String DayPart){
         //DayPart can be d for day or n for night - default to d
-        if (DayPart.equals("n")){
-            return DayPart;
+        if (DayPart.startsWith("n")){
+            return "n";
         }else{
             return "d";
         }
