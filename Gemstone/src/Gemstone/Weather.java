@@ -116,5 +116,14 @@ public class Weather {
     public static Boolean FCHasTodaysHigh(){
         return GemstoneWeather.FCHasTodaysHigh();
     }
+    public static String GetFCCondition(Object DayNumber){
+        return GemstoneWeather.GetFCCondition(DayNumber);
+    }
+    public static String GetFCCondition(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCCondition(DayNumber, DayPart);
+    }
+    public static String GetFCConditionPeriod(Integer Period){
+        return GemstoneWeather.GetFCConditionPeriod(Period);
+    }
     
 }

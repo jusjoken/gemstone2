@@ -107,6 +107,17 @@ public class WeatherAPI {
             return Boolean.FALSE;
         }
     }
+    public Boolean IsGoogleNWSWeather(){
+        if (APIType.equals(APITypes.GOOGLE)){
+            if (gWeather.getNWSZipCode()==null || gWeather.getNWSZipCode().length()==0){
+                return Boolean.FALSE;
+            }else{
+                return Boolean.TRUE;
+            }
+        }else{
+            return Boolean.FALSE;
+        }
+    }
     public String GetType() {
         return util.GetOptionName(Const.WeatherProp, "APIType", APITypes.GOOGLE.toString());
     }
@@ -235,7 +246,10 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getCurrentCondition("curr_updated");
         }else{
-            Long tTime = gWeather.getLastUpdateTimeNWS();
+            Long tTime = gWeather.getLastUpdateTimeGW();
+            if (IsGoogleNWSWeather()){
+                tTime = gWeather.getLastUpdateTimeNWS();
+            }
             return sagex.api.Utility.PrintDateLong(tTime) + " at " + sagex.api.Utility.PrintTimeShort(tTime);
         }
     }
@@ -306,6 +320,91 @@ public class WeatherAPI {
             }
         }else{
             return Boolean.TRUE;
+        }
+    }
+    //get a single forecst condition representing the day
+    public String GetFCCondition(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("conditions" + "d" + iDay);
+        }else{
+            return gWeather.getGWForecastCondition(iDay, "CondText");
+        }
+    }
+    //get a forecst condition for the specified part of the day
+    public String GetFCCondition(Object DayNumber, String DayPart){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("conditions" + ValidateDayPart(DayPart) + iDay);
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "forecast_text");
+            }else{
+                //without NWS, Google only has one condition
+                return gWeather.getGWForecastCondition(iDay, "CondText");
+            }
+        }
+    }
+    //get a forecst condition for a specified period
+    public String GetFCConditionPeriod(Integer Period){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("conditions" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period));
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return gWeather.getNWSForecastCondition(Period, "forecast_text");
+            }else{
+                //without NWS, Google only has one condition
+                return gWeather.getGWForecastCondition(GetDayFromPeriod(Period), "CondText");
+            }
+        }
+        
+    }
+    private Integer GetPeriod(Integer DayNumber, String DayPart){
+        //will return -1 if the period is not valid
+        //find offset by checking period 0 for "l" or "h"
+        Integer DayPartOffset = 0;
+        if (DayPart.equals("n")){
+            DayPartOffset = 1;
+        }
+        String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+        if (checkPeriod.equals("h")){
+            return (DayNumber * 2) + DayPartOffset; 
+        }else{
+            return (DayNumber * 2) + DayPartOffset - 1; 
+        }
+    }
+    private Integer GetDayFromPeriod(Integer Period){
+        String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+        if (checkPeriod.equals("h")){
+            return Period/2; 
+        }else{
+            return (Period + 1)/2; 
+        }
+    }
+    private String GetDayPartFromPeriod(Integer Period){
+        String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+        if (checkPeriod.equals("h")){
+            if (Period%2==0){
+                return "d";
+            }else{
+                return "n";
+            }
+        }else{
+            if (Period%2==0){
+                return "n";
+            }else{
+                return "d";
+            }
+        }
+    }
+    private String ValidateDayPart(String DayPart){
+        //DayPart can be d for day or n for night - default to d
+        if (DayPart.equals("n")){
+            return DayPart;
+        }else{
+            return "d";
         }
     }
     
