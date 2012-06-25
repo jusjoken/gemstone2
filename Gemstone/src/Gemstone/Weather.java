@@ -52,6 +52,18 @@ public class Weather {
         GemstoneWeather.Init();
         GemstoneWeather.Update();
     }
+    public static String GetDefaultConditionsDisplay() {
+        return GemstoneWeather.GetDefaultConditionsDisplay();
+    }
+    public static void SetDefaultConditionsDisplay(String Value) {
+        GemstoneWeather.SetDefaultConditionsDisplay(Value);
+    }
+    public static String GetDefaultForecastDisplay() {
+        return GemstoneWeather.GetDefaultForecastDisplay();
+    }
+    public static void SetDefaultForecastDisplay(String Value) {
+        GemstoneWeather.SetDefaultForecastDisplay(Value);
+    }
 
     public static String GetTemp(){
         //LOG.debug("GetTemp: returning '" + GemstoneWeather.GetTemp() + "'");
@@ -84,6 +96,15 @@ public class Weather {
     }
     public static String GetLocation(){
         return GemstoneWeather.GetLocation();
+    }
+    public static String GetLocationExt(){
+        return GemstoneWeather.GetLocationExt();
+    }
+    public static String GetLocationID(){
+        return GemstoneWeather.GetLocationID();
+    }
+    public static String GetLocationIDExt(){
+        return GemstoneWeather.GetLocationIDExt();
     }
     public static String GetRecordedAtLocation(){
         return GemstoneWeather.GetRecordedAtLocation();
@@ -145,6 +166,9 @@ public class Weather {
     }
     public static String GetFCDescriptionPeriod(Integer Period){
         return GemstoneWeather.GetFCDescriptionPeriod(Period);
+    }
+    public static Boolean HasExtForecast(){
+        return GemstoneWeather.HasExtForecast();
     }
     public static String GetFCTempTypeText(Integer Period){
         return GemstoneWeather.GetFCTempTypeText(Period);

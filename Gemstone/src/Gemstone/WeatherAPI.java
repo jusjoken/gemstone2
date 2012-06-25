@@ -141,6 +141,45 @@ public class WeatherAPI {
             setAPIType(APITypes.GOOGLE);
         }
     }
+    //allow override of the default conditions or forecast display
+    public String GetDefaultConditionsDisplay() {
+        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
+        if (tDefault.equals(util.OptionNotFound)){
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                return "Old";
+            }else{
+                return "New";
+            }
+        }else{
+            return tDefault;
+        }
+    }
+    public void SetDefaultConditionsDisplay(String Value) {
+        if (Value.equals("Old")){
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", Value);
+        }else{
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "New");
+        }
+    }
+    public String GetDefaultForecastDisplay() {
+        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
+        if (tDefault.equals(util.OptionNotFound)){
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                return "Old";
+            }else{
+                return "New";
+            }
+        }else{
+            return tDefault;
+        }
+    }
+    public void SetDefaultForecastDisplay(String Value) {
+        if (Value.equals("Old")){
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", Value);
+        }else{
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "New");
+        }
+    }
 
     public String GetTemp(){
         if (APIType.equals(APITypes.WEATHERCOM)){
@@ -224,7 +263,45 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getLocationInfo("curr_location");
         }else{
-            return gWeather.getGWCityName();
+            if (IsGoogleNWSWeather()){
+                return gWeather.getGWCityName() + " (" + gWeather.getNWSZipCode() + ")";
+            }else{
+                return gWeather.getGWCityName();
+            }
+            
+        }
+    }
+    //Use the Ext function for sources that have a second source like NWS to return the 2nd source
+    public String GetLocationExt(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getLocationInfo("curr_location");
+        }else{
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSCityName() + " (" + gWeather.getNWSZipCode() + ")";
+            }else{
+                return gWeather.getGWCityName();
+            }
+            
+        }
+    }
+    public String GetLocationID(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getLocationID();
+        }else{
+            return gWeather.getGoogleWeatherLoc();
+        }
+    }
+    //Use the Ext function for sources that have a second source like NWS to return the 2nd source
+    public String GetLocationIDExt(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getLocationID();
+        }else{
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSZipCode();
+            }else{
+                return gWeather.getGoogleWeatherLoc();
+            }
+            
         }
     }
     public String GetRecordedAtLocation(){
@@ -484,6 +561,18 @@ public class WeatherAPI {
             }
         }
         
+    }
+    public Boolean HasExtForecast(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return Boolean.TRUE;
+        }else{
+            if (IsGoogleNWSWeather()){
+                return Boolean.TRUE;
+            }else{
+                //without NWS, Google does not have enough info for an extended forecast
+                return Boolean.FALSE;
+            }
+        }
     }
     public String GetFCTempTypeText(Integer Period){
         if (APIType.equals(APITypes.WEATHERCOM)){
