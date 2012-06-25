@@ -246,6 +246,7 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
+                LOG.debug("GetFCIcon: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
                 return WIcons.GetWeatherIconURL(gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "icon_url"));
             }else{
                 return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(iDay, "iconURL"));
@@ -557,7 +558,16 @@ public class WeatherAPI {
                 return Boolean.TRUE;
             }
         }else{
-            return Boolean.TRUE;
+            if (IsGoogleNWSWeather()){
+                String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+                if (checkPeriod.equals("h")){
+                    return Boolean.TRUE;
+                }else{
+                    return Boolean.FALSE;
+                }
+            }else{
+                return Boolean.TRUE;
+            }
         }
     }
     //get a single forecst condition representing the day
@@ -581,6 +591,7 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
+                LOG.debug("GetFCCondition: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
                 return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "summary");
             }else{
                 //without NWS, Google only has one condition
