@@ -230,7 +230,11 @@ public class WeatherAPI {
     public String GetFCIcon(Object DayNumber){
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
-            return WIcons.GetWeatherIconByNumber(wWeather.getForecastCondition("icon" + "d" + iDay));
+            if (iDay==0 && !FCHasTodaysHigh()){
+                return WIcons.GetWeatherIconByNumber(wWeather.getForecastCondition("icon" + "n" + iDay));
+            }else{
+                return WIcons.GetWeatherIconByNumber(wWeather.getForecastCondition("icon" + "d" + iDay));
+            }
         }else{
             return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(iDay, "iconURL"));
         }
@@ -560,7 +564,11 @@ public class WeatherAPI {
     public String GetFCCondition(Object DayNumber){
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
-            return wWeather.getForecastCondition("conditions" + "d" + iDay);
+            if (iDay==0 && !FCHasTodaysHigh()){
+                return wWeather.getForecastCondition("conditions" + "n" + iDay);
+            }else{
+                return wWeather.getForecastCondition("conditions" + "d" + iDay);
+            }
         }else{
             return gWeather.getGWForecastCondition(iDay, "CondText");
         }
@@ -599,8 +607,13 @@ public class WeatherAPI {
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
             //need to remove the % symbol
-            String tPrecip = wWeather.getForecastCondition("precip" + "d" + iDay);
-            return tPrecip.substring(0, tPrecip.length()-1);
+            if (iDay==0 && !FCHasTodaysHigh()){
+                String tPrecip = wWeather.getForecastCondition("precip" + "n" + iDay);
+                return tPrecip.substring(0, tPrecip.length()-1);
+            }else{
+                String tPrecip = wWeather.getForecastCondition("precip" + "d" + iDay);
+                return tPrecip.substring(0, tPrecip.length()-1);
+            }
         }else{
             if (IsGoogleNWSWeather()){
                 return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "precip");
