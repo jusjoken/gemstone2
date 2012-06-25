@@ -85,6 +85,15 @@ public class Weather {
     public static String GetIcon(){
         return GemstoneWeather.GetIcon();
     }
+    public static String GetFCIcon(Object DayNumber){
+        return GemstoneWeather.GetFCIcon(DayNumber);
+    }
+    public static String GetFCIcon(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCIcon(DayNumber, DayPart);
+    }
+    public static String GetFCIconPeriod(Integer Period){
+        return GemstoneWeather.GetFCIconPeriod(Period);
+    }
     public static String GetHumidity(){
         return GemstoneWeather.GetHumidity();
     }
@@ -103,8 +112,20 @@ public class Weather {
     public static String GetLocationID(){
         return GemstoneWeather.GetLocationID();
     }
+    public static void SetLocationID(String Value){
+        GemstoneWeather.SetLocationID(Value);
+    }
+    public static void RemoveLocationID(){
+        GemstoneWeather.RemoveLocationID();
+    }
     public static String GetLocationIDExt(){
         return GemstoneWeather.GetLocationIDExt();
+    }
+    public static Boolean SetLocationIDExt(String Value){
+        return GemstoneWeather.SetLocationIDExt(Value);
+    }
+    public static void RemoveLocationIDExt(){
+        GemstoneWeather.RemoveLocationIDExt();
     }
     public static String GetRecordedAtLocation(){
         return GemstoneWeather.GetRecordedAtLocation();
@@ -157,6 +178,15 @@ public class Weather {
     }
     public static String GetFCConditionPeriod(Integer Period){
         return GemstoneWeather.GetFCConditionPeriod(Period);
+    }
+    public static String GetFCPrecip(Object DayNumber){
+        return GemstoneWeather.GetFCPrecip(DayNumber);
+    }
+    public static String GetFCPrecip(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCPrecip(DayNumber, DayPart);
+    }
+    public static String GetFCPrecipPeriod(Integer Period){
+        return GemstoneWeather.GetFCPrecipPeriod(Period);
     }
     public static Boolean HasFCDescription(){
         return GemstoneWeather.HasFCDescription();

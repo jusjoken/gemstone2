@@ -227,6 +227,41 @@ public class WeatherAPI {
             return WIcons.GetWeatherIconURL(gWeather.getGWCurrentCondition("iconURL"));
         }
     }
+    public String GetFCIcon(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return WIcons.GetWeatherIconByNumber(wWeather.getForecastCondition("icon" + "d" + iDay));
+        }else{
+            return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(iDay, "iconURL"));
+        }
+    }
+    public String GetFCIcon(Object DayNumber, String DayPart){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return WIcons.GetWeatherIconByNumber(wWeather.getForecastCondition("icon" + ValidateDayPart(DayPart) + iDay));
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return WIcons.GetWeatherIconURL(gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "icon_url"));
+            }else{
+                return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(iDay, "iconURL"));
+            }
+            
+        }
+    }
+    public String GetFCIconPeriod(Integer Period){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return WIcons.GetWeatherIconByNumber(wWeather.getForecastCondition("icon" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period)));
+        }else{
+            if (IsGoogleNWSWeather()){
+                //with NWS need to convert Day and DayPart to a period
+                return WIcons.GetWeatherIconURL(gWeather.getNWSForecastCondition(Period, "icon_url"));
+            }else{
+                return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(GetDayFromPeriod(Period), "iconURL"));
+            }
+            
+        }
+    }
     public String GetHumidity(){
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getCurrentCondition("curr_humidity");
@@ -291,6 +326,20 @@ public class WeatherAPI {
             return gWeather.getGoogleWeatherLoc();
         }
     }
+    public void SetLocationID(String Value){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            wWeather.setLocationID(Value);
+        }else{
+            gWeather.setGoogleWeatherLoc(Value);
+        }
+    }
+    public void RemoveLocationID(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            wWeather.setLocationID("");
+        }else{
+            gWeather.removeGoogleWeatherLoc();
+        }
+    }
     //Use the Ext function for sources that have a second source like NWS to return the 2nd source
     public String GetLocationIDExt(){
         if (APIType.equals(APITypes.WEATHERCOM)){
@@ -300,6 +349,32 @@ public class WeatherAPI {
                 return gWeather.getNWSZipCode();
             }else{
                 return gWeather.getGoogleWeatherLoc();
+            }
+            
+        }
+    }
+    public Boolean SetLocationIDExt(String Value){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            wWeather.setLocationID(Value);
+            return Boolean.TRUE;
+        }else{
+            if (IsGoogleNWSWeather()){
+                return gWeather.setNWSZipCode(Value);
+            }else{
+                return Boolean.FALSE;
+            }
+            
+        }
+    }
+    public void RemoveLocationIDExt(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            //setting this to blank may need to be tested
+            wWeather.setLocationID("");
+        }else{
+            if (IsGoogleNWSWeather()){
+                gWeather.removeNWSZipCode();
+            }else{
+                //do nothing as has no Extended function
             }
             
         }
@@ -519,6 +594,45 @@ public class WeatherAPI {
             }
         }
         
+    }
+    public String GetFCPrecip(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            //need to remove the % symbol
+            String tPrecip = wWeather.getForecastCondition("precip" + "d" + iDay);
+            return tPrecip.substring(0, tPrecip.length()-1);
+        }else{
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "precip");
+            }else{
+                return "N/A";
+            }
+        }
+    }
+    public String GetFCPrecip(Object DayNumber, String DayPart){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tPrecip = wWeather.getForecastCondition("precip" + ValidateDayPart(DayPart) + iDay);
+            return tPrecip.substring(0, tPrecip.length()-1);
+        }else{
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "precip");
+            }else{
+                return "N/A";
+            }
+        }
+    }
+    public String GetFCPrecipPeriod(Integer Period){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tPrecip = wWeather.getForecastCondition("precip" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period));
+            return tPrecip.substring(0, tPrecip.length()-1);
+        }else{
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(Period, "precip");
+            }else{
+                return "N/A";
+            }
+        }
     }
     public Boolean HasFCDescription(){
         if (APIType.equals(APITypes.WEATHERCOM)){
