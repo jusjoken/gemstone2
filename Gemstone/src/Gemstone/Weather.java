@@ -4,6 +4,7 @@
  */
 package Gemstone;
 
+import java.util.Collection;
 import org.apache.log4j.Logger;
 
 
@@ -64,6 +65,15 @@ public class Weather {
     public static void SetDefaultForecastDisplay(String Value) {
         GemstoneWeather.SetDefaultForecastDisplay(Value);
     }
+    public static Collection<String> GetDayListShort(){
+        return GemstoneWeather.GetDayListShort();
+    }
+    public static Collection<String> GetDayList(){
+        return GemstoneWeather.GetDayList();
+    }
+    public static Integer GetDayCount(){
+        return GemstoneWeather.GetDayCount();
+    }
 
     public static String GetTemp(){
         //LOG.debug("GetTemp: returning '" + GemstoneWeather.GetTemp() + "'");
@@ -97,11 +107,41 @@ public class Weather {
     public static String GetHumidity(){
         return GemstoneWeather.GetHumidity();
     }
+    public static String GetFCHumidity(Object DayNumber){
+        return GemstoneWeather.GetFCHumidity(DayNumber);
+    }
+    public static String GetFCHumidityPeriod(Integer Period){
+        return GemstoneWeather.GetFCHumidityPeriod(Period);
+    }
+    public static String GetFCHumidity(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCHumidity(DayNumber, DayPart);
+    }
+    public static String GetFCSunrisePeriod(Integer Period){
+        return GemstoneWeather.GetFCSunrisePeriod(Period);
+    }
+    public static String GetFCSunrise(Object DayNumber){
+        return GemstoneWeather.GetFCSunrise(DayNumber);
+    }
+    public static String GetFCSunsetPeriod(Integer Period){
+        return GemstoneWeather.GetFCSunsetPeriod(Period);
+    }
+    public static String GetFCSunset(Object DayNumber){
+        return GemstoneWeather.GetFCSunset(DayNumber);
+    }
     public static String GetCondition(){
         return GemstoneWeather.GetCondition();
     }
     public static String GetWind(){
         return GemstoneWeather.GetWind();
+    }
+    public static String GetFCWind(Object DayNumber){
+        return GemstoneWeather.GetFCWind(DayNumber);
+    }
+    public static String GetFCWindPeriod(Integer Period){
+        return GemstoneWeather.GetFCWindPeriod(Period);
+    }
+    public static String GetFCWind(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCWind(DayNumber, DayPart);
     }
     public static String GetLocation(){
         return GemstoneWeather.GetLocation();
@@ -142,6 +182,9 @@ public class Weather {
     public static String GetFCDayNameFull(Object DayNumber){
         //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
         return GemstoneWeather.GetFCDayNameFull(DayNumber);
+    }
+    public static String GetFCDayName(Object DayNumber, String DayPart){
+        return GemstoneWeather.GetFCDayName(DayNumber, DayPart);
     }
     public static String GetFCDayNamePeriod(Integer Period){
         return GemstoneWeather.GetFCDayNamePeriod(Period);

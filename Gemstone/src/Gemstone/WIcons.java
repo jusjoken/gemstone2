@@ -134,7 +134,7 @@ public class WIcons {
         }
     }
     public static String GetWeatherIconURL(String ConditionURL){
-        System.out.println("WIcons: ConditionURL '" + ConditionURL + "'");
+        //System.out.println("WIcons: ConditionURL '" + ConditionURL + "'");
         String tCondition = ConvertURLtoCondition(ConditionURL, Boolean.FALSE);
         if (tCondition.equals(ConditionURL)){
             System.out.println("WIcons: unhandled url - please report '" + ConditionURL + "'");

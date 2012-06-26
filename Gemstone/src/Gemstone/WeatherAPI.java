@@ -4,6 +4,8 @@
  */
 package Gemstone;
 
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import org.apache.log4j.Logger;
 import sage.google.weather.GoogleWeather;
 import tv.sage.weather.WeatherDotCom;
@@ -70,12 +72,19 @@ public class WeatherAPI {
     }
     public void Update(){
         if (APIType.equals(APITypes.WEATHERCOM)){
+            LOG.debug("Update: updating WEATHERCOM");
             wWeather.updateNow();
         }else{
             //Google
             //get the language code
             String LangCode = util.GetProperty("ui/translation_language_code", "en");
-            gWeather.updateAllNow(LangCode);
+            if (IsGoogleNWSWeather()){
+                LOG.debug("Update: updating GOOGLE and NWS");
+                gWeather.updateAllNow(LangCode);
+            }else{
+                LOG.debug("Update: updating GOOGLE");
+                gWeather.updateGoogleNow(LangCode);
+            }
         }
     }
     public Boolean IsConfigured(){
@@ -180,7 +189,84 @@ public class WeatherAPI {
             util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "New");
         }
     }
-
+    //get 3 entries for the short forecast list
+    public Collection<String> GetDayListShort(){
+        Collection<String> tList = new LinkedHashSet<String>();
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            if (FCHasTodaysHigh()){
+                tList.add("A");
+                tList.add("B");
+                tList.add("1");
+            }else{
+                tList.add("B");
+                tList.add("1");
+                tList.add("2");
+            }
+        }else{
+            if (FCHasTodaysHigh()){
+                tList.add("A");
+                tList.add("B");
+                tList.add("1");
+            }else{
+                tList.add("B");
+                tList.add("1");
+                tList.add("2");
+            }
+        }
+        LOG.debug("GetDayListShort: List '" + tList + "'");
+        return tList;
+    }
+    //get enough entries based on the sources available entries
+    public Collection<String> GetDayList(){
+        Collection<String> tList = new LinkedHashSet<String>();
+        Integer MaxItems = 0;
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            if (FCHasTodaysHigh()){
+                tList.add("A");
+            }
+            tList.add("B");
+            tList.add("d1");
+            tList.add("n1");
+            tList.add("d2");
+            tList.add("n2");
+            tList.add("d3");
+            tList.add("n3");
+            tList.add("d4");
+            tList.add("n4");
+        }else{
+            if (IsGoogleNWSWeather()){
+                MaxItems = gWeather.getNWSPeriodCount();
+            }else{
+                MaxItems = gWeather.getGWDayCount()*2;
+            }
+            if (FCHasTodaysHigh()){
+                tList.add("A");
+            }
+            if (MaxItems>tList.size())tList.add("B");
+            if (MaxItems>tList.size())tList.add("d1");
+            if (MaxItems>tList.size())tList.add("n1");
+            if (MaxItems>tList.size())tList.add("d2");
+            if (MaxItems>tList.size())tList.add("n2");
+            if (MaxItems>tList.size())tList.add("d3");
+            if (MaxItems>tList.size())tList.add("n3");
+            if (MaxItems>tList.size())tList.add("d4");
+            if (MaxItems>tList.size())tList.add("n4");
+            if (MaxItems>tList.size())tList.add("d5");
+            if (MaxItems>tList.size())tList.add("n5");
+            if (MaxItems>tList.size())tList.add("d6");
+            if (MaxItems>tList.size())tList.add("n6");
+        }
+        LOG.debug("GetDayList: List '" + tList + "' Max '" + MaxItems + "'" );
+        return tList;
+    }
+    public Integer GetDayCount(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return 5;
+        }else{
+            return 4;
+        }
+    }
+    
     public String GetTemp(){
         if (APIType.equals(APITypes.WEATHERCOM)){
             //need to strip off the degree and unit from the temp
@@ -274,6 +360,51 @@ public class WeatherAPI {
             return gWeather.getGWCurrentCondition("HumidText").replaceAll("Humidity:", "").trim();
         }
     }
+    public String GetFCHumidity(Object DayNumber){
+        return GetFCHumidity(DayNumber, "d");
+    }
+    public String GetFCHumidityPeriod(Integer Period){
+        return GetFCHumidity(GetDayFromPeriod(Period), GetDayPartFromPeriod(Period));
+    }
+    public String GetFCHumidity(Object DayNumber, String DayPart){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tHumidity = wWeather.getForecastCondition("humid" + ValidateDayPart(DayPart) + iDay);
+            return tHumidity;
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetFCSunrisePeriod(Integer Period){
+        if (GetDayPartFromPeriod(Period).equals("n")){
+            return "N/A";
+        }else{
+            return GetFCSunrise(GetDayFromPeriod(Period));
+        }
+    }
+    public String GetFCSunrise(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("sunrise" + iDay);
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetFCSunsetPeriod(Integer Period){
+        if (GetDayPartFromPeriod(Period).equals("d")){
+            return "N/A";
+        }else{
+            return GetFCSunset(GetDayFromPeriod(Period));
+        }
+    }
+    public String GetFCSunset(Object DayNumber){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getForecastCondition("sunset" + iDay);
+        }else{
+            return "N/A";
+        }
+    }
     public String GetCondition(){
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getCurrentCondition("curr_conditions");
@@ -297,6 +428,28 @@ public class WeatherAPI {
             }else{
                 return tWind.replaceAll("Wind:", "").trim().replaceFirst(" at ", "/");
             }
+        }
+    }
+    public String GetFCWind(Object DayNumber){
+        return GetFCWind(DayNumber, "d");
+    }
+    public String GetFCWindPeriod(Integer Period){
+        return GetFCWind(GetDayFromPeriod(Period), GetDayPartFromPeriod(Period));
+    }
+    public String GetFCWind(Object DayNumber, String DayPart){
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            String tWind = wWeather.getForecastCondition("wind" + ValidateDayPart(DayPart) + iDay);
+            LOG.debug("GetFCWind: '" + tWind + "'");
+            if (tWind.startsWith("CALM")){
+                return "CALM";
+            }
+            String WindDir = tWind.substring(0, tWind.indexOf(" "));
+            String WindSpeed = tWind.substring(tWind.indexOf(" ")+1);
+            LOG.debug("GetFCWind: returning '" + WindDir + "/" + WindSpeed + "'");
+            return WindDir + "/" + WindSpeed;
+        }else{
+            return "N/A";
         }
     }
     public String GetLocation(){
@@ -430,6 +583,35 @@ public class WeatherAPI {
             return gWeather.getGWForecastCondition(iDay, "name");
         }
     }
+    public String GetFCDayName(Object DayNumber, String DayPart){
+        //return a custom day name for the forecast displays
+        //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
+        Integer iDay = util.GetInteger(DayNumber, 0);
+        if (iDay==0){
+            if (ValidateDayPart(DayPart).equals("d")){
+                return "Today";
+            }else{
+                return "Tonight";
+            }
+        }else{
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                String tDay = wWeather.getForecastCondition("date" + iDay);
+                if (ValidateDayPart(DayPart).equals("n")){
+                    tDay = tDay.substring(0, 3) + " Night";
+                }else{
+                    tDay = tDay.substring(0, 3) + " " + tDay.substring(tDay.indexOf(" ")+1);
+                }
+                LOG.debug("GetFCDayName: for '" + DayNumber + "' DayPart '" + DayPart + "' = '" + tDay + "'");
+                return tDay;
+            }else{
+                if (ValidateDayPart(DayPart).equals("n")){
+                    return gWeather.getGWForecastCondition(iDay, "name") + " Night";
+                }else{
+                    return gWeather.getGWForecastCondition(iDay, "name");
+                }
+            }
+        }
+    }
     public String GetFCDayNamePeriod(Integer Period){
         //return a short dayname like Sun, Mon, Tues etc (first 3 letters)
         Integer iDay = GetDayFromPeriod(Period);
@@ -497,7 +679,11 @@ public class WeatherAPI {
             String tTemp = wWeather.getForecastCondition("hi"+iDay);
             return tTemp.substring(0, tTemp.length()-2);
         }else{
-            return gWeather.getGWForecastCondition(iDay, "high");
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "temp");
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "high");
+            }
         }
     }
     //return the temp with the degrees and units as part of the display
@@ -506,7 +692,11 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getForecastCondition("hi"+iDay);
         }else{
-            return gWeather.getGWForecastCondition(iDay, "high") + GetUnitsDisplay();
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "temp") + GetUnitsDisplay();
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "high") + GetUnitsDisplay();
+            }
         }
     }
     public String GetFCLow(Object DayNumber){
@@ -515,7 +705,11 @@ public class WeatherAPI {
             String tTemp = wWeather.getForecastCondition("low"+iDay);
             return tTemp.substring(0, tTemp.length()-2);
         }else{
-            return gWeather.getGWForecastCondition(iDay, "low");
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "n"), "temp");
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "low");
+            }
         }
     }
     //return the temp with the degrees and units as part of the display
@@ -524,7 +718,11 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getForecastCondition("low"+iDay);
         }else{
-            return gWeather.getGWForecastCondition(iDay, "low") + GetUnitsDisplay();
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "n"), "temp") + GetUnitsDisplay();
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "low") + GetUnitsDisplay();
+            }
         }
     }
     //get a forecst temp for a specified period
@@ -774,30 +972,30 @@ public class WeatherAPI {
         if (IsGoogleNWSWeather()){
             String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
             if (checkPeriod.equals("h")){
-                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "'");
+                //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "'");
                 if (Period%2==0){
-                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'd'");
+                    //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'd'");
                     return "d";
                 }else{
-                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'n'");
+                    //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'n'");
                     return "n";
                 }
             }else{
-                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "'");
+                //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "'");
                 if (Period%2==0){
-                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'n'");
+                    //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'n'");
                     return "n";
                 }else{
-                    LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'd'");
+                    //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' checkPeriod '" + checkPeriod + "' returning 'd'");
                     return "d";
                 }
             }
         }else{
             if (Period%2==0){
-                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
+                //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
                 return "d";
             }else{
-                LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
+                //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
                 return "n";
             }
         }
