@@ -223,6 +223,8 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             if (FCHasTodaysHigh()){
                 tList.add("A");
+            }else{
+                tList.add("N/A");
             }
             tList.add("B");
             tList.add("d1");
@@ -236,11 +238,16 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 MaxItems = gWeather.getNWSPeriodCount();
+                if (!FCHasTodaysHigh()){
+                    MaxItems++;
+                }
             }else{
                 MaxItems = gWeather.getGWDayCount()*2;
             }
             if (FCHasTodaysHigh()){
                 tList.add("A");
+            }else{
+                tList.add("N/A");
             }
             if (MaxItems>tList.size())tList.add("B");
             if (MaxItems>tList.size())tList.add("d1");
@@ -263,7 +270,11 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             return 5;
         }else{
-            return 4;
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSPeriodCount()/2;
+            }else{
+                return gWeather.getGWDayCount();
+            }
         }
     }
     
@@ -577,10 +588,17 @@ public class WeatherAPI {
         //return the full dayname that is available
         //LOG.debug("GetFCDayNameFull: for '" + DayNumber + "'");
         Integer iDay = util.GetInteger(DayNumber, 0);
+        if (iDay==0){
+            return "Today";
+        }
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getForecastCondition("date" + iDay);
         }else{
-            return gWeather.getGWForecastCondition(iDay, "name");
+            if (IsGoogleNWSWeather()){
+                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "name");
+            }else{
+                return gWeather.getGWForecastCondition(iDay, "name");
+            }
         }
     }
     public String GetFCDayName(Object DayNumber, String DayPart){
@@ -604,10 +622,34 @@ public class WeatherAPI {
                 LOG.debug("GetFCDayName: for '" + DayNumber + "' DayPart '" + DayPart + "' = '" + tDay + "'");
                 return tDay;
             }else{
-                if (ValidateDayPart(DayPart).equals("n")){
-                    return gWeather.getGWForecastCondition(iDay, "name") + " Night";
+                String tDateName = "";
+                if (IsGoogleNWSWeather()){
+                    tDateName = gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "name");
+                    if (tDateName.toLowerCase().equals("monday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else if (tDateName.toLowerCase().equals("tuesday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else if (tDateName.toLowerCase().equals("wednesday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else if (tDateName.toLowerCase().equals("thursday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else if (tDateName.toLowerCase().equals("friday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else if (tDateName.toLowerCase().equals("saturday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else if (tDateName.toLowerCase().equals("sunday")){
+                        tDateName = tDateName.substring(0, 3);
+                    }else{
+                        //return the first word to keep it short
+                        tDateName = tDateName.substring(0, tDateName.indexOf(" "));
+                    }
                 }else{
-                    return gWeather.getGWForecastCondition(iDay, "name");
+                    tDateName = gWeather.getGWForecastCondition(iDay, "name");
+                }
+                if (ValidateDayPart(DayPart).equals("n")){
+                    return tDateName + " Night";
+                }else{
+                    return tDateName;
                 }
             }
         }
@@ -680,7 +722,15 @@ public class WeatherAPI {
             return tTemp.substring(0, tTemp.length()-2);
         }else{
             if (IsGoogleNWSWeather()){
-                return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "temp");
+                if (iDay==0){
+                    if (FCHasTodaysHigh()){
+                        return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "temp");
+                    }else{
+                        return "N/A";
+                    }
+                }else{
+                    return gWeather.getNWSForecastCondition(GetPeriod(iDay, "d"), "temp");
+                }
             }else{
                 return gWeather.getGWForecastCondition(iDay, "high");
             }
