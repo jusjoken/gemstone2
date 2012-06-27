@@ -344,7 +344,7 @@ public class WeatherAPI {
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
                 LOG.debug("GetFCIcon: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
-                return WIcons.GetWeatherIconURL(gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "icon_url"));
+                return WIcons.GetWeatherIconURLDay(gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "icon_url"));
             }else{
                 return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(iDay, "iconURL"));
             }
@@ -357,7 +357,7 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
-                return WIcons.GetWeatherIconURL(gWeather.getNWSForecastCondition(Period, "icon_url"));
+                return WIcons.GetWeatherIconURLDay(gWeather.getNWSForecastCondition(Period, "icon_url"));
             }else{
                 return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(GetDayFromPeriod(Period), "iconURL"));
             }
@@ -992,15 +992,15 @@ public class WeatherAPI {
         }
     }
     
-    private Integer GetPeriod(Integer DayNumber, String DayPart){
+    public Integer GetPeriod(Integer DayNumber, String DayPart){
         //will return -1 if the period is not valid
         //find offset by checking period 0 for "l" or "h"
         Integer DayPartOffset = 0;
         if (DayPart.equals("n")){
             DayPartOffset = 1;
         }
-        String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
-        if (checkPeriod.equals("h")){
+        //String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
+        if (FCHasTodaysHigh()){
             return (DayNumber * 2) + DayPartOffset; 
         }else{
             return (DayNumber * 2) + DayPartOffset - 1; 

@@ -249,5 +249,8 @@ public class Weather {
     public static Integer GetFCPeriodCount(){
         return GemstoneWeather.GetFCPeriodCount();
     }
+    public static Integer GetPeriod(Integer DayNumber, String DayPart){
+        return GemstoneWeather.GetPeriod(DayNumber, DayPart);
+    }
     
 }
