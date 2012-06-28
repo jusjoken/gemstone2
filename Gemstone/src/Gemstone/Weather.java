@@ -116,6 +116,12 @@ public class Weather {
     public static String GetFCHumidity(Object DayNumber, String DayPart){
         return GemstoneWeather.GetFCHumidity(DayNumber, DayPart);
     }
+    public static String GetSunrise(){
+        return GemstoneWeather.GetSunrise();
+    }
+    public static String GetSunset(){
+        return GemstoneWeather.GetSunset();
+    }
     public static String GetFCSunrisePeriod(Integer Period){
         return GemstoneWeather.GetFCSunrisePeriod(Period);
     }
@@ -127,6 +133,24 @@ public class Weather {
     }
     public static String GetFCSunset(Object DayNumber){
         return GemstoneWeather.GetFCSunset(DayNumber);
+    }
+    public static String GetUVIndex(){
+        return GemstoneWeather.GetUVIndex();
+    }
+    public static String GetUVWarn(){
+        return GemstoneWeather.GetUVWarn();
+    }
+    public static String GetVisibility(){
+        return GemstoneWeather.GetVisibility();
+    }
+    public static String GetFeelsLike(){
+        return GemstoneWeather.GetFeelsLike();
+    }
+    public static String GetBarometer(){
+        return GemstoneWeather.GetBarometer();
+    }
+    public static String GetDewPoint(){
+        return GemstoneWeather.GetDewPoint();
     }
     public static String GetCondition(){
         return GemstoneWeather.GetCondition();

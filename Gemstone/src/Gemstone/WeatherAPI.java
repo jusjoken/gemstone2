@@ -386,6 +386,20 @@ public class WeatherAPI {
             return "N/A";
         }
     }
+    public String GetSunrise(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getLocationInfo("curr_sunrise");
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetSunset(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getLocationInfo("curr_sunset");
+        }else{
+            return "N/A";
+        }
+    }
     public String GetFCSunrisePeriod(Integer Period){
         if (GetDayPartFromPeriod(Period).equals("n")){
             return "N/A";
@@ -412,6 +426,48 @@ public class WeatherAPI {
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
             return wWeather.getForecastCondition("sunset" + iDay);
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetUVIndex(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_uv_index");
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetUVWarn(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_uv_warning");
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetVisibility(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_visibility");
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetFeelsLike(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_windchill");
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetBarometer(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_pressure");
+        }else{
+            return "N/A";
+        }
+    }
+    public String GetDewPoint(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather.getCurrentCondition("curr_dewpoint");
         }else{
             return "N/A";
         }
@@ -936,6 +992,7 @@ public class WeatherAPI {
     //get a forecst condition for a specified period
     public String GetFCDescriptionPeriod(Integer Period){
         if (APIType.equals(APITypes.WEATHERCOM)){
+            LOG.debug("GetFCDescriptionPeriod: Period '" + Period + "' DayPart '" + GetDayPartFromPeriod(Period) + "' Day '" + GetDayFromPeriod(Period) + "'" );
             return wWeather.getForecastCondition("conditions" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period));
         }else{
             if (IsGoogleNWSWeather()){
@@ -1001,8 +1058,10 @@ public class WeatherAPI {
         }
         //String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
         if (FCHasTodaysHigh()){
+            LOG.debug("GetPeriod: DayNumber '" + DayNumber + "' DayPart '" + DayPart + "' Period '" + ((DayNumber * 2) + DayPartOffset) + "'");
             return (DayNumber * 2) + DayPartOffset; 
         }else{
+            LOG.debug("GetPeriod: DayNumber '" + DayNumber + "' DayPart '" + DayPart + "' Period '" + ((DayNumber * 2) + DayPartOffset -1) + "'");
             return (DayNumber * 2) + DayPartOffset - 1; 
         }
     }
@@ -1019,6 +1078,8 @@ public class WeatherAPI {
         }
     }
     private String GetDayPartFromPeriod(Integer Period){
+        //add 2 to the Period sto take care of the fact that zero is not odd nor even but we need it to be even
+        Period = Period + 2;
         if (IsGoogleNWSWeather()){
             String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
             if (checkPeriod.equals("h")){
