@@ -1042,10 +1042,21 @@ public class WeatherAPI {
             return gWeather.getNWSPeriodCount();
         }else{
             if (APIType.equals(APITypes.WEATHERCOM)){
-                return 10;
+                if (FCHasTodaysHigh()){
+                    return 10;
+                }else{
+                    return 9;
+                }
             }else{
                 return gWeather.getGWDayCount()*2;
             }
+        }
+    }
+    public Object GetInstance(){
+        if (APIType.equals(APITypes.WEATHERCOM)){
+            return wWeather;
+        }else{
+            return gWeather;
         }
     }
     
@@ -1074,11 +1085,19 @@ public class WeatherAPI {
                 return (Period + 1)/2; 
             }
         }else{
-            return Period/2; 
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                if (FCHasTodaysHigh()){
+                    return Period/2; 
+                }else{
+                    return (Period + 1)/2; 
+                }
+            }else{
+                return Period/2; 
+            }
         }
     }
     private String GetDayPartFromPeriod(Integer Period){
-        //add 2 to the Period sto take care of the fact that zero is not odd nor even but we need it to be even
+        //add 2 to the Period to take care of the fact that zero is not odd nor even but we need it to be even
         Period = Period + 2;
         if (IsGoogleNWSWeather()){
             String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
@@ -1102,12 +1121,33 @@ public class WeatherAPI {
                 }
             }
         }else{
-            if (Period%2==0){
-                //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
-                return "d";
+            if (APIType.equals(APITypes.WEATHERCOM)){
+                if (FCHasTodaysHigh()){
+                    if (Period%2==0){
+                        //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
+                        return "d";
+                    }else{
+                        //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
+                        return "n";
+                    }
+                }else{
+                    if (Period%2==0){
+                        //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
+                        return "n";
+                    }else{
+                        //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
+                        return "d";
+                    }
+                }
+                
             }else{
-                //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
-                return "n";
+                if (Period%2==0){
+                    //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'd'");
+                    return "d";
+                }else{
+                    //LOG.debug("GetDayPartFromPeriod: for Period '" + Period + "' returning 'n'");
+                    return "n";
+                }
             }
         }
     }

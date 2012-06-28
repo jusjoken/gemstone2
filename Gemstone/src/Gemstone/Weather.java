@@ -276,5 +276,8 @@ public class Weather {
     public static Integer GetPeriod(Integer DayNumber, String DayPart){
         return GemstoneWeather.GetPeriod(DayNumber, DayPart);
     }
+    public static Object GetInstance(){
+        return GemstoneWeather.GetInstance();
+    }
     
 }
