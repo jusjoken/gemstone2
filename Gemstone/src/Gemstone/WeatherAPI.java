@@ -153,7 +153,7 @@ public class WeatherAPI {
     //allow override of the default conditions or forecast display
     public String GetDefaultConditionsDisplay() {
         String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
-        if (tDefault.equals(util.OptionNotFound)){
+        if (tDefault.equals(util.OptionNotFound) || tDefault.equals("Default")){
             if (APIType.equals(APITypes.WEATHERCOM)){
                 return "Old";
             }else{
@@ -163,16 +163,27 @@ public class WeatherAPI {
             return tDefault;
         }
     }
-    public void SetDefaultConditionsDisplay(String Value) {
-        if (Value.equals("Old")){
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", Value);
+    public String GetDefaultConditionsButtonText() {
+        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
+        if (tDefault.equals(util.OptionNotFound)){
+            return "Default";
+        }else{
+            return tDefault;
+        }
+    }
+    public void SetDefaultConditionsDisplayNext() {
+        String Value = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
+        if (Value.equals("New")){
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Old");
+        }else if (Value.equals("Old")){
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Default");
         }else{
             util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "New");
         }
     }
     public String GetDefaultForecastDisplay() {
         String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
-        if (tDefault.equals(util.OptionNotFound)){
+        if (tDefault.equals(util.OptionNotFound) || tDefault.equals("Default")){
             if (APIType.equals(APITypes.WEATHERCOM)){
                 return "Old";
             }else{
@@ -182,9 +193,20 @@ public class WeatherAPI {
             return tDefault;
         }
     }
-    public void SetDefaultForecastDisplay(String Value) {
-        if (Value.equals("Old")){
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", Value);
+    public String GetDefaultForecastButtonText() {
+        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
+        if (tDefault.equals(util.OptionNotFound)){
+            return "Default";
+        }else{
+            return tDefault;
+        }
+    }
+    public void SetDefaultForecastDisplayNext() {
+        String Value = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
+        if (Value.equals("New")){
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Old");
+        }else if (Value.equals("Old")){
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Default");
         }else{
             util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "New");
         }
@@ -343,7 +365,7 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
-                LOG.debug("GetFCIcon: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
+                //LOG.debug("GetFCIcon: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
                 return WIcons.GetWeatherIconURLDay(gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "icon_url"));
             }else{
                 return WIcons.GetWeatherIconURLDay(gWeather.getGWForecastCondition(iDay, "iconURL"));
@@ -507,13 +529,13 @@ public class WeatherAPI {
         Integer iDay = util.GetInteger(DayNumber, 0);
         if (APIType.equals(APITypes.WEATHERCOM)){
             String tWind = wWeather.getForecastCondition("wind" + ValidateDayPart(DayPart) + iDay);
-            LOG.debug("GetFCWind: '" + tWind + "'");
+            //LOG.debug("GetFCWind: '" + tWind + "'");
             if (tWind.startsWith("CALM")){
                 return "CALM";
             }
             String WindDir = tWind.substring(0, tWind.indexOf(" "));
             String WindSpeed = tWind.substring(tWind.indexOf(" ")+1);
-            LOG.debug("GetFCWind: returning '" + WindDir + "/" + WindSpeed + "'");
+            //LOG.debug("GetFCWind: returning '" + WindDir + "/" + WindSpeed + "'");
             return WindDir + "/" + WindSpeed;
         }else{
             return "N/A";
@@ -675,7 +697,7 @@ public class WeatherAPI {
                 }else{
                     tDay = tDay.substring(0, 3) + " " + tDay.substring(tDay.indexOf(" ")+1);
                 }
-                LOG.debug("GetFCDayName: for '" + DayNumber + "' DayPart '" + DayPart + "' = '" + tDay + "'");
+                //LOG.debug("GetFCDayName: for '" + DayNumber + "' DayPart '" + DayPart + "' = '" + tDay + "'");
                 return tDay;
             }else{
                 String tDateName = "";
@@ -836,7 +858,7 @@ public class WeatherAPI {
         if (IsGoogleNWSWeather()){
             return gWeather.getNWSForecastCondition(Period, "temp");
         }
-        LOG.debug("GetFCTempPeriod: for Period '" + Period + "'");
+        //LOG.debug("GetFCTempPeriod: for Period '" + Period + "'");
         if (GetDayPartFromPeriod(Period).equals("d")){
             return GetFCHigh(GetDayFromPeriod(Period));
         }else{
@@ -895,7 +917,7 @@ public class WeatherAPI {
         }else{
             if (IsGoogleNWSWeather()){
                 //with NWS need to convert Day and DayPart to a period
-                LOG.debug("GetFCCondition: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
+                //LOG.debug("GetFCCondition: iDay '" + iDay + "' DayPart '" + DayPart + "' Period '" + GetPeriod(iDay, ValidateDayPart(DayPart)) + "'");
                 return gWeather.getNWSForecastCondition(GetPeriod(iDay, ValidateDayPart(DayPart)), "summary");
             }else{
                 //without NWS, Google only has one condition
@@ -992,7 +1014,7 @@ public class WeatherAPI {
     //get a forecst condition for a specified period
     public String GetFCDescriptionPeriod(Integer Period){
         if (APIType.equals(APITypes.WEATHERCOM)){
-            LOG.debug("GetFCDescriptionPeriod: Period '" + Period + "' DayPart '" + GetDayPartFromPeriod(Period) + "' Day '" + GetDayFromPeriod(Period) + "'" );
+            //LOG.debug("GetFCDescriptionPeriod: Period '" + Period + "' DayPart '" + GetDayPartFromPeriod(Period) + "' Day '" + GetDayFromPeriod(Period) + "'" );
             return wWeather.getForecastCondition("conditions" + GetDayPartFromPeriod(Period) + GetDayFromPeriod(Period));
         }else{
             if (IsGoogleNWSWeather()){
@@ -1069,14 +1091,14 @@ public class WeatherAPI {
         }
         //String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
         if (FCHasTodaysHigh()){
-            LOG.debug("GetPeriod: DayNumber '" + DayNumber + "' DayPart '" + DayPart + "' Period '" + ((DayNumber * 2) + DayPartOffset) + "'");
+            //LOG.debug("GetPeriod: DayNumber '" + DayNumber + "' DayPart '" + DayPart + "' Period '" + ((DayNumber * 2) + DayPartOffset) + "'");
             return (DayNumber * 2) + DayPartOffset; 
         }else{
-            LOG.debug("GetPeriod: DayNumber '" + DayNumber + "' DayPart '" + DayPart + "' Period '" + ((DayNumber * 2) + DayPartOffset -1) + "'");
+            //LOG.debug("GetPeriod: DayNumber '" + DayNumber + "' DayPart '" + DayPart + "' Period '" + ((DayNumber * 2) + DayPartOffset -1) + "'");
             return (DayNumber * 2) + DayPartOffset - 1; 
         }
     }
-    private Integer GetDayFromPeriod(Integer Period){
+    public Integer GetDayFromPeriod(Integer Period){
         if (IsGoogleNWSWeather()){
             String checkPeriod = gWeather.getNWSForecastCondition(0, "tempType");
             if (checkPeriod.equals("h")){
@@ -1096,7 +1118,7 @@ public class WeatherAPI {
             }
         }
     }
-    private String GetDayPartFromPeriod(Integer Period){
+    public String GetDayPartFromPeriod(Integer Period){
         //add 2 to the Period to take care of the fact that zero is not odd nor even but we need it to be even
         Period = Period + 2;
         if (IsGoogleNWSWeather()){

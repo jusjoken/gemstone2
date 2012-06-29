@@ -56,14 +56,20 @@ public class Weather {
     public static String GetDefaultConditionsDisplay() {
         return GemstoneWeather.GetDefaultConditionsDisplay();
     }
-    public static void SetDefaultConditionsDisplay(String Value) {
-        GemstoneWeather.SetDefaultConditionsDisplay(Value);
+    public static String GetDefaultConditionsButtonText() {
+        return GemstoneWeather.GetDefaultConditionsButtonText();
+    }
+    public static void SetDefaultConditionsDisplayNext() {
+        GemstoneWeather.SetDefaultConditionsDisplayNext();
     }
     public static String GetDefaultForecastDisplay() {
         return GemstoneWeather.GetDefaultForecastDisplay();
     }
-    public static void SetDefaultForecastDisplay(String Value) {
-        GemstoneWeather.SetDefaultForecastDisplay(Value);
+    public static String GetDefaultForecastButtonText() {
+        return GemstoneWeather.GetDefaultForecastButtonText();
+    }
+    public static void SetDefaultForecastDisplayNext() {
+        GemstoneWeather.SetDefaultForecastDisplayNext();
     }
     public static Collection<String> GetDayListShort(){
         return GemstoneWeather.GetDayListShort();
@@ -275,6 +281,12 @@ public class Weather {
     }
     public static Integer GetPeriod(Integer DayNumber, String DayPart){
         return GemstoneWeather.GetPeriod(DayNumber, DayPart);
+    }
+    public static Integer GetDayFromPeriod(Integer Period){
+        return GemstoneWeather.GetDayFromPeriod(Period);
+    }
+    public static String GetDayPartFromPeriod(Integer Period){
+        return GemstoneWeather.GetDayPartFromPeriod(Period);
     }
     public static Object GetInstance(){
         return GemstoneWeather.GetInstance();
