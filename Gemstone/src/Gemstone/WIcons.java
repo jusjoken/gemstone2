@@ -7,7 +7,6 @@ package Gemstone;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
-import sagex.UIContext;
 
 /**
  *
@@ -130,7 +129,7 @@ public class WIcons {
             System.out.println("WIcons: unhandled url - please report '" + ConditionURL + "'");
             return ConditionURL;
         }else{
-            return "WeatherIcons\\Images\\" + tCondition + ".png";
+            return GetWeatherPath() + tCondition + ".png";
         }
     }
     public static String GetWeatherIconURL(String ConditionURL){
@@ -140,11 +139,11 @@ public class WIcons {
             System.out.println("WIcons: unhandled url - please report '" + ConditionURL + "'");
             return ConditionURL;
         }else{
-            return "WeatherIcons\\Images\\" + tCondition + ".png";
+            return GetWeatherPath() + tCondition + ".png";
         }
     }
     public static String GetWeatherIconByNumber(String ConditionNumber){
-        return "WeatherIcons\\Images\\" + ConditionNumber + ".png";
+        return GetWeatherPath() + ConditionNumber + ".png";
     }
 
     public static String GetWeatherIconNoURLDay(String ConditionURL){
@@ -185,14 +184,14 @@ public class WIcons {
             }else{
                 DefaultIcon = Condition;
             }
-            returnIcon = GetProperty(WIconProp + Condition + "/" + "DayIcon", DefaultIcon );
+            returnIcon = util.GetProperty(WIconProp + Condition + "/" + "DayIcon", DefaultIcon );
         }else{
             if (IconsForNighttime.containsKey(Condition)){
                 DefaultIcon = IconsForNighttime.get(Condition);
             }else{
                 DefaultIcon = Condition;
             }
-            returnIcon = GetProperty(WIconProp + Condition + "/" + "NightIcon", DefaultIcon );
+            returnIcon = util.GetProperty(WIconProp + Condition + "/" + "NightIcon", DefaultIcon );
         }
         return returnIcon;
     }
@@ -200,8 +199,9 @@ public class WIcons {
     public static Boolean IsDaytime(){
         Calendar myCalendar = Calendar.getInstance();
         Integer currentHour = myCalendar.get(Calendar.HOUR_OF_DAY);
-        Integer DayStartHour = GetPropertyAsInteger(WIconProp + "DayStartHour", 7);
-        Integer DayEndHour = GetPropertyAsInteger(WIconProp + "DayEndHour", 19);
+        String PropLocation = Const.BaseProp + Const.PropDivider + Const.WeatherProp + Const.PropDivider;
+        Integer DayStartHour = util.GetPropertyAsInteger(PropLocation + "DayStartHour", 7);
+        Integer DayEndHour = util.GetPropertyAsInteger(PropLocation + "DayEndHour", 19);
         if (currentHour>=DayStartHour && currentHour<DayEndHour){
             return Boolean.TRUE;
         }else{
@@ -209,30 +209,12 @@ public class WIcons {
         }
     }
     
-    public static Integer GetPropertyAsInteger(String Property, Integer DefaultValue){
-        //read in the Sage Property and force convert it to an Integer
-        Integer tInteger = DefaultValue;
-        String tValue = sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
-        if (tValue==null || tValue.equals(OptionNotFound)){
-            return DefaultValue;
-        }
-        try {
-            tInteger = Integer.valueOf(tValue);
-        } catch (NumberFormatException ex) {
-            //use DefaultValue
-            return DefaultValue;
-        }
-        return tInteger;
-    }
-    
-    public static String GetProperty(String Property, String DefaultValue){
-        String tValue = sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
-        if (tValue==null || tValue.equals(OptionNotFound)){
-            return DefaultValue;
+    public static String GetWeatherPath(){
+        if (util.GetTrueFalseOption(Const.WeatherProp, "UseGemstoneWeatherIcons", Boolean.TRUE)){
+            return "Themes\\Gemstone\\Weather\\Images\\";
         }else{
-            return tValue;
+            return "WeatherIcons\\Images\\";
         }
     }
-    
     
 }
