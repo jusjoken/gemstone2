@@ -117,7 +117,7 @@ public class WIcons {
             }
             
             String tCondition = GetWeatherIcon(Condition, ForceDay);
-            LOG.debug("ConvertURLtoCondition: Condition '" + Condition + "' tCondition '" + tCondition + "' URL '" + ConditionURL + "'");
+            //LOG.debug("ConvertURLtoCondition: Condition '" + Condition + "' tCondition '" + tCondition + "' URL '" + ConditionURL + "'");
             if (tCondition.equals(Condition)){
                 return ConditionURL;
             }else{
@@ -197,7 +197,7 @@ public class WIcons {
             }
             returnIcon = util.GetProperty(WIconProp + Condition + "/" + "NightIcon", DefaultIcon );
         }
-        LOG.debug("GetWeatherIcon: returning '" + returnIcon + "' IsDaytime '" + IsDaytime() + "' ForceDay '" + ForceDay + "'");
+        //LOG.debug("GetWeatherIcon: returning '" + returnIcon + "' IsDaytime '" + IsDaytime() + "' ForceDay '" + ForceDay + "'");
         return returnIcon;
     }
 
