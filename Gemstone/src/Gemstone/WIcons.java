@@ -4,9 +4,15 @@
  */
 package Gemstone;
 
+import java.io.File;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 /**
@@ -149,6 +155,11 @@ public class WIcons {
     public static String GetWeatherIconByNumber(String ConditionNumber){
         return GetWeatherPath() + ConditionNumber + ".png";
     }
+    
+    public static String GetWeatherIconByNumber(String ConditionNumber, String WeatherSet){
+        return GetWeatherPath(WeatherSet) + ConditionNumber + ".png";
+    }
+    
 
     public static String GetWeatherIconNoURLDay(String ConditionURL){
         String tCondition = ConvertURLtoCondition(ConditionURL, Boolean.TRUE);
@@ -215,11 +226,41 @@ public class WIcons {
     }
     
     public static String GetWeatherPath(){
-        if (util.GetTrueFalseOption(Const.WeatherProp, "UseGemstoneWeatherIcons", Boolean.TRUE)){
-            return "Themes\\Gemstone\\Weather\\Images\\";
-        }else{
+        String tSet = util.GetOptionName(Const.WeatherProp, "IconSet", util.OptionNotFound);
+        if (tSet.equals(util.OptionNotFound)){
             return "WeatherIcons\\Images\\";
+        }else{
+            return GetWeatherPath(tSet);
         }
     }
+    public static String GetWeatherPath(String WeatherSet){
+        return util.WeatherLocation() + File.separator + "Icons" + File.separator + WeatherSet + File.separator;
+    }
+    
+    //functions for managing sets of icons
+    
+    public static Collection<String> GetIconSets(){
+        SortedSet<String> tList = new TreeSet<String>();
+        File IconSetLoc = new File(new File(util.WeatherLocation()), "Icons");
+        File[] files = IconSetLoc.listFiles();
+        for (File file : files){
+            if (file.isDirectory()){
+                tList.add(file.getName());
+            }
+        }
+        LOG.debug("GetIconSets: found '" + tList + "'");
+        return tList;
+    }
+    
+    public static Collection<String> GetIconList(){
+        Collection<String> tList = new LinkedHashSet<String>();
+        for ( Integer i = 0 ; i < 48 ; i++ ) {
+            tList.add(i.toString());
+        }
+        tList.add("na");
+        return tList;
+    }
+
+    
     
 }

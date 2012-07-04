@@ -930,6 +930,10 @@ public class util {
         return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "menus";
     }
     
+    public static String WeatherLocation(){
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "Weather";
+    }
+    
     public static String GetSageTVRootDir(){
         return sagex.phoenix.Phoenix.getInstance().getSageTVRootDir().toString();
     }

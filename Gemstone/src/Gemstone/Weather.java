@@ -292,4 +292,6 @@ public class Weather {
         return GemstoneWeather.GetInstance();
     }
     
+    
+    
 }
