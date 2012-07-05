@@ -799,7 +799,6 @@ public class Source {
     }
     
     public static ArrayList<String> GetTags(){
-        phoenix.umb.GetTags(false);
         TreeMap<String,String> TagList = new TreeMap<String,String>();
         for (String tKey: phoenix.umb.GetTags(false)){
             //see if the tag is valid for a ViewFactory

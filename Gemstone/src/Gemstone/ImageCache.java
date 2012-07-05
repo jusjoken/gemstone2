@@ -1075,8 +1075,6 @@ public class ImageCache {
         }
     }
     
-    //TODO: Check GetImage as a default BACKGROUND is not being retrieved for TV (Movies work)
-    
     //phoenix does not expose this as public so recreate this here
     private static final String STORE_SERIES_FANART = "phoenix.seriesfanart";
     private static final String STORE_SEASON_FANART = "phoenix.seasonfanart";
@@ -1178,16 +1176,13 @@ public class ImageCache {
         Map<String, String> SeasonMetadata = resolveFanartMetadata(metadata, mediaType, mediaObject);
         if (SeasonMetadata!=null){
             IsTV = Boolean.TRUE;
-//            if (SeasonMetadata.containsKey(FanartUtil.SEASON_NUMBER)){
-//                IsTVSeason = Boolean.TRUE;
-//            }
         }
         
         if (IsTV){
             //check the default first and return it if any
             String Default = GetDefaultArtifact(mediaObject, artifactType, metadata);
             //if no default then get the first SEASON/SERIES specific Fanart 
-            //  - skipping the phoenix call as it will get a SERIES default if on exists
+            //  - skipping the phoenix call as it will get a SERIES default if one exists
             if (Default==null || Default.isEmpty()){
                 // grab first fanart artifact
                 //LOG.debug("GetFanartArtifact: no default found so getting the first Season/Series based fanart item");

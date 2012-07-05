@@ -7,6 +7,7 @@ package Gemstone;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import org.apache.log4j.Logger;
+import phoenix.weather;
 import sage.google.weather.GoogleWeather;
 import tv.sage.weather.WeatherDotCom;
 /**
@@ -18,6 +19,7 @@ public class WeatherAPI {
     private APITypes APIType = APITypes.GOOGLE;
     private GoogleWeather gWeather = null;
     private WeatherDotCom wWeather = null;
+    private sagex.phoenix.weather.IWeatherData pWeather = null;
     static private final Logger LOG = Logger.getLogger(WeatherAPI.class);
     
     public WeatherAPI(String APIType) {
@@ -64,6 +66,15 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             wWeather = WeatherDotCom.getInstance();
             gWeather = null;
+            if (!phoenix.weather.IsConfigured()){
+                phoenix.weather.SetLocation("55373");
+                phoenix.weather.SetUnits("s");
+            }else{
+                phoenix.weather.SetLocation("55373");
+                phoenix.weather.SetUnits("s");
+            }
+            phoenix.weather.Update();
+            pWeather = phoenix.weather.GetCurrentWeather();
         }else{
             //default to GOOGLE
             gWeather = GoogleWeather.getInstance();
@@ -74,6 +85,7 @@ public class WeatherAPI {
         if (APIType.equals(APITypes.WEATHERCOM)){
             LOG.debug("Update: updating WEATHERCOM");
             wWeather.updateNow();
+            phoenix.weather.Update();
         }else{
             //Google
             //get the language code
@@ -303,7 +315,9 @@ public class WeatherAPI {
     public String GetTemp(){
         if (APIType.equals(APITypes.WEATHERCOM)){
             //need to strip off the degree and unit from the temp
-            String tTemp = wWeather.getCurrentCondition("curr_temp");
+            //String tTemp = wWeather.getCurrentCondition("curr_temp");
+            //return tTemp.substring(0, tTemp.length()-2);
+            String tTemp = pWeather.getTemp();
             return tTemp.substring(0, tTemp.length()-2);
         }else{
             return gWeather.getGWCurrentCondition("Temp");
@@ -313,7 +327,9 @@ public class WeatherAPI {
     public String GetTempFull(){
         if (APIType.equals(APITypes.WEATHERCOM)){
             //this already has the units so just return the results
-            return wWeather.getCurrentCondition("curr_temp");
+            LOG.debug("GetTempFull: pWeather '" + pWeather + "' temp '" + pWeather.getTemp() + "'");
+            return pWeather.getTemp();
+            //return wWeather.getCurrentCondition("curr_temp");
         }else{
             return gWeather.getGWCurrentCondition("Temp") + GetUnitsDisplay();
         }
@@ -327,7 +343,9 @@ public class WeatherAPI {
     }
     public String GetUnits(){
         if (APIType.equals(APITypes.WEATHERCOM)){
-            return wWeather.getUnits();
+            LOG.debug("GetUnits: '" + phoenix.weather.GetUnits() + "'");
+            return phoenix.weather.GetUnits().toLowerCase().substring(0,1);
+            //return wWeather.getUnits();
         }else{
             return gWeather.getUnits();
         }
@@ -635,7 +653,8 @@ public class WeatherAPI {
     }
     public String GetUpdateTime(){
         if (APIType.equals(APITypes.WEATHERCOM)){
-            return wWeather.getCurrentCondition("curr_updated");
+            //return wWeather.getCurrentCondition("curr_updated");
+            return phoenix.weather.GetLastUpdated().toString();
         }else{
             Long tTime = gWeather.getLastUpdateTimeGW();
             return sagex.api.Utility.PrintDateLong(tTime) + " at " + sagex.api.Utility.PrintTimeShort(tTime);
