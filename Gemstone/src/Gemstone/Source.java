@@ -910,6 +910,9 @@ public class Source {
             }else if (phoenix.media.IsMediaType( imediaresource , "BLURAY" )){
                 //LOG.debug("GetSpecialType: bluray found");
                 return "movie";
+            }else if (phoenix.media.IsMediaType( imediaresource , "MUSIC" )){
+                //LOG.debug("GetSpecialType: music found");
+                return "music";
             }
         }
         //LOG.debug("GetSpecialType: Nothing found - returning 'other'");

@@ -667,5 +667,51 @@ public class MetadataCalls {
             }
         }
     }
-    
+
+    public static Boolean IsArchived(Object IMR){
+        IMediaResource imediaresource = Source.ConvertToIMR(IMR);
+        if (imediaresource!=null){ 
+            if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+                //see if ALL the Children are archived by seeing if we find any unarchived ones
+                ViewFolder Folder = (ViewFolder) imediaresource;
+                List Children = phoenix.media.GetAllChildren(Folder);
+                //Get all the Archived items
+                Integer ArchivedCount = sagex.api.Utility.Size(sagex.api.Utility.GetSubgroup(sagex.api.Database.GroupByMethod(Children,"phoenix_media_isLibraryFile"),true));
+                if (Children.size()==ArchivedCount){
+                    return Boolean.TRUE;
+                }
+            }else{
+                return imediaresource.isLibraryFile();
+            }
+        }
+        return Boolean.FALSE;
+    }
+
+    public static void SetArchived(Object IMR){
+        ChangeArchived(IMR, Boolean.TRUE);
+    }
+    public static void ClearArchived(Object IMR){
+        ChangeArchived(IMR, Boolean.FALSE);
+    }
+    public static void ChangeArchived(Object IMR){
+        ChangeArchived(IMR, !IsArchived(IMR));
+    }
+    public static void ChangeArchived(Object IMR, Boolean Value){
+        IMediaResource imediaresource = Source.ConvertToIMR(IMR);
+        if (imediaresource!=null){ 
+            if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+                //see if ALL the Children are archived by seeing if we find any unarchived ones
+                ViewFolder Folder = (ViewFolder) imediaresource;
+                for (Object child:phoenix.media.GetAllChildren(Folder)){
+                    if (child instanceof IMediaResource){
+                        IMediaResource iChild = (IMediaResource) child;
+                        iChild.setLibraryFile(Value);
+                    }
+                }
+            }else{
+                imediaresource.setLibraryFile(Value);
+            }
+        }
+    }
+
 }
