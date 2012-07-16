@@ -19,6 +19,10 @@ public class Weather {
 
     //always call Init first - should be called in the Gemstone Init 
     public static void Init(){
+        //force phoenix to use the current weather implementation setting
+        
+        
+        //TODO: remove old weather calls when new phoenix calls are complete
         GemstoneWeather = new WeatherAPI();
         GemstoneWeather.Init();
     }
