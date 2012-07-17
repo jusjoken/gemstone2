@@ -30,21 +30,23 @@ public class SourceUI {
     public static final String OptionNotSet = "NotSet";
     
     public SourceUI(String FlowName){
-        this.thisFlowName = FlowName;
-        PropLocation = GetPropertyLocation(FlowName);
-        //based on the FlowName load the settings into this class from the properties file
-        IConfigurable tOrganizer = new ViewFactory();
-        for (String tOpt: tOrganizer.getOptionNames()){
-            //skip some options types that we don't want the user to set
-            String OptionsToSkip[] = { "name", "label", "description", "visible" };
-            ArrayList OptionsToSkipList = new ArrayList();
-            OptionsToSkipList.addAll(Arrays.asList(OptionsToSkip));
-            ConfigOption tConfig = new ConfigOption(PropLocation, tOrganizer.getOption(tOpt));
-            if (!OptionsToSkipList.contains(tConfig.getName())){
-                ConfigOptionsList.put(tConfig.getLabel(), tConfig);
+        if (FlowName!=null){
+            this.thisFlowName = FlowName;
+            PropLocation = GetPropertyLocation(FlowName);
+            //based on the FlowName load the settings into this class from the properties file
+            IConfigurable tOrganizer = new ViewFactory();
+            for (String tOpt: tOrganizer.getOptionNames()){
+                //skip some options types that we don't want the user to set
+                String OptionsToSkip[] = { "name", "label", "description", "visible" };
+                ArrayList OptionsToSkipList = new ArrayList();
+                OptionsToSkipList.addAll(Arrays.asList(OptionsToSkip));
+                ConfigOption tConfig = new ConfigOption(PropLocation, tOrganizer.getOption(tOpt));
+                if (!OptionsToSkipList.contains(tConfig.getName())){
+                    ConfigOptionsList.put(tConfig.getLabel(), tConfig);
+                }
             }
+            Refresh();
         }
-        Refresh();
     }
     
     public void Refresh(){

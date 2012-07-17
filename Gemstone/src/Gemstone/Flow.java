@@ -296,7 +296,7 @@ public class Flow {
 
     public static String GetFlowName(String name){
         if (name==null){
-            LOG.debug("GetFlowName: request for null name returned NotFound");
+            //LOG.debug("GetFlowName: request for null name returned NotFound");
             return util.OptionNotFound;
         }
         String FlowNameProp = Flow.GetFlowBaseProp(name) + Const.PropDivider + Const.FlowName;
@@ -388,7 +388,7 @@ public class Flow {
 
     public static String GetFlowSource(String name){
         if (name==null){
-            LOG.debug("GetFlowSource: request for null name returned NotFound");
+            //LOG.debug("GetFlowSource: request for null name returned NotFound");
             return util.OptionNotFound;
         }
         String FlowSourceProp = Flow.GetFlowBaseProp(name) + Const.PropDivider + Const.FlowSource;
