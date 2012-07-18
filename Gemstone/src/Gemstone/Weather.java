@@ -7,6 +7,7 @@ package Gemstone;
 import java.util.Collection;
 import org.apache.log4j.Logger;
 import sagex.phoenix.Phoenix;
+import sagex.phoenix.weather.IForecastPeriod;
 
 
 /**
@@ -103,6 +104,28 @@ public class Weather {
             phoenix.weather2.SetUnits("metric");
         }
         util.SetOption(Const.WeatherProp, Const.WeatherUnits, phoenix.weather2.GetUnits());
+    }
+
+    public static String GetIconImage(IForecastPeriod iforecastperiod){
+        if (phoenix.weather2.GetCode(iforecastperiod)==-1){
+            return WIcons.GetWeatherIconByNumber("na");
+        }else{
+            return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCode(iforecastperiod));
+        }
+    }
+    public static String GetIconImageDay(IForecastPeriod iforecastperiod){
+        if (phoenix.weather2.GetCode(iforecastperiod)==-1){
+            return WIcons.GetWeatherIconByNumber("na");
+        }else{
+            return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCodeForceDay(phoenix.weather2.GetCode(iforecastperiod)));
+        }
+    }
+    public static String GetIconImageNight(IForecastPeriod iforecastperiod){
+        if (phoenix.weather2.GetCode(iforecastperiod)==-1){
+            return WIcons.GetWeatherIconByNumber("na");
+        }else{
+            return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCodeForceNight(phoenix.weather2.GetCode(iforecastperiod)));
+        }
     }
     
     public static Boolean IsConfigured(){

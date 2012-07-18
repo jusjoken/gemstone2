@@ -143,7 +143,7 @@ public class WIcons {
         }
     }
     public static String GetWeatherIconURL(String ConditionURL){
-        //System.out.println("WIcons: ConditionURL '" + ConditionURL + "'");
+        //LOG.debug("GetWeatherIconURL: ConditionURL '" + ConditionURL + "'");
         String tCondition = ConvertURLtoCondition(ConditionURL, Boolean.FALSE);
         if (tCondition.equals(ConditionURL)){
             LOG.debug("GetWeatherIconURL: unhandled url - please report '" + ConditionURL + "'");
@@ -153,10 +153,16 @@ public class WIcons {
         }
     }
     public static String GetWeatherIconByNumber(String ConditionNumber){
+        //LOG.debug("GetWeatherIconByNumber: returning '" + GetWeatherPath() + ConditionNumber + ".png'");
+        return GetWeatherPath() + ConditionNumber + ".png";
+    }
+    public static String GetWeatherIconByNumber(int ConditionNumber){
+        //LOG.debug("GetWeatherIconByNumber: returning '" + GetWeatherPath() + ConditionNumber + ".png'");
         return GetWeatherPath() + ConditionNumber + ".png";
     }
     
     public static String GetWeatherIconByNumber(String ConditionNumber, String WeatherSet){
+        //LOG.debug("GetWeatherIconByNumber: returning '" + GetWeatherPath() + ConditionNumber + ".png'");
         return GetWeatherPath(WeatherSet) + ConditionNumber + ".png";
     }
     
