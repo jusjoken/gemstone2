@@ -8,6 +8,7 @@ import java.util.Collection;
 import org.apache.log4j.Logger;
 import sagex.phoenix.Phoenix;
 import sagex.phoenix.weather.IForecastPeriod;
+import sagex.phoenix.weather.ILongRangeForecast;
 
 
 /**
@@ -126,6 +127,17 @@ public class Weather {
         }else{
             return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCodeForceNight(phoenix.weather2.GetCode(iforecastperiod)));
         }
+    }
+
+    public static IForecastPeriod GetSingleDayPeriod(ILongRangeForecast ilongrangeforecast){
+        if (ilongrangeforecast==null){
+            return null;
+        }
+        IForecastPeriod iforecastperiod = ilongrangeforecast.getForecastPeriodDay();
+        if (iforecastperiod==null){
+            iforecastperiod = ilongrangeforecast.getForecastPeriodNight();
+        }
+        return iforecastperiod;
     }
     
     public static Boolean IsConfigured(){
