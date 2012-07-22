@@ -129,17 +129,6 @@ public class Weather {
         }
     }
 
-    public static IForecastPeriod GetSingleDayPeriod(ILongRangeForecast ilongrangeforecast){
-        if (ilongrangeforecast==null){
-            return null;
-        }
-        IForecastPeriod iforecastperiod = ilongrangeforecast.getForecastPeriodDay();
-        if (iforecastperiod==null){
-            iforecastperiod = ilongrangeforecast.getForecastPeriodNight();
-        }
-        return iforecastperiod;
-    }
-    
     public static Boolean IsConfigured(){
         if (GemstoneWeather==null){
             return Boolean.FALSE;

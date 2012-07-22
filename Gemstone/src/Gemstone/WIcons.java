@@ -80,6 +80,7 @@ public class WIcons {
         AddIcon("hi_ntsra", "47", "47");
         AddIcon("nwind", "24", "24");
         AddIcon("wind", "23", "24");
+        AddIcon("sctfg", "20", "20");
         AddIcon("nfg", "20", "20");
         AddIcon("fg", "20", "20");
         AddIcon("cold", "15", "15");
