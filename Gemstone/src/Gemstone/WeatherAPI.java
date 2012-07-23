@@ -13,6 +13,7 @@ import tv.sage.weather.WeatherDotCom;
 /**
  *
  * @author jusjoken
+ * TODO: can be deleted
  */
 public class WeatherAPI {
     private static enum APITypes{GOOGLE,WEATHERCOM};
