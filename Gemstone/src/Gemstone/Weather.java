@@ -129,7 +129,7 @@ public class Weather {
     public static String GetDefaultConditionsDisplay() {
         String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
         if (tDefault.equals(util.OptionNotFound) || tDefault.equals("Default")){
-            return "New";
+            return "Gemstone";
         }else{
             return tDefault;
         }
@@ -144,18 +144,20 @@ public class Weather {
     }
     public static void SetDefaultConditionsDisplayNext() {
         String Value = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
-        if (Value.equals("New")){
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Old");
-        }else if (Value.equals("Old")){
+        if (Value.equals("Gemstone")){
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "SageNew");
+        }else if (Value.equals("SageNew")){
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "SageOld");
+        }else if (Value.equals("SageOld")){
             util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Default");
         }else{
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "New");
+            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Gemstone");
         }
     }
     public static String GetDefaultForecastDisplay() {
         String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
         if (tDefault.equals(util.OptionNotFound) || tDefault.equals("Default")){
-            return "New";
+            return "Gemstone";
         }else{
             return tDefault;
         }
@@ -170,12 +172,68 @@ public class Weather {
     }
     public static void SetDefaultForecastDisplayNext() {
         String Value = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
-        if (Value.equals("New")){
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Old");
-        }else if (Value.equals("Old")){
+        if (Value.equals("Gemstone")){
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "SageNew");
+        }else if (Value.equals("SageNew")){
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "SageOld");
+        }else if (Value.equals("SageOld")){
             util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Default");
         }else{
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "New");
+            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Gemstone");
+        }
+    }
+    
+    public static boolean HasDescription(){
+        if (phoenix.weather2.IsSupported(phoenix.weather2.GetDescription(phoenix.weather2.GetForecastPeriod(0)))){
+            return true;
+        }else{
+            return false;
+        }
+        
+    }
+    public static int GetForecastColumns(){
+        if (HasDescription()){
+            return 3;
+        }else if(phoenix.weather2.GetForecastDays()<3){
+            return 2;
+        }else{
+            return 4;
+        }
+    }
+    
+    public static double GetForecastWidth(boolean Focused){
+        if (HasDescription()){
+            if (Focused){
+                return (1.0/5)*3;
+            }else{
+                return (1.0/5);
+            }
+        }else if(phoenix.weather2.GetForecastDays()<3){
+            return (1.0/2);
+        }else{
+            if (Focused){
+                return (1.0/5)*2;
+            }else{
+                return (1.0/5);
+            }
+        }
+    }
+    
+    public static boolean UseSplitForecast(boolean Focused){
+        if (HasDescription()){
+            if (Focused){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(phoenix.weather2.GetForecastDays()<3){
+            return true;
+        }else{
+            if (Focused){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
     
