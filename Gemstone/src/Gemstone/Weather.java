@@ -104,6 +104,20 @@ public class Weather {
         util.SetOption(Const.WeatherProp, Const.WeatherUnits, phoenix.weather2.GetUnits());
     }
 
+    public static String GetBackground(){
+        if (phoenix.weather2.IsConfigured()){
+            IForecastPeriod current = phoenix.weather2.GetCurrentWeather();
+            int code = phoenix.weather2.GetCode(current);
+            if (code>-1){
+                return WIcons.GetWeatherIconByNumber(code);
+            }else{
+                return "";
+            }
+        }else{
+            return "";
+        }
+    }
+
     public static String GetIconImage(IForecastPeriod iforecastperiod){
         if (phoenix.weather2.GetCode(iforecastperiod)==-1){
             return WIcons.GetWeatherIconByNumber("na");
@@ -191,20 +205,36 @@ public class Weather {
         }
         
     }
-    public static int GetForecastColumns(){
+    public static int GetForecastColumns(boolean ForecastExpandFocused){
         if (HasDescription()){
-            return 3;
+            if (ForecastExpandFocused){
+                return 3;
+            }else{
+                return 5;
+            }
         }else if(phoenix.weather2.GetForecastDays()<3){
             return 2;
         }else{
-            return 4;
+            if (ForecastExpandFocused){
+                return 4;
+            }else{
+                return 5;
+            }
         }
     }
     
-    public static double GetForecastWidth(boolean Focused){
+    public static double GetForecastWidth(boolean Focused, boolean ForecastExpandFocused, IForecastPeriod NightPeriod){
         if (HasDescription()){
             if (Focused){
-                return (1.0/5)*3;
+                if (ForecastExpandFocused){
+                    if (NightPeriod==null){
+                        return (1.0/5)*1.5;
+                    }else{
+                        return (1.0/5)*3;
+                    }
+                }else{
+                    return (1.0/5);
+                }
             }else{
                 return (1.0/5);
             }
@@ -212,17 +242,29 @@ public class Weather {
             return (1.0/2);
         }else{
             if (Focused){
-                return (1.0/5)*2;
+                if (ForecastExpandFocused){
+                    if (NightPeriod==null){
+                        return (1.0/5)*1;
+                    }else{
+                        return (1.0/5)*2;
+                    }
+                }else{
+                    return (1.0/5);
+                }
             }else{
                 return (1.0/5);
             }
         }
     }
     
-    public static boolean UseSplitForecast(boolean Focused){
+    public static boolean UseSplitForecast(boolean Focused, boolean ForecastExpandFocused){
         if (HasDescription()){
             if (Focused){
-                return true;
+                if (ForecastExpandFocused){
+                    return true;
+                }else{
+                    return false;
+                }
             }else{
                 return false;
             }
@@ -230,7 +272,11 @@ public class Weather {
             return true;
         }else{
             if (Focused){
-                return true;
+                if (ForecastExpandFocused){
+                    return true;
+                }else{
+                    return false;
+                }
             }else{
                 return false;
             }
