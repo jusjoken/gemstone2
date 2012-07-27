@@ -4,6 +4,11 @@
  */
 package Gemstone;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import sagex.phoenix.weather.IForecastPeriod;
 
@@ -105,11 +110,32 @@ public class Weather {
     }
 
     public static String GetBackground(){
+        IForecastPeriod current = phoenix.weather2.GetCurrentWeather();
+        return GetBackground(current);
+    }
+    public static String GetBackground(IForecastPeriod current){
         if (phoenix.weather2.IsConfigured()){
-            IForecastPeriod current = phoenix.weather2.GetCurrentWeather();
             int code = phoenix.weather2.GetCode(current);
-            if (code>-1){
-                return WIcons.GetWeatherIconByNumber(code);
+            return GetBackground(code);
+        }else{
+            return "";
+        }
+    }
+    public static String GetBackground(int code){
+        if (phoenix.weather2.IsConfigured()){
+            if (code>-1 && code <48){
+                //determine which image file to return
+                int BGIndex = GetBackgroundIndex(code);
+                if (GetBackgroundsList(code).size()>BGIndex){
+                    return GetBackgroundsPath(code) + GetBackgroundsList(code).get(BGIndex);
+                }else{
+                    if (GetBackgroundsList(code).size()>0){
+                        //adjust the index back to 0
+                        SetBackgroundIndex(code, 0);
+                        return GetBackgroundsPath(code) + GetBackgroundsList(code).get(0);
+                    }
+                    return "";
+                }
             }else{
                 return "";
             }
@@ -118,6 +144,48 @@ public class Weather {
         }
     }
 
+    public static ArrayList<String> GetBackgroundsList(int code){
+        SortedSet<String> tList = new TreeSet<String>();
+        File BGLoc = new File(GetBackgroundsPath(code));
+        if (BGLoc!=null){
+            File[] files = BGLoc.listFiles();
+            if (files==null){
+                LOG.debug("GetBackgroundsList: for code '" + code + "' invalid backgrounds location '" + GetBackgroundsPath(code) + "'");
+                return new ArrayList<String>();
+            }else{
+                for (File file : files){
+                    if (!file.isDirectory()){
+                        tList.add(file.getName());
+                    }
+                }
+                //LOG.debug("GetBackgroundsList: for code '" + code + "' found '" + tList + "'");
+                return new ArrayList<String>(tList);
+            }
+        }else{
+            LOG.debug("GetBackgroundsList: for code '" + code + "' invalid backgrounds location '" + GetBackgroundsPath(code) + "'");
+            return new ArrayList<String>();
+        }
+    }
+    
+    public static String GetBackgroundsPath(int code){
+        return util.WeatherLocation() + File.separator + "Backgrounds" + File.separator + code + File.separator;
+    }
+
+    private static String getBGPropLocation(int code){
+        return Const.Weather + Const.PropDivider + Const.WeatherBGIndex + Const.PropDivider + code;
+    }
+    
+    public static int GetBackgroundIndex(int code){
+        return util.GetPropertyAsInteger(getBGPropLocation(code), 0);
+    }
+    public static void SetBackgroundIndexNext(int code){
+        int BGIndex = GetBackgroundIndex(code)+1;
+        util.SetProperty(getBGPropLocation(code), BGIndex + "");
+    }
+    public static void SetBackgroundIndex(int code, int newIndex){
+        util.SetProperty(getBGPropLocation(code), newIndex + "");
+    }
+    
     public static String GetIconImage(IForecastPeriod iforecastperiod){
         if (phoenix.weather2.GetCode(iforecastperiod)==-1){
             return WIcons.GetWeatherIconByNumber("na");

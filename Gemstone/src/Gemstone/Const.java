@@ -71,6 +71,7 @@ public class Const {
     public static final String WeatherProp = "Widgets/Weather";
     public static final String WeatherImpl = "WeatherImpl";
     public static final String WeatherUnits = "WeatherUnits";
+    public static final String WeatherBGIndex = "WeatherBGIndex";
     public static final String WeatherLoc = "WeatherLoc";
     public static final String MenuManagerProp = "MenuManager";
     public static final String MenuSharedfileName = "menus.properties";
