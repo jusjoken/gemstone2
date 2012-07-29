@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import sagex.phoenix.weather.IForecastPeriod;
 
@@ -19,7 +20,6 @@ import sagex.phoenix.weather.IForecastPeriod;
  * public Gemstone single Weather instance to use across the app and all extenders
  */
 public class Weather {
-    private static WeatherAPI GemstoneWeather = null;
     static private final Logger LOG = Logger.getLogger(Weather.class);
     private static String implList = util.ConvertListtoString(phoenix.weather2.GetWeatherImplKeys());
     private static final String implDefault = "google";
@@ -109,6 +109,26 @@ public class Weather {
         util.SetOption(Const.WeatherProp, Const.WeatherUnits, phoenix.weather2.GetUnits());
     }
 
+    public static String GetLocationTitle(){
+        if (!phoenix.weather2.IsConfigured()){
+            return "Not Configured";
+        }
+        String tLoc = phoenix.weather2.GetLocation();
+        String tName = phoenix.weather2.GetLocationName();
+        if (isValidZIP(tLoc)){
+            return tName + " (" + tLoc + ")";
+        }else{
+            return tName;
+        }
+    }
+    
+    private static boolean isValidZIP(String ZIPCode){
+        //String regex = "^\\d{5}(-\\d{4})?$"; //extended zip
+        String regex = "^\\d{5}";  //5 digit zip
+        //LOG.debug("isValidZIP: checking for ZIP '" + ZIPCode + "'");
+        return Pattern.matches(regex, ZIPCode);
+    }
+    
     public static String GetBackground(){
         IForecastPeriod current = phoenix.weather2.GetCurrentWeather();
         return GetBackground(current);
@@ -208,63 +228,6 @@ public class Weather {
         }
     }
 
-    public static String GetDefaultConditionsDisplay() {
-        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
-        if (tDefault.equals(util.OptionNotFound) || tDefault.equals("Default")){
-            return "Gemstone";
-        }else{
-            return tDefault;
-        }
-    }
-    public static String GetDefaultConditionsButtonText() {
-        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
-        if (tDefault.equals(util.OptionNotFound)){
-            return "Default";
-        }else{
-            return tDefault;
-        }
-    }
-    public static void SetDefaultConditionsDisplayNext() {
-        String Value = util.GetOptionName(Const.WeatherProp, "DefaultConditionsDisplay", util.OptionNotFound);
-        if (Value.equals("Gemstone")){
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "SageNew");
-        }else if (Value.equals("SageNew")){
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "SageOld");
-        }else if (Value.equals("SageOld")){
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Default");
-        }else{
-            util.SetOption(Const.WeatherProp, "DefaultConditionsDisplay", "Gemstone");
-        }
-    }
-    public static String GetDefaultForecastDisplay() {
-        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
-        if (tDefault.equals(util.OptionNotFound) || tDefault.equals("Default")){
-            return "Gemstone";
-        }else{
-            return tDefault;
-        }
-    }
-    public static String GetDefaultForecastButtonText() {
-        String tDefault = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
-        if (tDefault.equals(util.OptionNotFound)){
-            return "Default";
-        }else{
-            return tDefault;
-        }
-    }
-    public static void SetDefaultForecastDisplayNext() {
-        String Value = util.GetOptionName(Const.WeatherProp, "DefaultForecastDisplay", util.OptionNotFound);
-        if (Value.equals("Gemstone")){
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "SageNew");
-        }else if (Value.equals("SageNew")){
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "SageOld");
-        }else if (Value.equals("SageOld")){
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Default");
-        }else{
-            util.SetOption(Const.WeatherProp, "DefaultForecastDisplay", "Gemstone");
-        }
-    }
-    
     public static boolean HasDescription(){
         if (phoenix.weather2.IsSupported(phoenix.weather2.GetDescription(phoenix.weather2.GetForecastPeriod(0)))){
             return true;
