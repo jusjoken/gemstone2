@@ -109,6 +109,19 @@ public class Weather {
         util.SetOption(Const.WeatherProp, Const.WeatherUnits, phoenix.weather2.GetUnits());
     }
 
+    public static String GetNightShortName(IForecastPeriod forecastperiod){
+        String tName = "";
+        if (phoenix.weather2.IsDay(forecastperiod)){
+            return "Tomorrow";
+        }else{
+            if (phoenix.weather2.GetForecastDay(forecastperiod)==0){
+                return "Tonight";
+            }else{
+                return phoenix.weather2.GetDay(forecastperiod) + " Night";
+            }
+        }
+    }
+    
     public static String GetLocationTitle(){
         if (!phoenix.weather2.IsConfigured()){
             return "Not Configured";
