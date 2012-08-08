@@ -4,7 +4,17 @@
  */
 package Gemstone;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontFormatException;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1369,8 +1379,71 @@ public class ImageCache {
         return Key;
     }
     
-    //TODO: handle user set backgrounds and posters and banners located with the media files
-    //use similar settings as Gemstone settings so user can specific the name of the file for the fanart
-    
+    //returns a BufferedImage Object with the passed in Label text displayed
+    public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize){
+        return GetImageLabel(Label, DisplayFont, FontSize, Font.PLAIN, Color.white);
+        
+    }
+    public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize, int FontStyle){
+        return GetImageLabel(Label, DisplayFont, FontSize, FontStyle, Color.white);
+        
+    }
+    public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize, Color FontColor){
+        return GetImageLabel(Label, DisplayFont, FontSize, Font.PLAIN, FontColor);
+        
+    }
+    public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize, int FontSytle, Color FontColor){
+        //String FontPath = util.GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7"  + File.separator + "Themes" +  File.separator + "Gemstone" +  File.separator + "Fonts";
+        //String FontName = "";
+        if (!DisplayFont.toLowerCase().endsWith(".ttf")){
+            DisplayFont = DisplayFont + ".ttf";
+        }
+        FileInputStream fontFile = null;
+        try {
+            fontFile = new FileInputStream(DisplayFont);
+        } catch (FileNotFoundException ex) {
+            java.util.logging.Logger.getLogger(ImageCache.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        Font font = null;
+        try {
+            font = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+        } catch (FontFormatException ex) {
+            java.util.logging.Logger.getLogger(ImageCache.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(ImageCache.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        //we now have a font to work with
+        font = font.deriveFont(FontSytle,FontSize);
+        
+        // create temporary 1x1 image to get FontRenderingContext needed to calculate image size
+        BufferedImage buffer = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2 = buffer.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        FontRenderContext fc = g2.getFontRenderContext();
+        Rectangle2D bounds = font.getStringBounds(Label,fc);
+
+        // calculate the size of the text
+        int width = (int) bounds.getWidth();
+        int height = (int) bounds.getHeight();
+
+        // prepare final image with proper dimensions
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        g2 = buffer.createGraphics();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setFont(font);
+
+        // actually do the drawing
+        //g2.setColor(Color.white);
+        //g2.fillRect(0,0,width,height);
+        g2.setColor(FontColor);
+        g2.drawString(Label,0,(int)-bounds.getY());
+
+        // return the image
+        return buffer;
+        
+    }
     
 }

@@ -1064,6 +1064,23 @@ public class util {
         }
         return tValue;
     }
+    
+    public static String SidewaysText(String text){
+        //reverse the text first
+        String t = new StringBuffer(text).reverse().toString();
+        //add newline characters between each letter
+        String o = "";
+        for (int i = 0; i < t.length(); i++) {
+            if (i==0){
+                o = t.charAt(i) + ""; 
+            }else{
+                o = o + "\n" + t.charAt(i);
+            }
+        } 
+        o = o.toLowerCase();
+        LOG.debug("SidewaysText: text in '" + text + "' text out '" + o + "'");
+        return o;
+    }
 
     //TODO: remove as only used for temp conversion for Scott's Menus for Playon
     public static void BuildActions(){
