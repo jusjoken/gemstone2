@@ -60,6 +60,7 @@ public class ImageCache {
     // - CacheType - NoQueue - items get added to the Cache and returned
     // - CacheType - Off - items get returned and NOT added to Queue NOR Cache
     // - CacheType - ByImageType - 
+    
     static private final Logger LOG = Logger.getLogger(ImageCache.class);
     private static final String ICacheProps = Const.BaseProp + Const.PropDivider + Const.ImageCacheProp;
     private static LinkedHashMap<String,ImageCacheKey> IQueue = new LinkedHashMap<String,ImageCacheKey>();

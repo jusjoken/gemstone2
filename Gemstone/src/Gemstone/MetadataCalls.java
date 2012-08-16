@@ -600,7 +600,7 @@ public class MetadataCalls {
         if (imediaresource!=null){ 
             String tReturn = phoenix.series.GetDescription(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
             //LOG.debug("GetSeriesDescription: GetDescription returned '" + tReturn + "' for '" + imediaresource + "'");
-            if (tReturn.isEmpty()){
+            if (tReturn==null || tReturn.isEmpty()){
                 return "";
             }else{
                 return tReturn;

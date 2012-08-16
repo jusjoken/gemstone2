@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import sagex.UIContext;
+import sagex.util.Log4jConfigurator;
 
 /**
  *
@@ -39,6 +40,7 @@ public class api {
         //InitLogger();
         //initialize the ADM settings
         //util.HandleNonCompatiblePlugins();
+        Gemstone.getInstance();
         
         ADMutil.LoadADM();
         
@@ -67,43 +69,44 @@ public class api {
 
     public static void InitLogger(){
         //initialize the Logging 
-        System.out.println("InitLogger: setting up logger");
-        LOG = Logger.getLogger(api.class);
-        String log4jfile = "STVs" + File.separator + "Gemstone" + File.separator + "Configuration" + File.separator + "Gemstone.log4j.properties";
-        String log4jfullpath = sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + log4jfile;
-        //check if the log4j property file exists and use defaults if it does not
-        Boolean FileExists = (new File(log4jfullpath)).exists();
-        if (FileExists){
-            System.out.println("InitLogger: using '" + log4jfullpath + "' for log properties");
-            PropertyConfigurator.configure(log4jfullpath);
-        }else{
-            //configure manually
-            System.out.println("InitLogger: using internal defaults for log properties. Properties file not found '" + log4jfullpath + "'");
-            Properties log4jProps = new Properties();
-            log4jProps.put("log4j.rootCategory", "debug, Log");
-            log4jProps.put("log4j.additivity.Gemstone", "false");
-            log4jProps.put("log4j.appender.Gemstone", "org.apache.log4j.RollingFileAppender");
-            log4jProps.put("log4j.appender.Gemstone.File", "logs/Gemstone.log");
-            log4jProps.put("log4j.appender.Gemstone.layout", "org.apache.log4j.PatternLayout");
-            log4jProps.put("log4j.appender.Gemstone.layout.ConversionPattern", "%d{EEE M/d HH:mm:ss.SSS} [%t] %-5p %c - %m%n");
-            log4jProps.put("log4j.appender.Gemstone.MaxBackupIndex", "5");
-            log4jProps.put("log4j.appender.Gemstone.MaxFileSize", "10000KB");
-            log4jProps.put("log4j.appender.Gemstone.Threshold", "debug");
-            log4jProps.put("log4j.additivity.Sage", "false");
-            log4jProps.put("log4j.appender.Sage", "org.apache.log4j.ConsoleAppender");
-            log4jProps.put("log4j.appender.Sage.layout", "org.apache.log4j.PatternLayout");
-            log4jProps.put("log4j.appender.Sage.layout.ConversionPattern", "%d{EEE M/d HH:mm:ss.SSS} [%t] %-5p %c - %m%n");
-            log4jProps.put("log4j.appender.Sage.Threshold", "debug");
-            //log4jProps.put("log4j.logger.SDGroup", "debug,Gemstone,Sage");
-            log4jProps.put("log4j.logger.Gemstone", "debug,Gemstone,Sage");
-            PropertyConfigurator.configure(log4jProps);
-        }
-        LOG.info("Logger for Gemstone created successfully!");
-//        LOG.debug("Test Log Message - debug");
-//        LOG.info("Test Log Message - info");
-//        LOG.warn("Test Log Message - warn");
-//        LOG.error("Test Log Message - error");
-//        LOG.fatal("Test Log Message - fatal");
+        
+//        System.out.println("InitLogger: setting up logger");
+//        LOG = Logger.getLogger(api.class);
+//        String log4jfile = "STVs" + File.separator + "Gemstone" + File.separator + "Configuration" + File.separator + "Gemstone.log4j.properties";
+//        String log4jfullpath = sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + log4jfile;
+//        //check if the log4j property file exists and use defaults if it does not
+//        Boolean FileExists = (new File(log4jfullpath)).exists();
+//        if (FileExists){
+//            System.out.println("InitLogger: using '" + log4jfullpath + "' for log properties");
+//            PropertyConfigurator.configure(log4jfullpath);
+//        }else{
+//            //configure manually
+//            System.out.println("InitLogger: using internal defaults for log properties. Properties file not found '" + log4jfullpath + "'");
+//            Properties log4jProps = new Properties();
+//            log4jProps.put("log4j.rootCategory", "debug, Log");
+//            log4jProps.put("log4j.additivity.Gemstone", "false");
+//            log4jProps.put("log4j.appender.Gemstone", "org.apache.log4j.RollingFileAppender");
+//            log4jProps.put("log4j.appender.Gemstone.File", "logs/Gemstone.log");
+//            log4jProps.put("log4j.appender.Gemstone.layout", "org.apache.log4j.PatternLayout");
+//            log4jProps.put("log4j.appender.Gemstone.layout.ConversionPattern", "%d{EEE M/d HH:mm:ss.SSS} [%t] %-5p %c - %m%n");
+//            log4jProps.put("log4j.appender.Gemstone.MaxBackupIndex", "5");
+//            log4jProps.put("log4j.appender.Gemstone.MaxFileSize", "10000KB");
+//            log4jProps.put("log4j.appender.Gemstone.Threshold", "debug");
+//            log4jProps.put("log4j.additivity.Sage", "false");
+//            log4jProps.put("log4j.appender.Sage", "org.apache.log4j.ConsoleAppender");
+//            log4jProps.put("log4j.appender.Sage.layout", "org.apache.log4j.PatternLayout");
+//            log4jProps.put("log4j.appender.Sage.layout.ConversionPattern", "%d{EEE M/d HH:mm:ss.SSS} [%t] %-5p %c - %m%n");
+//            log4jProps.put("log4j.appender.Sage.Threshold", "debug");
+//            //log4jProps.put("log4j.logger.SDGroup", "debug,Gemstone,Sage");
+//            log4jProps.put("log4j.logger.Gemstone", "debug,Gemstone,Sage");
+//            PropertyConfigurator.configure(log4jProps);
+//        }
+//        LOG.info("NO Logger for Gemstone created successfully!");
+////        LOG.debug("Test Log Message - debug");
+////        LOG.info("Test Log Message - info");
+////        LOG.warn("Test Log Message - warn");
+////        LOG.error("Test Log Message - error");
+////        LOG.fatal("Test Log Message - fatal");
    }
 
     public static void AddStaticContext(String Context, Object Value) {
