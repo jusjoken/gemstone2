@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
@@ -32,6 +33,7 @@ import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
+import sagex.util.Log4jConfigurator;
 
 /**
  *
@@ -1127,6 +1129,80 @@ public class util {
             
         }
     }
+
+    public static void SetLogtoDebug(){
+        Properties props = GetLogProps();
+        props.setProperty("log4j.logger.Gemstone", "DEBUG, GEMSTONE");
+        Log4jConfigurator.reconfigure("gemstone", props);
+        LOG.info("SetLogtoDebug: completed");
+    }
+    public static void SetLogtoInfo(){
+        Properties props = GetLogProps();
+        props.setProperty("log4j.logger.Gemstone", "INFO, GEMSTONE");
+        Log4jConfigurator.reconfigure("gemstone", props);
+        LOG.info("SetLogtoInfo: completed");
+    }
+    
+    public static String GetLogFileNameFull(){
+        return GetLocalWorkingDir() + File.separator + Const.LogFileName;
+    }
+    
+    public static Properties GetLogProps(){
+        //get the properties for the gemstone log either from the file if it exists or from the JAR
+        LOG.info("GetLogProps: starting");
+        File configFile = new File(GetLogFileNameFull());
+        Properties props = new Properties();
+        if (configFile.exists()){
+            LOG.info("GetLogProps: from File");
+            try {
+                props = getPropsAndCloseStream(Const.LogFileName, configFile, new FileInputStream(configFile));
+            } catch (FileNotFoundException ex) {
+                java.util.logging.Logger.getLogger(util.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }else{
+            LOG.info("GetLogProps: from JAR");
+            ClassLoader loader = Log4jConfigurator.class.getClassLoader();
+            props = getPropsAndCloseStream(Const.LogFileName, configFile, loader.getResourceAsStream(Const.LogFileName));
+        }
+        //temp output to test this
+        LOG.info("GetLogProps: level = '" + props.getProperty("log4j.logger.Gemstone", "NOT FOUND"));
+        return props;
+    }
+    
+    private static Properties getPropsAndCloseStream(String id, File file, InputStream is) {
+        try {
+                return getPropsforStream(id, file, is);
+        } finally {
+                closeStream(is);
+        }
+    }
+
+    private static Properties getPropsforStream(String id, File file, InputStream is) {
+        if (is == null){
+            return new Properties();
+        }
+
+        // configure default logging
+        try {
+            Properties props = new Properties();
+            props.load(is);
+            return props;
+        } catch (Exception e) {
+            LOG.debug("Failed to load props for: " + id + " using file: " + file);
+        }
+        return new Properties();
+    }
+
+    private static void closeStream(InputStream fis) {
+        if (fis != null) {
+            try {
+                fis.close();
+            } catch (IOException e) {
+                LOG.debug("closeStream: Failed to close InputStream");
+            }
+        }
+    }
+
     
 }
 

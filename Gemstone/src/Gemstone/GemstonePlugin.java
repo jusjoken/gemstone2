@@ -36,7 +36,7 @@ public class GemstonePlugin extends AbstractPlugin {
     public void start() {      
         LOG.debug("start: called for GemstonePlugin");
         super.start(); 
-        //api.InitLogger();
+        api.InitLogger();
     }
     
 }

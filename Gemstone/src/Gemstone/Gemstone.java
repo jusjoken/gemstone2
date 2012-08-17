@@ -29,12 +29,12 @@ public class Gemstone {
             return INSTANCE;
     }
 
-    //private Logger log = Logger.getLogger(this.getClass());
+    private Logger log = Logger.getLogger(this.getClass());
 
     protected void init() {
         try {
             Log4jConfigurator.configureQuietly("gemstone", this.getClass().getClassLoader());
-            //log.info("Initializing Gemstone - Version: " +  api.GetVersion());
+            log.info("Initializing Gemstone - Version: " +  api.GetVersion());
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(Gemstone.class.getName()).log(Level.SEVERE, null, ex);
         }

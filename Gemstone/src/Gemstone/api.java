@@ -24,7 +24,7 @@ import sagex.util.Log4jConfigurator;
  */
 public class api {
 
-    public static Logger LOG=null;
+    public static Logger LOG=Logger.getLogger(api.class);
 
     public static String Version = "1.013" + "";
 
@@ -38,31 +38,14 @@ public class api {
     public static void Load(){
         //the following calls are now called from ApplicationStarted hook in the STV
         //initialize the Logging 
-        //InitLogger();
+        InitLogger();
         //initialize the ADM settings
         //util.HandleNonCompatiblePlugins();
-        //Gemstone.getInstance();
-        try {
-            System.out.println("****TEST 1****");
-            Log4jConfigurator.configure("gemstone");
-            System.out.println("****TEST 2****");
-            //log.info("Initializing Gemstone - Version: " +  api.GetVersion());
-        } catch (Exception ex) {
-            java.util.logging.Logger.getLogger(Gemstone.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        LOG = Logger.getLogger(api.class);
-        LOG.info("*****TEST INFO*****");
-        LOG.debug("*****TEST DEBUG*****");
         
         ADMutil.LoadADM();
-        LOG.info("*****TEST INFO*****");
-        LOG.debug("*****TEST DEBUG*****");
         
         //Init the common Weather interface
         Weather.Init();
-        LOG.info("*****TEST INFO*****");
-        LOG.debug("*****TEST DEBUG*****");
         
         //generate symbols to be used for new names
         for (int idx = 0; idx < 10; ++idx)
@@ -86,6 +69,8 @@ public class api {
 
     public static void InitLogger(){
         //initialize the Logging 
+        Gemstone.getInstance();
+        LOG.debug("InitLogger: Gemstone Instance created and logging started");
         
 //        System.out.println("InitLogger: setting up logger");
 //        LOG = Logger.getLogger(api.class);
