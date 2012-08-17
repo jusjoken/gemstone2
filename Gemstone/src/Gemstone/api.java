@@ -7,6 +7,7 @@ package Gemstone;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import sagex.UIContext;
@@ -40,12 +41,28 @@ public class api {
         //InitLogger();
         //initialize the ADM settings
         //util.HandleNonCompatiblePlugins();
-        Gemstone.getInstance();
+        //Gemstone.getInstance();
+        try {
+            System.out.println("****TEST 1****");
+            Log4jConfigurator.configure("gemstone");
+            System.out.println("****TEST 2****");
+            //log.info("Initializing Gemstone - Version: " +  api.GetVersion());
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(Gemstone.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        LOG = Logger.getLogger(api.class);
+        LOG.info("*****TEST INFO*****");
+        LOG.debug("*****TEST DEBUG*****");
         
         ADMutil.LoadADM();
+        LOG.info("*****TEST INFO*****");
+        LOG.debug("*****TEST DEBUG*****");
         
         //Init the common Weather interface
         Weather.Init();
+        LOG.info("*****TEST INFO*****");
+        LOG.debug("*****TEST DEBUG*****");
         
         //generate symbols to be used for new names
         for (int idx = 0; idx < 10; ++idx)

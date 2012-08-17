@@ -4,6 +4,7 @@
  */
 package Gemstone;
 
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import sagex.phoenix.util.Loggers;
 import sagex.util.Log4jConfigurator;
@@ -28,11 +29,15 @@ public class Gemstone {
             return INSTANCE;
     }
 
-    private Logger log = Logger.getLogger(this.getClass());
+    //private Logger log = Logger.getLogger(this.getClass());
 
     protected void init() {
-        Log4jConfigurator.configureQuietly("gemstone", this.getClass().getClassLoader());
-        log.info("Initializing Gemstone - Version: " +  api.GetVersion());
+        try {
+            Log4jConfigurator.configureQuietly("gemstone", this.getClass().getClassLoader());
+            //log.info("Initializing Gemstone - Version: " +  api.GetVersion());
+        } catch (Exception ex) {
+            java.util.logging.Logger.getLogger(Gemstone.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
 
