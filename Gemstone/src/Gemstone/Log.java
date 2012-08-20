@@ -24,13 +24,24 @@ public class Log {
     static private final Logger LOG = Logger.getLogger(util.class);
     private Properties props = null;
     public static enum LogLevels2{FATAL,ERROR,WARN,DEBUG,INFO};
-    public static List<String> LogLevels = Arrays.asList("INFO","DEBUG","WARN","ERROR","FATAL"); 
+    private static List<String> LogLevels = Arrays.asList("DEBUG","INFO","WARN","ERROR"); 
     private String DefaultLevel = "INFO";
     private String originalLevel = "";
     
     public Log() {
         props = GetLogProps();
         originalLevel = GetLevel();
+    }
+
+    public List<String> GetLevels(){
+        return LogLevels;
+    }
+    
+    public boolean IsCurrentLevel(String Level){
+        if (Level.equals(GetLevel())){
+            return true;
+        }
+        return false;
     }
     
     public String GetLevel(){
@@ -80,6 +91,23 @@ public class Log {
         }
     }
     
+    public void LoadDefaults(){
+        props.clear();
+        //make sure these match the gemstone.log4j.properties file imbeded in the JAR
+        props.setProperty("log4j.appender.GEMSTONE", "org.apache.log4j.RollingFileAppender");
+        props.setProperty("log4j.appender.GEMSTONE.MaxFileSize", "10000KB");
+        props.setProperty("log4j.appender.GEMSTONE.MaxBackupIndex", "2");
+        props.setProperty("log4j.appender.GEMSTONE.File", "logs/gemstone.log");
+        props.setProperty("log4j.appender.GEMSTONE.Append", "false");
+        props.setProperty("log4j.appender.GEMSTONE.layout", "org.apache.log4j.PatternLayout");
+        props.setProperty("log4j.appender.GEMSTONE.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
+        props.setProperty("log4j.logger.Gemstone", "INFO, GEMSTONE");
+        props.setProperty("log4j.additivity.Gemstone", "false");
+        Log4jConfigurator.reconfigure("gemstone", props);
+        originalLevel = GetLevel();
+        LOG.info("LoadDefaults: log settings set to defaults.");
+    }
+
     public static String GetLogFileNameFull(){
         return util.GetLocalWorkingDir() + File.separator + Const.LogFileName;
     }
@@ -97,13 +125,18 @@ public class Log {
                 java.util.logging.Logger.getLogger(util.class.getName()).log(Level.SEVERE, null, ex);
             }
         }else{
-            LOG.info("GetLogProps: from JAR");
-            ClassLoader loader = Log4jConfigurator.class.getClassLoader();
-            props = getPropsAndCloseStream(Const.LogFileName, configFile, loader.getResourceAsStream(Const.LogFileName));
+            props = getPropsfromJAR();
         }
         //temp output to test this
         LOG.info("GetLogProps: level = '" + props.getProperty("log4j.logger.Gemstone", "NOT FOUND"));
         return props;
+    }
+    
+    private static Properties getPropsfromJAR(){
+        File configFile = new File(GetLogFileNameFull());
+        LOG.info("getPropsfromJAR: from JAR");
+        ClassLoader loader = Log4jConfigurator.class.getClassLoader();
+        return getPropsAndCloseStream(Const.LogFileName, configFile, loader.getResourceAsStream(Const.LogFileName));
     }
     
     private static Properties getPropsAndCloseStream(String id, File file, InputStream is) {
@@ -121,9 +154,9 @@ public class Log {
 
         // configure default logging
         try {
-            Properties props = new Properties();
-            props.load(is);
-            return props;
+            Properties sProps = new Properties();
+            sProps.load(is);
+            return sProps;
         } catch (Exception e) {
             LOG.debug("Failed to load props for: " + id + " using file: " + file);
         }
