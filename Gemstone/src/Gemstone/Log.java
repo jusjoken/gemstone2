@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import org.apache.log4j.Logger;
+import sagex.UIContext;
 import sagex.util.Log4jConfigurator;
 
 /**
@@ -105,6 +106,13 @@ public class Log {
         props.setProperty("log4j.additivity.Gemstone", "false");
         Log4jConfigurator.reconfigure("gemstone", props);
         originalLevel = GetLevel();
+        //set the SageTV logging to it's default
+        if (util.IsClient()){
+            setSageLogSettingServer(Boolean.FALSE);
+            setSageLogSettingClient(Boolean.FALSE);
+        }else{
+            setSageLogSettingServer(Boolean.FALSE);
+        }
         LOG.info("LoadDefaults: log settings set to defaults.");
     }
 
@@ -172,5 +180,78 @@ public class Log {
             }
         }
     }
-
+    
+    public static String GetSageLogSettingLabel(){
+        if (util.IsClient()){
+            return "Server/Client Debug Log";
+        }else{
+            return "SageTV Debug Log";
+        }
+    }
+    
+    public static String GetSageLogSetting(){
+        String retVal = "";
+        if (util.IsClient()){
+            //client needs to return the server and the client value combined
+            if (getSageLogSettingServer()){
+                retVal = "On/";
+            }else{
+                retVal = "Off/";
+            }
+            if (getSageLogSettingClient()){
+                retVal = retVal + "On";
+            }else{
+                retVal = retVal + "Off";
+            }
+        }else{
+            //just need the server value
+            if (getSageLogSettingServer()){
+                retVal = "On";
+            }else{
+                retVal = "Off";
+            }
+        }
+        return retVal;
+    }
+    
+    public static void SetSageLogSettingNext(){
+        if (util.IsClient()){
+            //client: need to rotate through server and client logging settings
+            //values can be false/false, false/true, true/false, true,true
+            if (!getSageLogSettingServer() && !getSageLogSettingClient()){
+                setSageLogSettingServer(Boolean.FALSE);
+                setSageLogSettingClient(Boolean.TRUE);
+            }else if (!getSageLogSettingServer() && getSageLogSettingClient()){
+                setSageLogSettingServer(Boolean.TRUE);
+                setSageLogSettingClient(Boolean.FALSE);
+            }else if (getSageLogSettingServer() && !getSageLogSettingClient()){
+                setSageLogSettingServer(Boolean.TRUE);
+                setSageLogSettingClient(Boolean.TRUE);
+            }else{
+                setSageLogSettingServer(Boolean.FALSE);
+                setSageLogSettingClient(Boolean.FALSE);
+            }
+        }else{
+            //just need to toggle the server value
+            if (getSageLogSettingServer()){
+                setSageLogSettingServer(Boolean.FALSE);
+            }else{
+                setSageLogSettingServer(Boolean.TRUE);
+            }
+        }
+    }
+    
+    private static boolean getSageLogSettingClient(){
+        return util.GetPropertyAsBoolean("debug_logging", false);
+    }
+    private static boolean getSageLogSettingServer(){
+        return util.GetServerPropertyAsBoolean("debug_logging", false);
+    }
+    private static void setSageLogSettingClient(Boolean setting){
+        util.SetProperty("debug_logging", setting.toString());
+    }
+    private static void setSageLogSettingServer(Boolean setting){
+        util.SetServerProperty("debug_logging", setting.toString());
+    }
+    
 }

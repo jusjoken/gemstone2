@@ -324,6 +324,15 @@ public class util {
         }
     }
     
+    public static Boolean GetServerPropertyAsBoolean(String Property, Boolean DefaultValue){
+        String tValue = sagex.api.Configuration.GetServerProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
+        if (tValue==null || tValue.equals(OptionNotFound)){
+            return DefaultValue;
+        }else{
+            return Boolean.parseBoolean(tValue);
+        }
+    }
+    
     //Evaluates the property and returns it's value - must be true or false - returns true otherwise
     public static Boolean GetPropertyEvalAsBoolean(String Property, Boolean DefaultValue){
         String tValue = sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
@@ -1130,6 +1139,9 @@ public class util {
         }
     }
 
-    
+    public static boolean IsClient(){
+        UIContext uic = new UIContext(sagex.api.Global.GetUIContextName());
+        return sagex.api.Global.IsClient(uic) || (!sagex.api.Global.IsClient(uic) && !sagex.api.Global.IsRemoteUI(uic) && (GetProperty("client","")=="true"));
+    }
 }
 
