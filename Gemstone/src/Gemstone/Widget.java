@@ -303,6 +303,16 @@ public class Widget {
         }
     }
     public static Boolean GetSectionEnabled(String WidgetType, Integer Section){
+        //see if this is a special Widget type that has a max number of sections - like "WeatherForecast"
+        if (WidgetType.equals("WeatherForecast")){
+            //Section 1 is the title
+            //make sure we return false if the section is larger than the number of forecast days available
+            if (phoenix.weather2.IsConfigured()){
+                if (Section > phoenix.weather2.GetForecastDays()+1){
+                    return false;
+                }
+            }
+        }
         String tProp = WidgetProps + WidgetType + Const.PropDivider + Section.toString() + Const.PropDivider + "Enabled";
         return util.GetPropertyAsBoolean(tProp,Boolean.TRUE);
     }
