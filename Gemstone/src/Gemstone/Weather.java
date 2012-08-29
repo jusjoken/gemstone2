@@ -22,7 +22,7 @@ import sagex.phoenix.weather.IForecastPeriod;
 public class Weather {
     static private final Logger LOG = Logger.getLogger(Weather.class);
     private static String implList = util.ConvertListtoString(phoenix.weather2.GetWeatherImplKeys());
-    private static final String implDefault = "google";
+    private static final String implDefault = "world";
     private static final String unitsDefault = "Standard";
 
     //always call Init first - should be called in the Gemstone Init 
@@ -242,6 +242,9 @@ public class Weather {
     }
 
     public static boolean HasDescription(){
+        if (phoenix.weather2.GetForecastPeriods()==null){
+            return false;
+        }
         if (phoenix.weather2.IsSupported(phoenix.weather2.GetDescription(phoenix.weather2.GetForecastPeriod(0)))){
             return true;
         }else{
