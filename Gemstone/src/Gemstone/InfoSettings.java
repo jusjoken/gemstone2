@@ -51,6 +51,16 @@ public class InfoSettings {
         }
     }
     
+    public boolean IsInfoShowing(boolean AutoInfoShowing){
+        if (Mode().equals(Modes.AlwaysOn.toString())){
+            return true;
+        }else if (Mode().equals(Modes.Auto.toString())){
+            return AutoInfoShowing;
+        }else{
+            return false;
+        }
+    }
+    
     public String Mode(){
         String tValue = Flow.GetOptionName(FlowID, PropBase("Mode"), util.OptionNotFound);
         if (tValue.equals(util.OptionNotFound)){
