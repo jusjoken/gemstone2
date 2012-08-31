@@ -1055,6 +1055,23 @@ public class util {
         }else{
             LOG.debug("HandleNonCompatiblePlugins: checking for ADM - not found");
         }
+        //check for Diamond Legacy
+        thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"DiamondLegacySTVi");
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, thisPlugin)){
+            if(DisableForConflict){
+                sagex.api.PluginAPI.DisablePlugin(tUI, thisPlugin);
+                String tMessage = "Diamond Legacy Plugin is NOT compatible with Gemstone as Gemstone now replaces Diamond.\n \n* Diamond Legacy Plugin has been disabled.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelInfo, tMessage);
+                ReloadUI = Boolean.TRUE;
+                LOG.debug("HandleNonCompatiblePlugins: Diamond Legacy found and disabled");
+            }else{
+                String tMessage = "Diamond Legacy Plugin is NOT compatible with Gemstone as Gemstone now replaces Diamond.\n \n* Please disable the Diamond Legacy Plugin and reload the UI.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+                LOG.debug("HandleNonCompatiblePlugins: Diamond Legacy found and System Error message created");
+            }
+        }else{
+            LOG.debug("HandleNonCompatiblePlugins: checking for Diamond Legacy - not found");
+        }
         return ReloadUI;
     }
     
