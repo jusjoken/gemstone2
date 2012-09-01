@@ -1447,9 +1447,11 @@ public class ImageCache {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setFont(font);
 
-        // actually do the drawing
+        //uncomment the next 2 lines to do testing with a solid background
         //g2.setColor(Color.BLUE);
         //g2.fillRect(0,0,width,height);
+
+        // actually do the drawing
         g2.setColor(FontColor);
         int centerh = height/2 + ((int)-bounds.getY()/2); 
         //draw the text in the center of the square box
@@ -1457,9 +1459,7 @@ public class ImageCache {
 
         // return the image
         if (degreesRotate>0){
-            //BufferedImage rbuff = RotateImage(buffer, degreesRotate);
             return RotateImage(buffer, degreesRotate);
-            //return rbuff;
         }else{
             return buffer;
         }
@@ -1468,7 +1468,6 @@ public class ImageCache {
     
     public static BufferedImage RotateImage(BufferedImage image, int degrees){
         AffineTransform transform = new AffineTransform();
-        //LOG.debug("RotateImage:  before - width '" + image.getWidth() + "' - height '" + image.getHeight() + "'");
         transform.rotate(Math.toRadians(degrees), image.getWidth(), image.getHeight());
         AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
         return op.filter(image, null);
