@@ -4,13 +4,16 @@
  */
 package Gemstone;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.FontRenderContext;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -1382,18 +1385,24 @@ public class ImageCache {
     
     //returns a BufferedImage Object with the passed in Label text displayed
     public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize){
-        return GetImageLabel(Label, DisplayFont, FontSize, Font.PLAIN, Color.white);
-        
+        return GetImageLabel(Label, 0, DisplayFont, FontSize, Font.PLAIN, Color.white);
+    }
+    public static BufferedImage GetImageLabel(String Label, int degreesRotate, String DisplayFont, int FontSize){
+        return GetImageLabel(Label, degreesRotate, DisplayFont, FontSize, Font.PLAIN, Color.white);
     }
     public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize, int FontStyle){
-        return GetImageLabel(Label, DisplayFont, FontSize, FontStyle, Color.white);
-        
+        return GetImageLabel(Label, 0, DisplayFont, FontSize, FontStyle, Color.white);
+    }
+    public static BufferedImage GetImageLabel(String Label, int degreesRotate, String DisplayFont, int FontSize, int FontStyle){
+        return GetImageLabel(Label, degreesRotate, DisplayFont, FontSize, FontStyle, Color.white);
     }
     public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize, Color FontColor){
-        return GetImageLabel(Label, DisplayFont, FontSize, Font.PLAIN, FontColor);
-        
+        return GetImageLabel(Label, 0, DisplayFont, FontSize, Font.PLAIN, FontColor);
     }
-    public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize, int FontSytle, Color FontColor){
+    public static BufferedImage GetImageLabel(String Label, int degreesRotate, String DisplayFont, int FontSize, Color FontColor){
+        return GetImageLabel(Label, degreesRotate, DisplayFont, FontSize, Font.PLAIN, FontColor);
+    }
+    public static BufferedImage GetImageLabel(String Label, int degreesRotate, String DisplayFont, int FontSize, int FontSytle, Color FontColor){
         //String FontPath = util.GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7"  + File.separator + "Themes" +  File.separator + "Gemstone" +  File.separator + "Fonts";
         //String FontName = "";
         if (!DisplayFont.toLowerCase().endsWith(".ttf")){
@@ -1428,23 +1437,40 @@ public class ImageCache {
 
         // calculate the size of the text
         int width = (int) bounds.getWidth();
-        int height = (int) bounds.getHeight();
+        //int height = (int) bounds.getHeight();
+        //force the box to be a square
+        int height = width;
 
         // prepare final image with proper dimensions
-        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         g2 = buffer.createGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setFont(font);
 
         // actually do the drawing
-        //g2.setColor(Color.white);
+        //g2.setColor(Color.BLUE);
         //g2.fillRect(0,0,width,height);
         g2.setColor(FontColor);
-        g2.drawString(Label,0,(int)-bounds.getY());
+        int centerh = height/2 + ((int)-bounds.getY()/2); 
+        //draw the text in the center of the square box
+        g2.drawString(Label,0,centerh);
 
         // return the image
-        return buffer;
+        if (degreesRotate>0){
+            //BufferedImage rbuff = RotateImage(buffer, degreesRotate);
+            return RotateImage(buffer, degreesRotate);
+            //return rbuff;
+        }else{
+            return buffer;
+        }
         
     }
     
+    public static BufferedImage RotateImage(BufferedImage image, int degrees){
+        AffineTransform transform = new AffineTransform();
+        //LOG.debug("RotateImage:  before - width '" + image.getWidth() + "' - height '" + image.getHeight() + "'");
+        transform.rotate(Math.toRadians(degrees), image.getWidth(), image.getHeight());
+        AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+        return op.filter(image, null);
+    }
 }
