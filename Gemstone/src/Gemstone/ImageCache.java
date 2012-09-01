@@ -1459,17 +1459,28 @@ public class ImageCache {
 
         // return the image
         if (degreesRotate>0){
-            return RotateImage(buffer, degreesRotate);
+            return rotateLabel(buffer, degreesRotate);
         }else{
             return buffer;
         }
         
     }
     
-    public static BufferedImage RotateImage(BufferedImage image, int degrees){
+    private static BufferedImage rotateLabel(BufferedImage image, int degrees){
         AffineTransform transform = new AffineTransform();
         transform.rotate(Math.toRadians(degrees), image.getWidth(), image.getHeight());
         AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
         return op.filter(image, null);
     }
+
+    public static BufferedImage RotateImage(Object image, int degrees){
+        return RotateImage(sagex.api.Utility.GetImageAsBufferedImage(image), degrees);
+    }
+    public static BufferedImage RotateImage(BufferedImage image, int degrees){
+        AffineTransform transform = new AffineTransform();
+        transform.rotate(Math.toRadians(degrees), image.getWidth()/2, image.getHeight()/2);
+        AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
+        return op.filter(image, null);
+    }
+
 }
