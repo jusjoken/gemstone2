@@ -473,11 +473,19 @@ public class ADMAction {
             return TempMenuItems;
         }else if(Attribute.equals(DynamicGemstoneFlows)){
             Counter = 0;
-            for (String vFlow: Flow.GetFlows()){
+            //if there are no Flows then add an item to allow the user to generate all default flows
+            if (Flow.GetFlows().size()>0){
+                for (String vFlow: Flow.GetFlows()){
+                    ItemName = dParent + Counter.toString();
+                    ADMMenuNode.CreateTempMenuItem(ItemName, dParent, GemstoneFlow, vFlow, GetAttributeButtonText(GemstoneFlow, vFlow, Boolean.TRUE), Counter);
+                    TempMenuItems.add(ItemName);
+                    Counter++;
+                }
+            }else{
+                //calls a specific widget inside the UI to create all default flows plus reset the main menu
                 ItemName = dParent + Counter.toString();
-                ADMMenuNode.CreateTempMenuItem(ItemName, dParent, GemstoneFlow, vFlow, GetAttributeButtonText(GemstoneFlow, vFlow, Boolean.TRUE), Counter);
+                ADMMenuNode.CreateTempMenuItem(ItemName, dParent, WidgetbySymbol, "JUSJOKEN-7763577", "Create Default Flows", Counter);
                 TempMenuItems.add(ItemName);
-                Counter++;
             }
             return TempMenuItems;
         }else{

@@ -226,6 +226,17 @@ public class Weather {
             return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCode(iforecastperiod));
         }
     }
+    public static String GetIconImageCurrent(IForecastPeriod iforecastperiod){
+        if (phoenix.weather2.GetCode(iforecastperiod)==-1){
+            return WIcons.GetWeatherIconByNumber("na");
+        }else{
+            if (WIcons.IsDaytime()){
+                return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCodeForceDay(phoenix.weather2.GetCode(iforecastperiod)));
+            }else{
+                return WIcons.GetWeatherIconByNumber(phoenix.weather2.GetCodeForceNight(phoenix.weather2.GetCode(iforecastperiod)));
+            }
+        }
+    }
     public static String GetIconImageDay(IForecastPeriod iforecastperiod){
         if (phoenix.weather2.GetCode(iforecastperiod)==-1){
             return WIcons.GetWeatherIconByNumber("na");

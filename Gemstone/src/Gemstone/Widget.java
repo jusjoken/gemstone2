@@ -212,31 +212,6 @@ public class Widget {
         util.SetProperty(WidgetProps + WidgetType + Const.PropDivider + "Size",tSize);
     }
     
-    public static Double GetForecastHeight(String WidgetType,Integer ForecastDay){
-        String tSize = GetSize(WidgetType);
-        if (tSize.equals(WidgetSize.XL.toString())){
-            return 1.0/4;
-        }else if (tSize.equals(WidgetSize.L.toString())){
-            if (ForecastDay>3){
-                return 0.0;
-            }else{
-                return 1.0/3;
-            }
-        }else if (tSize.equals(WidgetSize.M.toString())){
-            if (ForecastDay>2){
-                return 0.0;
-            }else{
-                return 1.0/2;
-            }
-        }else{
-            if (ForecastDay>1){
-                return 0.0;
-            }else{
-                return 1.0;
-            }
-        }
-    }
-    
 //    public static String GetType(Integer WidgetNumber){
 //        return util.GetProperty(WidgetProps + "WidgetPanel" + WidgetNumber,"Off");
 //    }
@@ -410,6 +385,15 @@ public class Widget {
             //LOG.debug("GetWidgetHeight: for Widget ='" + WidgetType + "' Section = '" + Section + "' Height = '" + thisHeight + "' totalHeight = '" + tHeight + "' ListItems = '" + ListItems + "'");
         }
         return tHeight;
+    }
+    public static Double GetForecastHeightP(){
+        int Section = 2;
+        String WidgetType = "WeatherForecast";
+        Double tHeight = 0.00;
+        Double thisHeight = (GetSpaceSize()*GetSectionSize(WidgetType, Section));
+        tHeight = tHeight + thisHeight;
+        //LOG.debug("GetWidgetHeight: for Widget ='" + WidgetType + "' Section = '" + Section + "' Height = '" + thisHeight + "' totalHeight = '" + tHeight + "' ListItems = '" + ListItems + "'");
+        return tHeight/GetWidgetHeight(WidgetType);
     }
     
 }
