@@ -500,4 +500,74 @@ public class Flow {
 //        return MetadataCalls.DisplaySeasonEpisode(MediaObject, SEFormat);
 //    }
     
+    public static void ClearOverrideFlows(String FlowName, int MaxLevel){
+        for (int l=2;l<=MaxLevel;l++){
+            if (HasOverrideFlow(FlowName, l)){
+                String Prop = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.FlowOverride + Const.PropDivider + l;
+                util.RemoveProperty(Prop);
+            }
+        }
+    }
+    
+    public static boolean HasOverrideFlows(String FlowName, int MaxLevel){
+        for (int l=2;l<=MaxLevel;l++){
+            if (HasOverrideFlow(FlowName, l)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static boolean HasOverrideFlow(String FlowName, int Level){
+        String tOverride = GetOverrideFlow(FlowName, Level);
+        if (tOverride.equals(FlowName) || tOverride.equals("0")){
+            return false;
+        }else{
+            return true;
+        }
+    }
+    
+    public static String GetOverrideFlow(String FlowName, int Level){
+        if (FlowName==null){
+            LOG.debug("GetOverrideFlow: request for null name returned 0");
+            return "0";
+        }
+        if (Level<2){
+            //can only override level 2 and higher
+            //LOG.debug("GetOverrideFlow: override for invalid level '" + Level + "' returning original FlowName '" + FlowName + "'");
+            return FlowName;
+        }
+        String tOverride = getOverrideFlow(FlowName, Level);
+        if (tOverride.equals(util.OptionNotFound)){
+            //check lower levels for previous overrides
+            for (int l=Level-1;l>1;l--){
+                tOverride = getOverrideFlow(FlowName, l);
+                if (!tOverride.equals(util.OptionNotFound)){
+                    //LOG.debug("GetOverrideFlow: override found for previous level '" + l + "' for Level '" + Level + "' override = '" + tOverride + "'");
+                    return tOverride;
+                }
+            }
+        }else{
+            //LOG.debug("GetOverrideFlow: override found for level '" + Level + "' override = '" + tOverride + "'");
+            return tOverride;
+        }
+        //LOG.debug("GetOverrideFlow: no override found for level '" + Level + "' returning original FlowName '" + FlowName + "'");
+        return FlowName;
+    }
+
+    private static String getOverrideFlow(String FlowName, int Level){
+        String Prop = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.FlowOverride + Const.PropDivider + Level;
+        return util.GetProperty(Prop, util.OptionNotFound);
+    }
+
+    public static void SetOverrideFlow(String FlowName, int Level, String Override){
+        String Prop = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.FlowOverride + Const.PropDivider + Level;
+        if (Override.equals(FlowName)){
+            //clear the property as the Override is the same as the base flow
+            util.RemoveProperty(Prop);
+        }else{
+            util.SetProperty(Prop, Override);
+        }
+    }
+    
 }

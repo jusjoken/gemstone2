@@ -543,6 +543,13 @@ public class Source {
         ViewCache.clear();
     }
 
+    public static int GetLevel(ViewFolder view){
+        //get the current level
+        Integer tLevel = view.getPresentation().getLevel() + 1;
+        LOG.debug("GetLevel: returning '" + tLevel + "' in '" + view + "'");
+        return tLevel;
+    }
+
     public static Boolean IsLastLevel(ViewFolder view){
         //get the current level
         LOG.debug("IsLastLevel: checking levels in '" + view + "'");

@@ -28,6 +28,7 @@ public class Const {
     public static final String FlowType = "FlowType";
     public static final String FlowSource = "FlowSource";
     public static final String FlowSort = "FlowSort";
+    public static final String FlowOverride = "FlowOverride";
     public static final String FlowPathFilters = "Filters/FlowPathFilters";
     public static final String FlowGenreFilters = "Filters/GenreFilterList";
     public static final String FlowFilters = "Filters";

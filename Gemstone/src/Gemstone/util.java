@@ -1160,5 +1160,17 @@ public class util {
         UIContext uic = new UIContext(sagex.api.Global.GetUIContextName());
         return sagex.api.Global.IsClient(uic) || (!sagex.api.Global.IsClient(uic) && !sagex.api.Global.IsRemoteUI(uic) && (GetProperty("client","")=="true"));
     }
+    
+    public static ArrayList<Integer> GetNumberList(int Start, int Max){
+        if (Start>Max){
+            return new ArrayList<Integer>();
+        }
+        ArrayList<Integer> tList = new ArrayList<Integer>();
+        for (int i=Start;i<=Max;i++){
+            tList.add(i);
+        }
+        return tList;
+    }
+    
 }
 
