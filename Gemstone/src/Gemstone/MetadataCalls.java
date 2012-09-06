@@ -480,7 +480,14 @@ public class MetadataCalls {
         String sType = Source.GetSpecialType(imediaresource);
         String tTitle = imediaresource.getTitle();
         if (sType.equals("tv")){  //return the episode name
-            return tTitle = phoenix.metadata.GetEpisodeName(imediaresource);
+            String eTitle = phoenix.metadata.GetEpisodeName(imediaresource);
+            if (eTitle==null){
+                return tTitle;
+            }else if (eTitle.equals("")){
+                return tTitle;
+            }else{
+                return eTitle;
+            }
         }
         //see if there is a Disc or Part number to append
         String Disc = sagex.api.MediaFileAPI.GetMediaFileMetadata(imediaresource, "DiscNumber");
@@ -500,11 +507,33 @@ public class MetadataCalls {
         IMediaResource imediaresource = Source.GetTVIMediaResource(IMR);
         if (imediaresource!=null){ 
             String tReturn = phoenix.series.GetTitle(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
-            //LOG.debug("GetSeriesTitle: GetTitle returned '" + tReturn + "' for '" + imediaresource + "'");
-            if (tReturn.isEmpty()){
-                return "";
+            //LOG.debug("GetSeriesTitle: series.GetTitle returned '" + tReturn + "' for '" + imediaresource + "'");
+            if (tReturn==null){
+                LOG.debug("GetSeriesTitle: null found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
+                return GetTitle(imediaresource);
+            }else if (tReturn.isEmpty()){
+                LOG.debug("GetSeriesTitle: empty found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
+                return GetTitle(imediaresource);
             }else{
+                //LOG.debug("GetSeriesTitle: good return value found '" + tReturn + "' for '" + imediaresource + "'");
                 return tReturn;
+            }
+        }
+        return "";
+    }
+
+    public static String GetUserCategory(Object IMR){
+        IMediaResource imediaresource = Source.ConvertToIMR(IMR);
+        if (imediaresource!=null){ 
+            if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+                return "FOLDER";
+            }else{
+                String tCat = sagex.api.MediaFileAPI.GetMediaFileMetadata(IMR, "UserCategory");
+                if (tCat==null){
+                    return "null found";
+                }else{
+                    return tCat;
+                }
             }
         }
         return "";
