@@ -1172,5 +1172,19 @@ public class util {
         return tList;
     }
     
+    public static ArrayList<Object> GetSageMediaFiles(List MediaFiles){
+        if (MediaFiles==null){
+            return new ArrayList<Object>();
+        }
+        ArrayList<Object> outMediaFiles = new ArrayList<Object>();
+        int counter = 0;
+        for (Object inMediaFile:MediaFiles){
+            outMediaFiles.add(phoenix.media.GetSageMediaFile(inMediaFile));
+            counter++;
+        }
+        LOG.debug("GetSageMediaFiles: converted '" + MediaFiles.size() + "' MediaFiles to SageMediaFiles");
+        return outMediaFiles;
+    }
+    
 }
 

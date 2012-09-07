@@ -175,8 +175,9 @@ public class airing
      * @param MediaObjects - sage MediaFiles, Airings, or Shows Objects in an Array, list, or vector.
      */
     {
-        LOG.debug("GetNextShow: for '" + MediaObjects + "'");
+        //LOG.debug("GetNextShow: for '" + MediaObjects + "'");
         Object LastWatched = airing.GetLastWatched(MediaObjects);
+        //LOG.debug("GetNextShow: LastWatched '" + LastWatched + "'");
         if(phoenix.media.IsWatched(LastWatched)){
             MediaObjects = Database.Sort(MediaObjects, false, "phoenix_metadata_GetOriginalAirDate");
             int index = Utility.FindElementIndex(MediaObjects, LastWatched);
@@ -255,12 +256,15 @@ public class airing
      */
     {
         Object NextWatch = airing.GetNextShow(Arr);
+        //LOG.debug("GetShowsFromLastWatched: NextWatch '" + NextWatch + "'");
         if (NextWatch == null){
             return  null;
         }else{
             Arr = Database.Sort(Arr, false, "phoenix_metadata_GetOriginalAirDate");
+            //LOG.debug("GetShowsFromLastWatched: sorted list '" + Arr + "'");
             Object[] Arr0 =FanartCaching.toArray(Arr);
             int	elementlocation = Utility.FindElementIndex(Arr0, NextWatch);
+            //LOG.debug("GetShowsFromLastWatched: element '" + elementlocation + "' length '" + Arr0.length + "'");
 
             return Arrays.copyOfRange(Arr0, elementlocation, Arr0.length);
         }
