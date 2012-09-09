@@ -4,6 +4,7 @@
  */
 package Gemstone;
 
+import java.util.Map;
 import org.apache.log4j.Logger;
 import sage.SageTVPluginRegistry;
 import sagex.plugin.AbstractPlugin;
@@ -31,6 +32,17 @@ public class GemstonePlugin extends AbstractPlugin {
         LOG.debug("onPluginsLoaded: All Plugins Loaded");
         //util.HandleNonCompatiblePlugins();
     }    
+
+    @Override
+    public void sageEvent(String eventName, Map eventVars) {
+        super.sageEvent(eventName, eventVars);
+        if (eventName.equals(SageEvents.ClientConnected)){
+            LOG.debug("sageEvent: ClientConnected '" + sagex.api.Global.GetUIContextName() + "' eventVars '" + eventVars + "'");
+        }
+        if (eventName.equals(SageEvents.ClientDisconnected)){
+            LOG.debug("sageEvent: ClientDisconnected '" + sagex.api.Global.GetUIContextName() + "' eventVars '" + eventVars + "'");
+        }
+    }
     
     @Override
     public void start() {      
