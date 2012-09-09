@@ -31,18 +31,28 @@ public class GemstonePlugin extends AbstractPlugin {
     public void onPluginsLoaded() {  
         LOG.debug("onPluginsLoaded: All Plugins Loaded");
         //util.HandleNonCompatiblePlugins();
+    }  
+    
+    @SageEvent(value=SageEvents.ClientConnected, background=true)
+    public void onClientConnected(Map args) {
+        LOG.debug("onClientConnected: '" + sagex.api.Global.GetUIContextName() + "' args '" + args + "'");
+    }
+
+    @SageEvent(value=SageEvents.ClientDisconnected, background=true)
+    public void onClientDisconnected(Map args) {
+        LOG.debug("onClientDisconnected: '" + sagex.api.Global.GetUIContextName() + "' args '" + args + "'");
     }    
 
-    @Override
-    public void sageEvent(String eventName, Map eventVars) {
-        super.sageEvent(eventName, eventVars);
-        if (eventName.equals(SageEvents.ClientConnected)){
-            LOG.debug("sageEvent: ClientConnected '" + sagex.api.Global.GetUIContextName() + "' eventVars '" + eventVars + "'");
-        }
-        if (eventName.equals(SageEvents.ClientDisconnected)){
-            LOG.debug("sageEvent: ClientDisconnected '" + sagex.api.Global.GetUIContextName() + "' eventVars '" + eventVars + "'");
-        }
-    }
+//    @Override
+//    public void sageEvent(String eventName, Map eventVars) {
+//        super.sageEvent(eventName, eventVars);
+//        if (eventName.equals(SageEvents.ClientConnected)){
+//            LOG.debug("sageEvent: ClientConnected '" + sagex.api.Global.GetUIContextName() + "' eventVars '" + eventVars + "'");
+//        }
+//        if (eventName.equals(SageEvents.ClientDisconnected)){
+//            LOG.debug("sageEvent: ClientDisconnected '" + sagex.api.Global.GetUIContextName() + "' eventVars '" + eventVars + "'");
+//        }
+//    }
     
     @Override
     public void start() {      
