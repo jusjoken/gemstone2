@@ -100,6 +100,7 @@ public class ADMAction {
     }
     
     public static void Init(){
+        LOG.debug("Init: Menu Manager Action Init started: " + util.LogInfo());
         //Clear existing Actions if any
         ActionList.clear();
         //Create the Actions for ADM to use
@@ -189,6 +190,7 @@ public class ADMAction {
         LoadDynamicLists();
 
         LoadSageTVRecordingViews();
+        LOG.debug("Init: Menu Manager Action Init completed: " + util.LogInfo());
     }
     
     public static String GetWidgetbySymbol(){ return WidgetbySymbol; }

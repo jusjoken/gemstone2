@@ -94,12 +94,9 @@ public class ADMutil {
         LOG.debug("ADMHiddenFeaturesMode - set to '" + tValue.toString() + "'");
     }
     
-    public static void InitADM(){
-        //do nothing as this has been moved to api.Load
-    }
     public static void LoadADM(){
-        
         if (!ADMInitComplete) {
+            LOG.debug("LoadADM - One Time initialization started: " + util.LogInfo());
             //initiate one time load items
             
             //Init Actions
@@ -149,14 +146,23 @@ public class ADMutil {
             
             ADMInitComplete = true;
 
-            LOG.debug("LoadADM - One Time initialization complete.");
-
+            LOG.debug("LoadADM - One Time initialization complete: " + util.LogInfo());
         }
+
+    }
+
+    public static void ClientStart(){
+        String UIContext = sagex.api.Global.GetUIContextName();
+        LOG.debug("ClientStart: started for '" + UIContext + "': " + util.LogInfo());
         //initiate items that may differ per UIContext - the UI needs to ensure this only gets loaded once
         //Load the menu items
         ADMMenuNode.LoadMenus();
-        LOG.debug("LoadADM - UI level initialization complete.");
-
+        LOG.debug("ClientStart: completed for '" + UIContext + "': " + util.LogInfo());
+    }
+    public static void ClientExit(String UIContext){
+        LOG.debug("ClientExit: started for '" + UIContext + "': " + util.LogInfo());
+        ADMMenuNode.ClientExit(UIContext);
+        LOG.debug("ClientExit: completed for '" + UIContext + "': " + util.LogInfo());
     }
     
     public static void ClearFocusStorage(){
@@ -188,6 +194,7 @@ public class ADMutil {
         //ADMMenuNode.LoadMenuItemDefaults();
         LOG.debug("ClearAll: initialize settings");
         LoadADM();
+        ClientStart();
         LOG.debug("ClearAll: complete - settings restored to defaults");
         
     }
@@ -198,6 +205,7 @@ public class ADMutil {
         LOG.debug("ReloadADMSettings: reload ADM settings");
         ADMInitComplete = Boolean.FALSE;
         LoadADM();
+        ClientStart();
         LOG.debug("ReloadADMSettings: complete");
         
     }

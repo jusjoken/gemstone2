@@ -52,6 +52,7 @@ public class util {
     public static enum TriState{YES,NO,OTHER};
     public static enum ExportType{ALL,WIDGETS,FLOWS,FLOW,MENUS,GENERAL};
     public static final String ListToken = ":&&:";
+    public static enum ClientType {None, Local, MVP, HD100, HD200, HD300, Placeshifter};
     
     public static void main(String[] args){
 
@@ -1008,6 +1009,7 @@ public class util {
     }   
     
     public static Boolean HandleNonCompatiblePlugins(){
+        LOG.debug("HandleNonCompatiblePlugins: start checking for non-compatible plugins: " + LogInfo());
         Boolean DisableForConflict = Boolean.TRUE;
         Boolean ReloadUI = Boolean.FALSE;
         //Boolean DisableForConflict = GetTrueFalseOption("Utility", "PluginConflictMode", Boolean.FALSE);
@@ -1022,6 +1024,7 @@ public class util {
 //        }
 //        
         //check for CVF
+        //LOG.debug("HandleNonCompatiblePlugins: checking for CVF: " + LogInfo());
         Object thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"jusjokencvf");
         if (sagex.api.PluginAPI.IsPluginEnabled(tUI,thisPlugin)){
             if(DisableForConflict){
@@ -1039,6 +1042,7 @@ public class util {
             LOG.debug("HandleNonCompatiblePlugins: checking for CVF - not found");
         }
         //check for ADM
+        //LOG.debug("HandleNonCompatiblePlugins: checking for ADM: " + LogInfo());
         thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"jusjokenadm");
         if (sagex.api.PluginAPI.IsPluginEnabled(tUI, thisPlugin)){
             if(DisableForConflict){
@@ -1056,6 +1060,7 @@ public class util {
             LOG.debug("HandleNonCompatiblePlugins: checking for ADM - not found");
         }
         //check for Diamond Legacy
+        //LOG.debug("HandleNonCompatiblePlugins: checking for DiamondLegacy: " + LogInfo());
         thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"DiamondLegacySTVi");
         if (sagex.api.PluginAPI.IsPluginEnabled(tUI, thisPlugin)){
             if(DisableForConflict){
@@ -1072,6 +1077,7 @@ public class util {
         }else{
             LOG.debug("HandleNonCompatiblePlugins: checking for Diamond Legacy - not found");
         }
+        LOG.debug("HandleNonCompatiblePlugins: complete - checking for non-compatible plugins: " + LogInfo());
         return ReloadUI;
     }
     
@@ -1184,6 +1190,59 @@ public class util {
         }
         LOG.debug("GetSageMediaFiles: converted '" + MediaFiles.size() + "' MediaFiles to SageMediaFiles");
         return outMediaFiles;
+    }
+
+    public static String GetClientType(){
+        UIContext uic = new UIContext(sagex.api.Global.GetUIContextName());
+        ClientType clientType = ClientType.None;
+        if (sagex.api.Global.GetRemoteUIType(uic).equalsIgnoreCase(sagex.api.Utility.LocalizeString("Local"))){
+            clientType = ClientType.Local;
+        }
+        else if (sagex.api.Global.GetRemoteUIType(uic).equalsIgnoreCase(sagex.api.Utility.LocalizeString("Placeshifter"))){
+            clientType = ClientType.Placeshifter;
+        }
+        else if (sagex.api.Global.GetRemoteUIType(uic).equalsIgnoreCase(sagex.api.Utility.LocalizeString("SD Media Extender"))){
+            clientType = ClientType.MVP;
+        }
+        else if (sagex.api.Global.GetRemoteUIType(uic).equalsIgnoreCase(sagex.api.Utility.LocalizeString("HD Media Extender"))){
+            clientType = ClientType.HD100;
+        }
+        else if (sagex.api.Global.GetRemoteUIType(uic).equalsIgnoreCase(sagex.api.Utility.LocalizeString("HD Media Player"))){
+            clientType = ClientType.HD300;
+            for (String option : sagex.api.Configuration.GetAudioOutputOptions(uic)){
+		if (option.equalsIgnoreCase("HDMIHBR")){
+                    clientType = ClientType.HD200;
+                    break;
+                }
+            }
+        }
+        return clientType.toString();
+    }
+
+    public static String LogInfo(){
+        return GetClientType() + ":" + FreeMem();
+    }
+
+    public static void DebugLog(String message){
+        DebugLog(message, false);
+    }
+    public static void DebugLog(String message, boolean IncludeInfo){
+        String tMessage = message;
+        if (IncludeInfo){
+            tMessage = tMessage + ": " + LogInfo();
+        }
+        LOG.debug(tMessage);
+    }
+
+    public static void InfoLog(String message){
+        InfoLog(message, false);
+    }
+    public static void InfoLog(String message, boolean IncludeInfo){
+        String tMessage = message;
+        if (IncludeInfo){
+            tMessage = tMessage + ": " + LogInfo();
+        }
+        LOG.info(tMessage);
     }
     
 }

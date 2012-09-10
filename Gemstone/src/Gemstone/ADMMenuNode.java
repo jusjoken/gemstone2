@@ -1338,6 +1338,23 @@ public class ADMMenuNode {
         }
     }
 
+    //cleanup settings used by a specific client - call on client disconnect
+    public static void ClientExit(String UIContext){
+        if (UIContext==null){
+            //nothing to clean up
+            return;
+        }
+        if (UIroot.containsKey(UIContext)){
+            LOG.debug("ClientExit: UIroot found for '" + UIContext + "'");
+            UIroot.get(UIContext).removeAllChildren();
+            UIroot.remove(UIContext);
+        }
+        if (UIMenuNodeList.containsKey(UIContext)){
+            LOG.debug("ClientExit: UIMenuNodeList found for '" + UIContext + "'");
+            UIMenuNodeList.remove(UIContext);
+        }
+    }
+
     //prepare the environment for a new load or a delete
     public static void CleanMenuNodeListandTree(){
         String UIContext = GetMenuID();

@@ -34,7 +34,7 @@ public class Gemstone {
     protected void init() {
         try {
             Log4jConfigurator.configureQuietly("gemstone", this.getClass().getClassLoader());
-            log.info("Initializing Gemstone - Version: " +  api.GetVersion());
+            log.info("Initializing Gemstone - Version: " +  api.GetVersion() + " : logging started: " + util.LogInfo());
         } catch (Exception ex) {
             java.util.logging.Logger.getLogger(Gemstone.class.getName()).log(Level.SEVERE, null, ex);
         }

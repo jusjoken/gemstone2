@@ -27,6 +27,14 @@ public class api {
     public static Logger LOG=Logger.getLogger(api.class);
 
     public static String Version = "1.016" + "";
+    private static boolean STVAppStarted = false;
+    
+    public static boolean IsSTVAppStarted(){
+        return STVAppStarted;
+    }
+    public static void SetSTVAppStarted(boolean value){
+        STVAppStarted = value;
+    }
 
     public static void main(String[] args){
 
@@ -35,10 +43,12 @@ public class api {
 
 
     //load any Gemstone settings that need to load at application start
+    //should be called from GemstonePlugin on the start event
     public static void Load(){
-        //the following calls are now called from ApplicationStarted hook in the STV
-        //initialize the Logging 
-        InitLogger();
+        //get the gemstone instance which will also initiate logging
+        Gemstone.getInstance();
+        LOG.debug("Load: api load started: " + util.LogInfo());
+
         //initialize the ADM settings
         //util.HandleNonCompatiblePlugins();
         
@@ -64,51 +74,25 @@ public class api {
                 LOG.debug("Load: - error creating '" + util.UserDataLocation() + "'" + ex.getMessage());
             }
         ImageCache.Init();
+        LOG.debug("Load: api load completed: " + util.LogInfo());
         
    }
 
-    public static void InitLogger(){
-        //initialize the Logging 
-        Gemstone.getInstance();
-        LOG.debug("InitLogger: Gemstone Instance created and logging started");
+    public static void ClientStart(){
+        //client specific settings
+        ADMutil.ClientStart();
         
-//        System.out.println("InitLogger: setting up logger");
-//        LOG = Logger.getLogger(api.class);
-//        String log4jfile = "STVs" + File.separator + "Gemstone" + File.separator + "Configuration" + File.separator + "Gemstone.log4j.properties";
-//        String log4jfullpath = sagex.api.Utility.GetWorkingDirectory(new UIContext(sagex.api.Global.GetUIContextName())) + File.separator + log4jfile;
-//        //check if the log4j property file exists and use defaults if it does not
-//        Boolean FileExists = (new File(log4jfullpath)).exists();
-//        if (FileExists){
-//            System.out.println("InitLogger: using '" + log4jfullpath + "' for log properties");
-//            PropertyConfigurator.configure(log4jfullpath);
-//        }else{
-//            //configure manually
-//            System.out.println("InitLogger: using internal defaults for log properties. Properties file not found '" + log4jfullpath + "'");
-//            Properties log4jProps = new Properties();
-//            log4jProps.put("log4j.rootCategory", "debug, Log");
-//            log4jProps.put("log4j.additivity.Gemstone", "false");
-//            log4jProps.put("log4j.appender.Gemstone", "org.apache.log4j.RollingFileAppender");
-//            log4jProps.put("log4j.appender.Gemstone.File", "logs/Gemstone.log");
-//            log4jProps.put("log4j.appender.Gemstone.layout", "org.apache.log4j.PatternLayout");
-//            log4jProps.put("log4j.appender.Gemstone.layout.ConversionPattern", "%d{EEE M/d HH:mm:ss.SSS} [%t] %-5p %c - %m%n");
-//            log4jProps.put("log4j.appender.Gemstone.MaxBackupIndex", "5");
-//            log4jProps.put("log4j.appender.Gemstone.MaxFileSize", "10000KB");
-//            log4jProps.put("log4j.appender.Gemstone.Threshold", "debug");
-//            log4jProps.put("log4j.additivity.Sage", "false");
-//            log4jProps.put("log4j.appender.Sage", "org.apache.log4j.ConsoleAppender");
-//            log4jProps.put("log4j.appender.Sage.layout", "org.apache.log4j.PatternLayout");
-//            log4jProps.put("log4j.appender.Sage.layout.ConversionPattern", "%d{EEE M/d HH:mm:ss.SSS} [%t] %-5p %c - %m%n");
-//            log4jProps.put("log4j.appender.Sage.Threshold", "debug");
-//            //log4jProps.put("log4j.logger.SDGroup", "debug,Gemstone,Sage");
-//            log4jProps.put("log4j.logger.Gemstone", "debug,Gemstone,Sage");
-//            PropertyConfigurator.configure(log4jProps);
-//        }
-//        LOG.info("NO Logger for Gemstone created successfully!");
-////        LOG.debug("Test Log Message - debug");
-////        LOG.info("Test Log Message - info");
-////        LOG.warn("Test Log Message - warn");
-////        LOG.error("Test Log Message - error");
-////        LOG.fatal("Test Log Message - fatal");
+    }
+
+    public static void ClientExit(String UIContext){
+        //remove client specific settings for Menus
+        ADMutil.ClientExit(UIContext);
+        
+    }
+    
+    public static void InitLogger(){
+        LOG.debug("InitLogger: ***** REMOVE THIS CALL AS IT DOES NOTHING: " + util.LogInfo());
+        //TODO: check STV if it call this then remove this
    }
 
     public static void AddStaticContext(String Context, Object Value) {

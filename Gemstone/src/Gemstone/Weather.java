@@ -27,6 +27,7 @@ public class Weather {
 
     //always call Init first - should be called in the Gemstone Init 
     public static void Init(){
+        LOG.debug("Init: weather init started: " + util.LogInfo());
         //force phoenix to use the current weather implementation setting
         String curImpl = util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault);
         //check the current phoenix impl and only change it if it's different
@@ -41,6 +42,7 @@ public class Weather {
         //TODO: remove old weather calls when new phoenix calls are complete
 //        GemstoneWeather = new WeatherAPI();
 //        GemstoneWeather.Init();
+        LOG.debug("Init: weather init completed: " + util.LogInfo());
     }
     
     public static void SetImplNext(){
