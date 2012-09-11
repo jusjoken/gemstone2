@@ -77,7 +77,7 @@ public class ImageCache {
     public static void Init(){
         LOG.debug("Init: imagecache init started: " + util.LogInfo());
         
-        SoftHashMap ICache = new SoftHashMap(GetMinSize());
+        ICache = new SoftHashMap(GetMinSize());
         ClearQueue();
         LOG.debug("Init: imagecache init completed: " + util.LogInfo());
     }
