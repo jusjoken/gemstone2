@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
@@ -33,7 +32,6 @@ import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
-import sagex.util.Log4jConfigurator;
 
 /**
  *
@@ -119,6 +117,14 @@ public class util {
 ////        }
 //        print(map);
     }
+    public static void gc(int repeat){
+        String Before = FreeMem();
+        for (int i = 0;i<repeat;i++){
+            java.lang.System.gc();
+        }
+        LOG.debug("gc: run " + repeat + " times. Before/After: " + Before + FreeMem());
+    }
+    
     public static String FreeMem() {
         Long total = Runtime.getRuntime().totalMemory();
         Long free = Runtime.getRuntime().freeMemory();

@@ -38,56 +38,6 @@ public class Flow {
         return GetFlowsBaseProp() + FlowName;
     }
     
-//    public static String GetInstantSearchMode(String FlowName){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchMode;
-//        return util.GetProperty(tProp, api.InstantSearchModes.GetDefault().Key());
-//    }
-    
-//    public static String GetInstantSearchModeName(String FlowName){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchMode;
-//        return api.InstantSearchModes.get(util.GetProperty(tProp, api.InstantSearchModes.GetDefault().Key())).DisplayName();
-//    }
-    
-//    public static void SetInstantSearchMode(String FlowName, String Value){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchMode;
-//        if (api.InstantSearchModes.containsKey(Value)){
-//            util.SetProperty(tProp, Value);
-//        }else{
-//            //use the default
-//            util.SetProperty(tProp, api.InstantSearchModes.GetDefault().Key());
-//        }
-//    }
-    
-//    public static String GetInstantSearchExecuteMode(String FlowName){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchExecuteMode;
-//        return util.GetProperty(tProp, api.InstantSearchExecuteModes.GetDefault().Key());
-//    }
-    
-//    public static String GetInstantSearchExecuteModeName(String FlowName){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchExecuteMode;
-//        return api.InstantSearchExecuteModes.get(util.GetProperty(tProp, api.InstantSearchExecuteModes.GetDefault().Key())).DisplayName();
-//    }
-    
-//    public static void SetInstantSearchExecuteMode(String FlowName, String Value){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchExecuteMode;
-//        if (api.InstantSearchExecuteModes.containsKey(Value)){
-//            util.SetProperty(tProp, Value);
-//        }else{
-//            //use the default
-//            util.SetProperty(tProp, api.InstantSearchExecuteModes.GetDefault().Key());
-//        }
-//    }
-    
-//    public static Boolean GetInstantSearchIsNumericListener(String FlowName){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchIsNumericListener;
-//        return util.GetPropertyAsBoolean(tProp, Boolean.FALSE);
-//    }
-    
-//    public static void SetInstantSearchIsNumericListener(String FlowName, Boolean Value){
-//        String tProp = GetFlowBaseProp(FlowName) + Const.PropDivider + Const.InstantSearchIsNumericListener;
-//        util.SetProperty(tProp, Value.toString());
-//    }
-    
     public static Boolean GetTrueFalseOption(String PropSection, String PropName, Boolean DefaultValue){
         return util.GetTrueFalseOptionBase(Boolean.TRUE, PropSection, PropName, DefaultValue);
     }
@@ -244,11 +194,6 @@ public class Flow {
                 }
             }
         }
-//        if (Moved){
-//            LOG.debug("MoveFlowinList: '" + thisFlow + "' moved from '" + CurrentFlowLocation + "' to '" + (CurrentFlowLocation+Delta) + "' New = '" + inFlows + "'");
-//        }else{
-//            LOG.debug("MoveFlowinList: '" + thisFlow + "' NOT moved from '" + CurrentFlowLocation + "' to '" + (CurrentFlowLocation+Delta) + "'");
-//        }
         return inFlows;
     }
     
@@ -368,15 +313,6 @@ public class Flow {
     }
 
     public static Collection<String> FlowTypes(){
-//        List<String> tTypes = new ArrayList<String>();
-//        tTypes.add("Wall Flow");
-//        tTypes.add("List Flow");
-//        tTypes.add("Cover Flow");
-//        tTypes.add("Stage Flow");
-//        tTypes.add("Category Flow");
-//        tTypes.add("360 Flow");
-//        tTypes.add("SideWays Flow");
-//        return tTypes;
         return InternalFlowTypes.keySet();
     }
     

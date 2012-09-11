@@ -12,7 +12,6 @@ import sage.SageTVPluginRegistry;
 import sagex.plugin.AbstractPlugin;
 import sagex.plugin.SageEvent;
 import sagex.plugin.SageEvents;
-import sagex.util.Log4jConfigurator;
 
 /**
  *

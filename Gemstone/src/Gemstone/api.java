@@ -6,12 +6,8 @@ package Gemstone;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.PropertyConfigurator;
 import sagex.UIContext;
-import sagex.util.Log4jConfigurator;
 
 /**
  *
@@ -90,11 +86,6 @@ public class api {
         
     }
     
-    public static void InitLogger(){
-        LOG.debug("InitLogger: ***** REMOVE THIS CALL AS IT DOES NOTHING: " + util.LogInfo());
-        //TODO: check STV if it call this then remove this
-   }
-
     public static void AddStaticContext(String Context, Object Value) {
         sagex.api.Global.AddStaticContext(new UIContext(sagex.api.Global.GetUIContextName()), Context, Value);
 
