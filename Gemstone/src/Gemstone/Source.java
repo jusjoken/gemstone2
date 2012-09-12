@@ -232,19 +232,20 @@ public class Source {
     }
     
     public static String BuildPQL(String ViewName, String FilterName, String FieldName, String FieldVerb, Boolean AndValues){
-        String tFilterString = "";
+        StringBuffer buf = new StringBuffer();
         for (String Item: Flow.PropertyList(ViewName, GetFilterListProp(FilterName))){
-            if (tFilterString.equals("")){
-                tFilterString = FieldName + " " + FieldVerb + " '" + Item + "' ";
+            buf.length();
+            if (buf.length()==0){
+                buf.append(FieldName + " " + FieldVerb + " '" + Item + "' ");
             }else{
                 String AndOr = " or ";
                 if (AndValues){
                     AndOr = " and ";
                 }
-                tFilterString = tFilterString + AndOr + FieldName + " " + FieldVerb + " '" + Item + "' ";
+                buf.append(AndOr + FieldName + " " + FieldVerb + " '" + Item + "' ");
             }
         }
-        return tFilterString;
+        return buf.toString();
     }
     
     public static Map GetAllFolderRestrictions(String ViewName) {
@@ -289,11 +290,11 @@ public class Source {
             String IncludeFilters = "";
             String ExcludeFilters = "";
             Map<String, Boolean> filters = GetAllFolderRestrictions(ViewName);
-            for (String filter:filters.keySet()){
-                if (filters.get(filter)){  //Include
-                    IncludeFilters = FolderFilterAppend(IncludeFilters, filter);
+            for (Map.Entry<String,Boolean> filter:filters.entrySet()){
+                if (filter.getValue()){  //Include
+                    IncludeFilters = FolderFilterAppend(IncludeFilters, filter.getKey());
                 }else{  //Exclude
-                    ExcludeFilters = FolderFilterAppend(ExcludeFilters, filter);
+                    ExcludeFilters = FolderFilterAppend(ExcludeFilters, filter.getKey());
                 }
             }
             String FilterString = BuildFilterRegEx(IncludeFilters, ExcludeFilters);
@@ -629,11 +630,11 @@ public class Source {
     }
     public static String DescribeView(ViewFolder view, String ViewName){
         //output the DescribeDetails to a string for Sage
-        String s = "";
+        StringBuffer buf = new StringBuffer();
         for (String d: CreateDescribeView(view, ViewName)){
-            s = s + d + "\n";
+            buf.append(d + "\n");
         }
-        return s;
+        return buf.toString();
     }
     private static void DescribeAddFactory(Factory ci, LinkedHashSet<String> dl, String Label, Integer Indent){
         dl.add(util.repeat(" ", Indent) + Label + " '" + ci.getLabel() + "'");
@@ -654,16 +655,17 @@ public class Source {
     }
     public static String ViewtoMD5(String ViewName){
         //output the view settings in a md5 hash to create a unique key
-        String s = "";
+        StringBuffer buf = new StringBuffer();
         Properties MD5Props = new Properties();
         String PropLocation = Flow.GetFlowBaseProp(ViewName) +  Const.PropDivider;
         Export.LoadAllProperties(PropLocation + Const.FlowFilters, MD5Props, Boolean.FALSE);
         Export.LoadAllProperties(PropLocation + Const.FlowSourceUI, MD5Props, Boolean.FALSE);
         for (String Prop:MD5Props.stringPropertyNames()){
-            s = s + Prop + "=" + MD5Props.getProperty(Prop) + "|";
+            buf.append(Prop + "=" + MD5Props.getProperty(Prop) + "|");
         }
-        s = s + Const.FlowSource + "=" + util.GetProperty(PropLocation + Const.FlowSource,"") + "|";
+        buf.append(Const.FlowSource + "=" + util.GetProperty(PropLocation + Const.FlowSource,"") + "|");
         //replace all FlowName specific strings so the match can be for Any Flow using the same Source info
+        String s = buf.toString();
         s = s.replaceAll(ViewName, "AnyFlow");
         LOG.debug("ViewtoMD5: for '" + ViewName + "' from '" + s + "'");
         return util.MD5(s);

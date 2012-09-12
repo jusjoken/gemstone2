@@ -5,10 +5,6 @@
 package Gemstone;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
@@ -32,6 +28,9 @@ import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  *
@@ -44,7 +43,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
 public class util {
 
     static private final Logger LOG = Logger.getLogger(util.class);
-    public static final char[] symbols = new char[36];
+    private static final char[] symbols = new char[36];
     private static final Random random = new Random();
     public static final String OptionNotFound = "Option not Found";
     public static enum TriState{YES,NO,OTHER};
@@ -58,40 +57,40 @@ public class util {
         //String test = StringNumberFormat("27.1", 0, 2);
         //LOG.debug(test);
         //api.InitLogger();
-        test1();
+        //test1();
         
     }
     
-    public static void test1(){
-        PropertiesExt Props = new PropertiesExt();
-        String FilePath = util.UserDataLocation() + File.separator + "menutest.properties";
-        Boolean KeepProcessing = Boolean.TRUE;
-        //read the properties from the properties file
-        try {
-            FileInputStream in = new FileInputStream(FilePath);
-            try {
-                Props.load(in);
-                in.close();
-            } catch (IOException ex) {
-                LOG.debug("test1: IO exception inporting properties " + util.class.getName() + ex);
-                KeepProcessing = Boolean.FALSE;
-            }
-        } catch (FileNotFoundException ex) {
-            LOG.debug("test1: file not found inporting properties " + util.class.getName() + ex);
-            KeepProcessing = Boolean.FALSE;
-        }
-        if (KeepProcessing){
-            LOG.debug("test1: start of BRANCHES");
-            for (String Key:Props.GetSubpropertiesThatAreBranches("Gemstone/Widgets")){
-                LOG.debug("TEST item '" + Key + "'");
-            }
-            LOG.debug("test1: start of LEAVES");
-            for (String Key:Props.GetSubpropertiesThatAreLeaves("Gemstone/Widgets")){
-                LOG.debug("TEST item '" + Key + "'");
-            }
-        }
-        
-    }
+//    public static void test1(){
+//        PropertiesExt Props = new PropertiesExt();
+//        String FilePath = util.UserDataLocation() + File.separator + "menutest.properties";
+//        Boolean KeepProcessing = Boolean.TRUE;
+//        //read the properties from the properties file
+//        try {
+//            FileInputStream in = new FileInputStream(FilePath);
+//            try {
+//                Props.load(in);
+//                in.close();
+//            } catch (IOException ex) {
+//                LOG.debug("test1: IO exception inporting properties " + util.class.getName() + ex);
+//                KeepProcessing = Boolean.FALSE;
+//            }
+//        } catch (FileNotFoundException ex) {
+//            LOG.debug("test1: file not found inporting properties " + util.class.getName() + ex);
+//            KeepProcessing = Boolean.FALSE;
+//        }
+//        if (KeepProcessing){
+//            LOG.debug("test1: start of BRANCHES");
+//            for (String Key:Props.GetSubpropertiesThatAreBranches("Gemstone/Widgets")){
+//                LOG.debug("TEST item '" + Key + "'");
+//            }
+//            LOG.debug("test1: start of LEAVES");
+//            for (String Key:Props.GetSubpropertiesThatAreLeaves("Gemstone/Widgets")){
+//                LOG.debug("TEST item '" + Key + "'");
+//            }
+//        }
+//        
+//    }
     
     private static void print(Map map) {
         LOG.debug("One=" + map.get("One"));
@@ -117,12 +116,31 @@ public class util {
 ////        }
 //        print(map);
     }
-    public static void gc(int repeat){
-        String Before = FreeMem();
+    public static void gc(final int repeat){
+        final String Before = FreeMem();
         for (int i = 0;i<repeat;i++){
             java.lang.System.gc();
         }
         LOG.debug("gc: run " + repeat + " times. Before/After: " + Before + FreeMem());
+    }
+    private static Timer gcTimer;
+    public static void gcback(final int repeat){
+        LOG.debug("gc: Starting the background gc " + repeat + " times.");
+        final String Before = FreeMem();
+        //run the gc in a thread
+        gcTimer = new Timer();
+
+        TimerTask task = new TimerTask() {
+            public void run() {
+                for (int i = 0;i<repeat;i++){
+                    java.lang.System.gc();
+                }
+                gcTimer.cancel();
+                LOG.debug("gc: run " + repeat + " times. Before/After: " + Before + FreeMem());
+            }
+        };
+        //wait 1 second and then run the gc
+        gcTimer.schedule(task, 1000);
     }
     
     public static String FreeMem() {
@@ -207,7 +225,7 @@ public class util {
 
     //TODO: check out this function as it likely always returns the full array
     public static Object CheckSimpleSize(Object[] Files,int sizeneeded) {
-        if (!Files.toString().contains("blankelement")) {
+        if (!Arrays.asList(Files).contains("blankelement")) {
 
             List<Object> WithBlanks = new ArrayList<Object>();
             for(int index=0;index<sizeneeded;index++){
@@ -298,6 +316,13 @@ public class util {
         return headers.containsKey(Key);
     }
 
+    public static void InitNameGen(){
+        for (int idx = 0; idx < 10; ++idx)
+            util.symbols[idx] = (char) ('0' + idx);
+        for (int idx = 10; idx < 36; ++idx)
+            util.symbols[idx] = (char) ('a' + idx - 10);
+    }
+    
     public static String GenerateRandomName(){
         char[] buf = new char[10];
         for (int idx = 0; idx < buf.length; ++idx)
@@ -1111,63 +1136,65 @@ public class util {
         String t = new StringBuffer(text).reverse().toString();
         //add newline characters between each letter
         String o = "";
+        StringBuffer buf = new StringBuffer();
         for (int i = 0; i < t.length(); i++) {
             if (i==0){
-                o = t.charAt(i) + ""; 
+                buf.append(t.charAt(i));
             }else{
-                o = o + "\n" + t.charAt(i);
+                buf.append("\n" + t.charAt(i));
             }
         } 
+        o = buf.toString();
         o = o.toLowerCase();
         LOG.debug("SidewaysText: text in '" + text + "' text out '" + o + "'");
         return o;
     }
 
     //TODO: remove as only used for temp conversion for Scott's Menus for Playon
-    public static void BuildActions(){
-        UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
-        Properties Props = new Properties();
-        Object[] Menus = sagex.api.WidgetAPI.GetWidgetsByType(tUI,"Menu");
-        for (Object item: Menus){
-            String tName = sagex.api.WidgetAPI.GetWidgetName(item);
-            //LOG.debug("BuildActions: Menu '" + tName + "'");
-            if (tName.startsWith("PlayOn::")){
-                String tTitle = tName.substring(8);
-                if (tTitle.startsWith("Custom")){
-                    continue;
-                }
-                String ActionName = tTitle.replaceAll("::", "_");
-                String ActionVal = tTitle.replaceAll("::", " ");
-                ActionName = "xItemPlayOn_" + ActionName.replaceAll(" ", "_");
-                String ActionTitle = tTitle.replaceAll("::", " - ");
-                LOG.debug("BuildActions: Item '" + ActionName + "' Title '" + ActionTitle + "'");
-                String Start = "ADM/custom_actions/";
-                Props.put(Start + ActionName + "/ActionCategory/1", "Online");
-                Props.put(Start + ActionName + "/ActionCategory/2", "PlayOn");
-                Props.put(Start + ActionName + "/ButtonText", ActionTitle);
-                Props.put(Start + ActionName + "/WidgetSymbol", "KMWIY-932161");
-                Props.put(Start + ActionName + "/ActionVariables/1/Val", ActionVal);
-                Props.put(Start + ActionName + "/ActionVariables/1/Var", "PlayOnMenuItem");
-                Props.put(Start + ActionName + "/ActionVariables/1/VarType", "VarTypeGlobal");
-                Props.put(Start + ActionName + "/CopyModeAttributeVar", "ThisItem");
-            }
-        }
-        String FilePath = util.UserDataLocation() +  File.separator + "ActionTemp.properties";
-        if (Props.size()>0){
-            try {
-                FileOutputStream out = new FileOutputStream(FilePath);
-                try {
-                    Props.store(out, Const.PropertyComment);
-                    out.close();
-                } catch (IOException ex) {
-                    LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
-                }
-            } catch (FileNotFoundException ex) {
-                LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
-            }
-            
-        }
-    }
+//    public static void BuildActions(){
+//        UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+//        Properties Props = new Properties();
+//        Object[] Menus = sagex.api.WidgetAPI.GetWidgetsByType(tUI,"Menu");
+//        for (Object item: Menus){
+//            String tName = sagex.api.WidgetAPI.GetWidgetName(item);
+//            //LOG.debug("BuildActions: Menu '" + tName + "'");
+//            if (tName.startsWith("PlayOn::")){
+//                String tTitle = tName.substring(8);
+//                if (tTitle.startsWith("Custom")){
+//                    continue;
+//                }
+//                String ActionName = tTitle.replaceAll("::", "_");
+//                String ActionVal = tTitle.replaceAll("::", " ");
+//                ActionName = "xItemPlayOn_" + ActionName.replaceAll(" ", "_");
+//                String ActionTitle = tTitle.replaceAll("::", " - ");
+//                LOG.debug("BuildActions: Item '" + ActionName + "' Title '" + ActionTitle + "'");
+//                String Start = "ADM/custom_actions/";
+//                Props.put(Start + ActionName + "/ActionCategory/1", "Online");
+//                Props.put(Start + ActionName + "/ActionCategory/2", "PlayOn");
+//                Props.put(Start + ActionName + "/ButtonText", ActionTitle);
+//                Props.put(Start + ActionName + "/WidgetSymbol", "KMWIY-932161");
+//                Props.put(Start + ActionName + "/ActionVariables/1/Val", ActionVal);
+//                Props.put(Start + ActionName + "/ActionVariables/1/Var", "PlayOnMenuItem");
+//                Props.put(Start + ActionName + "/ActionVariables/1/VarType", "VarTypeGlobal");
+//                Props.put(Start + ActionName + "/CopyModeAttributeVar", "ThisItem");
+//            }
+//        }
+//        String FilePath = util.UserDataLocation() +  File.separator + "ActionTemp.properties";
+//        if (Props.size()>0){
+//            try {
+//                FileOutputStream out = new FileOutputStream(FilePath);
+//                try {
+//                    Props.store(out, Const.PropertyComment);
+//                    out.close();
+//                } catch (IOException ex) {
+//                    LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
+//                }
+//            } catch (FileNotFoundException ex) {
+//                LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
+//            }
+//            
+//        }
+//    }
 
     public static boolean IsClient(){
         UIContext uic = new UIContext(sagex.api.Global.GetUIContextName());

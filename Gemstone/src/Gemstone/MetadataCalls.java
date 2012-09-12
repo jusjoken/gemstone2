@@ -77,11 +77,10 @@ public class MetadataCalls {
 
     public static String GetSortTitle(Object MediaObject) {
         String Title = GetMediaTitle(MediaObject);
-        if (Title.equals("") || Title.equals(null)) {
+        if (Title==null || Title.equals("")) {
             return "000";
         }
         return sagex.api.Database.StripLeadingArticles(Title.toLowerCase());
-
     }
 
     public static Integer GetEpisodeNumber(Object MediaObject) {
@@ -101,10 +100,11 @@ public class MetadataCalls {
     }
 
     public static String GetFanartTitle(Object MediaObject){
-    String Title=sagex.api.MediaFileAPI.GetMediaFileMetadata(MediaObject, "MediaTitle");
-     if (Title.equals("") || Title.equals(null)) {
-     Title=GetMediaTitle(MediaObject);}
-     return Title;
+        String Title=sagex.api.MediaFileAPI.GetMediaFileMetadata(MediaObject, "MediaTitle");
+        if (Title==null || Title.equals("")){
+            Title=GetMediaTitle(MediaObject);
+        }
+        return Title;
     }
 
     //used for searching
@@ -116,16 +116,16 @@ public class MetadataCalls {
         String Title ="";
 
 
-         if (Title.equals("") || Title.equals(null)) {
+        if (Title==null || Title.equals("")) {
             Title = sagex.api.ShowAPI.GetShowTitle(MediaObject);
         }
-        if (Title.equals("") || Title.equals(null)) {
+        if (Title==null || Title.equals("")) {
             Title = sagex.api.MediaFileAPI.GetMediaTitle(MediaObject);
         }
-        if (Title.equals("") || Title.equals(null)) {
+        if (Title==null || Title.equals("")) {
             Title = sagex.api.AiringAPI.GetAiringTitle(MediaObject);
         }
-        if (Title.equals("") || Title.equals(null)) {
+        if (Title==null || Title.equals("")) {
             return Const.UnknownName;  // was "Unkown"
         }
         return Title;

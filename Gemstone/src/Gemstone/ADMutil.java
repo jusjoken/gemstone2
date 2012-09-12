@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -270,12 +271,10 @@ public class ADMutil {
             FileInputStream in = new FileInputStream(SubMenuPropsPath);
             try {
                 SageSubMenusLevel1Props.load(in);
+            } finally {
                 in.close();
-            } catch (IOException ex) {
-                LOG.debug("LoadSubMenuListLevel1: IO exception loading standard actions " + ADMutil.class.getName() + ex);
-                return;
             }
-        } catch (FileNotFoundException ex) {
+        } catch (Exception ex) {
             LOG.debug("LoadSubMenuListLevel1: file not found loading standard actions " + ADMutil.class.getName() + ex);
             return;
         }
@@ -289,9 +288,9 @@ public class ADMutil {
         }
 
         //build a list of keys in the order of the values
-        for (String SageSubMenusValue : SageSubMenusList.keySet()){
-            SageSubMenusLevel1Keys.add(SageSubMenusList.get(SageSubMenusValue));
-            SageSubMenusKeys.add(SageSubMenusList.get(SageSubMenusValue));
+        for (Map.Entry<String,String> SageSubMenu : SageSubMenusList.entrySet()){
+            SageSubMenusLevel1Keys.add(SageSubMenu.getValue());
+            SageSubMenusKeys.add(SageSubMenu.getValue());
         }
         
         //Add in a -None- option to the list
@@ -311,11 +310,10 @@ public class ADMutil {
             try {
                 SageSubMenusLevel2Props.load(in);
                 in.close();
-            } catch (IOException ex) {
-                LOG.debug("LoadSubMenuListLevel2: IO exception loading standard actions " + ADMutil.class.getName() + ex);
-                return;
+            } finally {
+                in.close();
             }
-        } catch (FileNotFoundException ex) {
+        } catch (Exception ex) {
             LOG.debug("LoadSubMenuListLevel2: file not found loading standard actions " + ADMutil.class.getName() + ex);
             return;
         }
@@ -329,9 +327,9 @@ public class ADMutil {
         }
 
         //build a list of keys in the order of the values
-        for (String SageSubMenusValue : SageSubMenusList.keySet()){
-            SageSubMenusLevel2Keys.add(SageSubMenusList.get(SageSubMenusValue));
-            SageSubMenusKeys.add(SageSubMenusList.get(SageSubMenusValue));
+        for (Map.Entry<String,String> SageSubMenu : SageSubMenusList.entrySet()){
+            SageSubMenusLevel2Keys.add(SageSubMenu.getValue());
+            SageSubMenusKeys.add(SageSubMenu.getValue());
         }
         
         //Add in a -None- option to the list
@@ -350,12 +348,10 @@ public class ADMutil {
             FileInputStream in = new FileInputStream(StandardActionPropsPath);
             try {
                 SageBGVariablesProps.load(in);
+            } finally {
                 in.close();
-            } catch (IOException ex) {
-                LOG.debug("LoadSageBGVariablesList: IO exception loading SageBGVariables " + ADMutil.class.getName() + ex);
-                return;
             }
-        } catch (FileNotFoundException ex) {
+        } catch (Exception ex) {
             LOG.debug("LoadSageBGVariablesList: file not found loading SageBGVariables " + ADMutil.class.getName() + ex);
             return;
         }
@@ -369,8 +365,8 @@ public class ADMutil {
         }
 
         //build a list of keys in the order of the values
-        for (String ActionValue : ActionValuesList.keySet()){
-            SageBGVariablesKeys.add(ActionValuesList.get(ActionValue));
+        for (Map.Entry<String,String> ActionValue : ActionValuesList.entrySet()){
+            SageBGVariablesKeys.add(ActionValue.getValue());
         }
         
         LOG.debug("LoadSageBGVariablesList: completed for '" + StandardActionPropsPath + "'");
@@ -405,7 +401,7 @@ public class ADMutil {
 
         //find all Backgrounds from the SageTV properties file
         String[] tBackgrounds = sagex.api.Configuration.GetServerSubpropertiesThatAreLeaves(new UIContext(sagex.api.Global.GetUIContextName()),SageBackgroundsPropertyLocation);
-        LOG.debug("LoadSageBGList: Getting '" + tBackgrounds.length + "' backgrounds + UI = '" + sagex.api.Global.GetUIContextName() + "' tBackgrounds = '" + tBackgrounds + "'");
+        LOG.debug("LoadSageBGList: Getting '" + tBackgrounds.length + "' backgrounds + UI = '" + sagex.api.Global.GetUIContextName() + "' tBackgrounds = '" + Arrays.asList(tBackgrounds) + "'");
         if (tBackgrounds.length>0){
             for (String BGKey: tBackgrounds){
                 //only add valid backgrounds

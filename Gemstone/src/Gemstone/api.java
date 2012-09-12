@@ -54,10 +54,7 @@ public class api {
         Weather.Init();
         
         //generate symbols to be used for new names
-        for (int idx = 0; idx < 10; ++idx)
-            util.symbols[idx] = (char) ('0' + idx);
-        for (int idx = 10; idx < 36; ++idx)
-            util.symbols[idx] = (char) ('a' + idx - 10);
+        util.InitNameGen();
         
         //ensure the gemstone file location exists
         try{

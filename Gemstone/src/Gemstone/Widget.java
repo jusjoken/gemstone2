@@ -85,7 +85,7 @@ public class Widget {
             Integer counter = 0;
             for (String tWidget:InternalWidgetList){
                 //make sure this is a real Flow entry with a name property
-                if ((IncludeOff) || IncludeOff==Boolean.FALSE && ShowWidget(tWidget)){
+                if ((IncludeOff) || (!IncludeOff && ShowWidget(tWidget))){
                     counter++;
                     Integer thisSort = GetWidgetSort(tWidget);
                     if (thisSort==0){
@@ -102,9 +102,9 @@ public class Widget {
                 }
             }
             if (SortNeedsSaving){
-                for (Integer tWidgetIndex:tSortedList.keySet()){
-                    SetWidgetSort(tSortedList.get(tWidgetIndex),tWidgetIndex);
-                    //LOG.debug("GetWidgetList: Saving sort for '" + tSortedList.get(tWidgetIndex) + "' at '" + tWidgetIndex + "'");
+                for (Map.Entry<Integer,String> tWidget:tSortedList.entrySet()){
+                    SetWidgetSort(tWidget.getValue(),tWidget.getKey());
+                    //LOG.debug("GetWidgetList: Saving sort for '" + tWidget.getValue() + "' at '" + tWidget.getKey() + "'");
                 }
             }
             return new ArrayList<String>(tSortedList.values()); 
@@ -188,10 +188,10 @@ public class Widget {
             String newWidget = Widgets.get(newPos);
             //now resave all the sorts with the change in place
             for (Integer i=0;i<Widgets.size();i++){
-                if (i==currentPos){
+                if (i.equals(currentPos)){
                     SetWidgetSort(WidgetType, newPos+1);
                     //LOG.debug("MoveWidget: WidgetType original '" + WidgetType + "' to: '" + (newPos+1) + " Delta '" + Delta + "'");
-                }else if (i==newPos){
+                }else if (i.equals(newPos)){
                     SetWidgetSort(newWidget, currentPos+1);
                     //LOG.debug("MoveWidget: WidgetType replaced '" + newWidget + "' to: '" + (currentPos+1) + " Delta '" + Delta + "'");
                 }else{

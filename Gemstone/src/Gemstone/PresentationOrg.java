@@ -100,12 +100,12 @@ public class PresentationOrg {
         return tList;
     }
     public String LogMessage(){
-        String tMess = myType() + "-";
-        tMess = tMess + Name;
+        StringBuffer buf = new StringBuffer();
+        buf.append(myType() + "-" + Name);
         for (ConfigOption tConfig: ConfigOptionsList.values()){
-            tMess = tMess + ":" + tConfig.getName() + "=" + tConfig.GetValue() + "(" + tConfig.GetValueLabel() + ")";
+            buf.append(":" + tConfig.getName() + "=" + tConfig.GetValue() + "(" + tConfig.GetValueLabel() + ")");
         }
-        return tMess;
+        return buf.toString();
     }
     
 }

@@ -398,7 +398,7 @@ public class ADMMenuNode {
             return !MenuNodeList().get(Name).NodeItem.isLeaf();
         } catch (Exception e) {
             LOG.debug("GetMenuItemHasSubMenu ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
-            return null;
+            return Boolean.FALSE;
         }
     }
 
@@ -532,7 +532,7 @@ public class ADMMenuNode {
             }
         } catch (Exception e) {
             LOG.debug("IsSageUserAllowed ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
-            return null;
+            return Boolean.TRUE;
         }
     }
     
@@ -557,7 +557,7 @@ public class ADMMenuNode {
             return MenuNodeList().get(Name).IsCreatedNotLoaded;
         } catch (Exception e) {
             LOG.debug("GetMenuItemIsCreatedNotLoaded ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
-            return null;
+            return Boolean.FALSE;
         }
     }
 
@@ -570,7 +570,7 @@ public class ADMMenuNode {
             return MenuNodeList().get(Name).IsTemp;
         } catch (Exception e) {
             LOG.debug("SetMenuItemIsCreatedNotLoaded ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
-            return null;
+            return Boolean.FALSE;
         }
     }
 
@@ -583,13 +583,13 @@ public class ADMMenuNode {
             return MenuNodeList().get(Name).IsDefault;
         } catch (Exception e) {
             LOG.debug("SetMenuItemIsTemp ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
-            return null;
+            return Boolean.FALSE;
         }
     }
 
     public static void SetMenuItemIsDefault(String Name, Boolean Setting){
         //LOG.debug("SetMenuItemIsDefault: Name '" + Name + "' Setting '" + Setting + "'");
-        if (Setting==Boolean.TRUE){
+        if (Setting){
             //first clear existing Default settings for Menu Items with the same parent 
             ClearSubMenuDefaults(MenuNodeList().get(Name).Parent);
             Save(Name, "IsDefault", Setting.toString());
@@ -951,7 +951,7 @@ public class ADMMenuNode {
             }
         } catch (Exception e) {
             LOG.debug("IsSubMenuItem ERROR: Value not available for '" + bParent + "' Exception = '" + e + "'");
-            return null;
+            return Boolean.FALSE;
         }
     }
 
@@ -1933,14 +1933,16 @@ public class ADMMenuNode {
     public static String LogDirty(){
         Integer counter = 0;
         String ReturnString = "";
+        StringBuffer buf = new StringBuffer();
         for (String tName : MenuNodeList().keySet()){
             if (!tName.equals(ADMutil.TopMenu)){
                 if (GetMenuItemIsDirty(tName)){
                     counter++;
-                    ReturnString = ReturnString + "Item (" + counter + ") = '" + tName + "' Name '" + GetMenuItemButtonText(tName) + "' \n";
+                    buf.append("Item (" + counter + ") = '" + tName + "' Name '" + GetMenuItemButtonText(tName) + "' \n");
                 }
             }
         }
+        ReturnString = buf.toString();
         ReturnString = "TOTALS: " + counter + "' Dirty items. Total Items '" + MenuNodeList().size() + "' \n" + ReturnString;
         LOG.debug("LogDirty: found \n" + ReturnString);
         return ReturnString;

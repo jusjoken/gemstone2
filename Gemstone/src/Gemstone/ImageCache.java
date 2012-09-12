@@ -1379,7 +1379,9 @@ public class ImageCache {
             }
             //LOG.debug("GetFanartKey: Key path after Episode check '" + Key + "'");
             //now remove the central folder from the path
-            Key = Key.replace(central, "");
+            if (central!=null){
+                Key = Key.replace(central, "");
+            }
         }
         Key = Key + util.ListToken + Size;
         //LOG.debug("GetFanartKey: Key '" + Key + "'");

@@ -363,18 +363,16 @@ public class Export {
                     FileOutputStream out = new FileOutputStream(this.FilePath);
                     try {
                         ExportProps.store(out, Const.PropertyComment);
+                    } finally {
                         out.close();
-                    } catch (IOException ex) {
-                        LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
                     }
-                } catch (FileNotFoundException ex) {
+                } catch (Exception ex) {
                     LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
                 }
                 LOG.debug("Execute: properties saved to '" + this.FilePath + "'");
             }else{
                 LOG.debug("Execute: no properties to export");
             }
-            
             
         }
     }

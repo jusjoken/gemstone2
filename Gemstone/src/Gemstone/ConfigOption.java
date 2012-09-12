@@ -15,6 +15,16 @@ import sagex.phoenix.factory.ConfigurableOption;
  */
 public class ConfigOption extends ConfigurableOption {
 
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     private String PropLocation = "";
     static private final Logger LOG = Logger.getLogger(ConfigOption.class);
     public ConfigOption(String PropertyLocation, String name, String value) {

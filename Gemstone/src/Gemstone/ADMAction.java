@@ -7,7 +7,6 @@ package Gemstone;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -81,6 +80,7 @@ public class ADMAction {
     public static final String DynamicGemstoneFlows = "admDynamicGemstoneFlows";
     public static final String ActionCategoryShowAll = "admActionCategoryShowAll";
     public static final String ActionCategoryOther = "Other (no category)";
+    public static enum ActionCats {Video,TV,Gemstone,Music};
     
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText){
@@ -110,14 +110,14 @@ public class ADMAction {
 
         ActionList.put(BrowseVideoFolder, new ADMAction(BrowseVideoFolder,Boolean.FALSE,"Video Browser with specific Folder","Video Browser Folder","OPUS4A-174637"));
         ActionList.get(BrowseVideoFolder).ActionVariables.add(new ActionVariable(VarTypeGlobal,"gCurrentVideoBrowserFolder", UseAttributeValue));
-        ActionList.get(BrowseVideoFolder).ActionCategories.add("Video");
+        ActionList.get(BrowseVideoFolder).ActionCategories.add(ActionCats.Video.toString());
 
 
         ActionList.put(StandardMenuAction, new ADMAction(StandardMenuAction,Boolean.FALSE,"Execute Standard Sage Menu Action", "Standard Action"));
 
         ActionList.put(TVRecordingView, new ADMAction(TVRecordingView,Boolean.FALSE,"Launch Specific TV Recordings View", "TV Recordings View","OPUS4A-174116"));
         ActionList.get(TVRecordingView).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ViewFilter", UseAttributeValue));
-        ActionList.get(TVRecordingView).ActionCategories.add("TV");
+        ActionList.get(TVRecordingView).ActionCategories.add(ActionCats.TV.toString());
 
         ActionList.put(DynamicList, new ADMAction(DynamicList,Boolean.FALSE,"Dynamic List Item", "Dynamic List Type"));
 
@@ -140,39 +140,15 @@ public class ADMAction {
 
         ActionList.put(GemstoneFlow, new ADMAction(GemstoneFlow,Boolean.FALSE,"Gemstone Flow", "Gemstone Flow","AOSCS-679216"));
         ActionList.get(GemstoneFlow).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ViewCell", UseAttributeValue));
-        ActionList.get(GemstoneFlow).ActionCategories.add("Video");
-        ActionList.get(GemstoneFlow).ActionCategories.add("TV");
-        ActionList.get(GemstoneFlow).ActionCategories.add("Gemstone");
+        ActionList.get(GemstoneFlow).ActionCategories.add(ActionCats.Video.toString());
+        ActionList.get(GemstoneFlow).ActionCategories.add(ActionCats.TV.toString());
+        ActionList.get(GemstoneFlow).ActionCategories.add(ActionCats.Gemstone.toString());
 
-        ActionList.put(BrowseFileFolderLocal, new ADMAction(BrowseFileFolderLocal,Boolean.FALSE,"File Browser: Local","Local File Path","BASE-51703"));
-        ActionList.get(BrowseFileFolderLocal).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
-        ActionList.get(BrowseFileFolderLocal).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xLocal"));
-        ActionList.get(BrowseFileFolderLocal).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/local", UseAttributeValue));
-        ActionList.get(BrowseFileFolderLocal).ActionCategories.add("File Systems");
-
-        ActionList.put(BrowseFileFolderServer, new ADMAction(BrowseFileFolderServer,Boolean.FALSE,"File Browser: Server","Server File Path","BASE-51703"));
-        ActionList.get(BrowseFileFolderServer).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
-        ActionList.get(BrowseFileFolderServer).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xServer"));
-        ActionList.get(BrowseFileFolderServer).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/server", UseAttributeValue));
-        ActionList.get(BrowseFileFolderServer).ActionCategories.add("File Systems");
-
-        ActionList.put(BrowseFileFolderImports, new ADMAction(BrowseFileFolderImports,Boolean.FALSE,"File Browser: Imports","Imports File Path","BASE-51703"));
-        ActionList.get(BrowseFileFolderImports).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
-        ActionList.get(BrowseFileFolderImports).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xImports"));
-        ActionList.get(BrowseFileFolderImports).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/imports", UseAttributeValue));
-        ActionList.get(BrowseFileFolderImports).ActionCategories.add("File Systems");
-
-        ActionList.put(BrowseFileFolderRecDir, new ADMAction(BrowseFileFolderRecDir,Boolean.FALSE,"File Browser: Recordings","Recording File Path","BASE-51703"));
-        ActionList.get(BrowseFileFolderRecDir).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
-        ActionList.get(BrowseFileFolderRecDir).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xRecDirs"));
-        ActionList.get(BrowseFileFolderRecDir).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/rec_dirs", UseAttributeValue));
-        ActionList.get(BrowseFileFolderRecDir).ActionCategories.add("File Systems");
-
-        ActionList.put(BrowseFileFolderNetwork, new ADMAction(BrowseFileFolderNetwork,Boolean.FALSE,"File Browser: Network","Network File Path","BASE-51703"));
-        ActionList.get(BrowseFileFolderNetwork).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
-        ActionList.get(BrowseFileFolderNetwork).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", "xNetwork"));
-        ActionList.get(BrowseFileFolderNetwork).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/network", UseAttributeValue));
-        ActionList.get(BrowseFileFolderNetwork).ActionCategories.add("File Systems");
+        InitBrowseFileFolder(BrowseFileFolderLocal, "xLocal", "Local","local");
+        InitBrowseFileFolder(BrowseFileFolderServer, "xServer", "Server","server");
+        InitBrowseFileFolder(BrowseFileFolderImports, "xImports", "Imports","imports");
+        InitBrowseFileFolder(BrowseFileFolderRecDir, "xRecDirs", "Recordings","rec_dirs");
+        InitBrowseFileFolder(BrowseFileFolderNetwork, "xNetwork", "Network","network");
 
         ActionList.put(LaunchExternalApplication, new ADMAction(LaunchExternalApplication,Boolean.FALSE,"Launch External Application", "Application Settings"));
 
@@ -191,6 +167,14 @@ public class ADMAction {
 
         LoadSageTVRecordingViews();
         LOG.debug("Init: Menu Manager Action Init completed: " + util.LogInfo());
+    }
+
+    private static void InitBrowseFileFolder(String bType, String bTypeKey, String TitleAdd, String FolderAdd){
+        ActionList.put(bType, new ADMAction(bType,Boolean.FALSE,"File Browser: " + TitleAdd,TitleAdd + " File Path","BASE-51703"));
+        ActionList.get(bType).ActionVariables.add(new ActionVariable(VarTypeGlobal,"ForceReload", "true"));
+        ActionList.get(bType).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_style", bTypeKey));
+        ActionList.get(bType).ActionVariables.add(new ActionVariable(VarTypeSetProp,"file_browser/last_folder/"+FolderAdd, UseAttributeValue));
+        ActionList.get(bType).ActionCategories.add("File Systems");
     }
     
     public static String GetWidgetbySymbol(){ return WidgetbySymbol; }
@@ -240,9 +224,7 @@ public class ADMAction {
                 if (ADMutil.IsAdvancedMode()){
                     tempList.add(Item);
                 }
-            }else if (GetInternalOnly(Item)){
-                //do not add these types of items as they should not show on any lists
-            }else{
+            }else if (!GetInternalOnly(Item)){
                 tempList.add(Item);
             }
         }
@@ -294,45 +276,47 @@ public class ADMAction {
     }
     
     public static String GetAttributeButtonText(String Type, String Attribute, Boolean IgnoreAdvanced){
+        String retVal;
         if (Type.equals(StandardMenuAction)){
             //determine if using Advanced options
             if (ADMutil.IsAdvancedMode() && !IgnoreAdvanced){
-                return SageMenuActions.get(Attribute).ButtonText + " \n  (" + Attribute + ")";
+                retVal = SageMenuActions.get(Attribute).ButtonText + " \n  (" + Attribute + ")";
             }else{
-                return SageMenuActions.get(Attribute).ButtonText;
+                retVal = SageMenuActions.get(Attribute).ButtonText;
             }
         }else if(Type.equals(WidgetbySymbol)){
-            return Attribute + " - " + GetWidgetName(Attribute);
+            retVal = Attribute + " - " + GetWidgetName(Attribute);
         }else if(Type.equals(BrowseVideoFolder)){
             if (Attribute==null){
-                return "Root";
+                retVal = "Root";
             }else{
-                return Attribute;
+                retVal = Attribute;
             }
         }else if(Type.equals(TVRecordingView)){
-            return GetSageTVRecordingViewsButtonText(Attribute);
+            retVal = GetSageTVRecordingViewsButtonText(Attribute);
         }else if(Type.equals(DynamicList)){
-            return DynamicLists.get(Attribute);
+            retVal = DynamicLists.get(Attribute);
         }else if(Type.equals(LaunchPlayList)){
             //should not be used as this is an internal only item and should not be displayed
-            return "Invalid use of this Internal PlayList item";
+            retVal = "Invalid use of this Internal PlayList item";
         }else if(Type.equals(GemstoneFlow)){
-            return Flow.GetFlowName(Attribute);
+            retVal = Flow.GetFlowName(Attribute);
         }else if(Type.equals(LaunchExternalApplication)){
             if (Attribute.isEmpty()){
-                return "Configure";
+                retVal = "Configure";
             }else{
-                return "Configure (" + Attribute + ")";
+                retVal = "Configure (" + Attribute + ")";
             }
         }else if(IsFileBrowserType(Type)){
             if (Attribute==null){
-                return "Choose";
+                retVal = "Choose";
             }else{
-                return Attribute;
+                retVal = Attribute;
             }
         }else{
-            return ADMutil.OptionNotFound;
+            retVal = ADMutil.OptionNotFound;
         }
+        return retVal;
     }
     
     //execute the Action based on the Menu Item ActionType value
@@ -423,18 +407,18 @@ public class ADMAction {
         //Dynamic Lists are single menu items that expand themselves into a list of items of a specified type
         DynamicLists.clear();
         DynamicLists.put(DynamicTVRecordingsList, "TV Recordings List");
-        ActionList.get(DynamicTVRecordingsList).ActionCategories.add("TV");
+        ActionList.get(DynamicTVRecordingsList).ActionCategories.add(ActionCats.TV.toString());
         
         DynamicLists.put(DynamicVideoPlaylist, "Video Playlist");
-        ActionList.get(DynamicVideoPlaylist).ActionCategories.add("Video");
+        ActionList.get(DynamicVideoPlaylist).ActionCategories.add(ActionCats.Video.toString());
 
         DynamicLists.put(DynamicMusicPlaylist, "Music Playlist");
-        ActionList.get(DynamicMusicPlaylist).ActionCategories.add("Music");
+        ActionList.get(DynamicMusicPlaylist).ActionCategories.add(ActionCats.Music.toString());
 
         DynamicLists.put(DynamicGemstoneFlows, "Gemstone Flows");
-        ActionList.get(DynamicGemstoneFlows).ActionCategories.add("Gemstone");
-        ActionList.get(DynamicGemstoneFlows).ActionCategories.add("Video");
-        ActionList.get(DynamicGemstoneFlows).ActionCategories.add("TV");
+        ActionList.get(DynamicGemstoneFlows).ActionCategories.add(ActionCats.Gemstone.toString());
+        ActionList.get(DynamicGemstoneFlows).ActionCategories.add(ActionCats.Video.toString());
+        ActionList.get(DynamicGemstoneFlows).ActionCategories.add(ActionCats.TV.toString());
     }
     
     public static Collection<String> GetDynamicListItems(String dParent, String Attribute){
@@ -752,12 +736,10 @@ public class ADMAction {
             FileInputStream in = new FileInputStream(CustomActionPropsPath);
             try {
                 CustomActionProps.load(in);
+            } finally {
                 in.close();
-            } catch (IOException ex) {
-                LOG.debug("LoadStandardActionList: IO exception loading actions " + ADMutil.class.getName() + ex);
-                return;
             }
-        } catch (FileNotFoundException ex) {
+        } catch (Exception ex) {
             LOG.debug("LoadStandardActionList: file not found loading actions " + ADMutil.class.getName() + ex);
             return;
         }

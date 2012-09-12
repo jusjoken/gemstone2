@@ -72,12 +72,10 @@ public class Import {
                 FileInputStream in = new FileInputStream(FilePath);
                 try {
                     Props.load(in);
+                } finally {
                     in.close();
-                } catch (IOException ex) {
-                    LOG.debug("Import: IO exception inporting properties " + util.class.getName() + ex);
-                    KeepProcessing = Boolean.FALSE;
                 }
-            } catch (FileNotFoundException ex) {
+            } catch (Exception ex) {
                 LOG.debug("Import: file not found inporting properties " + util.class.getName() + ex);
                 KeepProcessing = Boolean.FALSE;
             }
@@ -259,12 +257,12 @@ public class Import {
     }
     
     public String PreviewProps(){
-        String Preview = "";
+        StringBuffer buf = new StringBuffer();
         TreeSet<String> PreviewKeys = new TreeSet<String>(Props.stringPropertyNames());
         for (String key:PreviewKeys){
-            Preview = Preview + key + "=" + Props.getProperty(key) + "\n";
+            buf.append(key + "=" + Props.getProperty(key) + "\n");
         }
-        return Preview;
+        return buf.toString();
     }
 
     public void Load(){
@@ -347,11 +345,10 @@ public class Import {
                 FileOutputStream out = new FileOutputStream(tFilePath);
                 try {
                     ExportProps.store(out, Const.PropertyComment);
+                } finally {
                     out.close();
-                } catch (IOException ex) {
-                    LOG.debug("WriteMenuProperties: error exporting properties " + util.class.getName() + ex);
                 }
-            } catch (FileNotFoundException ex) {
+            } catch (Exception ex) {
                 LOG.debug("WriteMenuProperties: error exporting properties " + util.class.getName() + ex);
             }
         }else{

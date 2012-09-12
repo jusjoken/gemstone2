@@ -136,14 +136,15 @@ public class SourceUI {
         return tList;
     }
     public String LogMessage(){
-        String tMess = Label() + "-'" + Source() + "'Levels'" + thisLevels + "'-";
+        StringBuffer buf = new StringBuffer();
+        buf.append(Label() + "-'" + Source() + "'Levels'" + thisLevels + "'-");
         for (ConfigOption tConfig: ConfigOptionsList.values()){
-            tMess = tMess + ":" + tConfig.getName() + "=" + tConfig.GetValue() + "(" + tConfig.GetValueLabel() + ")";
+            buf.append(":" + tConfig.getName() + "=" + tConfig.GetValue() + "(" + tConfig.GetValueLabel() + ")");
         }
         for (PresentationUI tUI: UIList()){
-            tMess = tMess + "[" + tUI.LogMessage() + "]";
+            buf.append("[" + tUI.LogMessage() + "]");
         }
-        return tMess;
+        return buf.toString();
     }
     
     public static String GetPresentationProp(Integer Level){
