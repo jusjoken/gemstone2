@@ -205,6 +205,7 @@ public class util {
 
     }
 
+    //TODO: check out this function as it likely always returns the full array
     public static Object CheckSimpleSize(Object[] Files,int sizeneeded) {
         if (!Files.toString().contains("blankelement")) {
 

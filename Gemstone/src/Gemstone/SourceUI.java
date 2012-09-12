@@ -179,7 +179,6 @@ public class SourceUI {
         }
     }
     public static Boolean IsDefaultConfigOption(HashSet<ConfigOption> ConfigList, ConfigOption CheckItem){
-        LinkedHashSet<ConfigOption> tList = new LinkedHashSet<ConfigOption>();
         for (ConfigOption tConfig:ConfigList){
             if (tConfig.equals(CheckItem)){
                 return Boolean.TRUE;

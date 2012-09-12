@@ -1669,7 +1669,8 @@ public class ADMMenuNode {
         //backup existing MenuItems before processing the import if any exist
         BackupMenus();
         //do an Import for MENUS only but skip writing as we are still going to modify this and then save
-        Import tImport = new Import(DefaultsFullPath, util.ExportType.MENUS, Boolean.TRUE);
+        //Import tImport = new Import(DefaultsFullPath, util.ExportType.MENUS, Boolean.TRUE);
+        new Import(DefaultsFullPath, util.ExportType.MENUS, Boolean.TRUE);
         LOG.debug("LoadMenuItemDefaults: Import returned to Load Defaults");
         
         ADMutil.ClearFocusStorage();

@@ -615,8 +615,7 @@ public class ADMAction {
     }
     
     public static String GetAllActionsInitialFocus(String Name){
-        Collection<String> AllActionsList = new LinkedList<String>();
-        AllActionsList = GetAllActionsList();
+        Collection<String> AllActionsList = GetAllActionsList();
         //if the current Action is in the list return it as focus otherwise return the first item
         String tKey = GetAllActionsKey(ADMMenuNode.GetMenuItemActionType(Name), ADMMenuNode.GetMenuItemAction(Name));
         if (AllActionsList.contains(tKey)){

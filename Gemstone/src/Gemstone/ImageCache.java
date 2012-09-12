@@ -213,7 +213,7 @@ public class ImageCache {
     public static Object GetImage(ImageCacheKey Key, Boolean SkipQueue){
         MediaArtifactType faArtifactType = Key.getArtifactType();
         Object mediaObject = null;
-        String tImageString = Key.getImagePath();
+        //String tImageString = Key.getImagePath();
         Object tImage = null;
 
         //make sure there is a valid key available

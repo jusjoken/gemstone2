@@ -26,7 +26,8 @@ public class airing
     //If it is not a TV file it returns the "MediaTitle" from the custom metadata fields. Returns "Unknown"
     //if the title is not known.
     {
-        String MediaTitle = new String();	
+        //String MediaTitle = new String();	
+        String MediaTitle;	
         if (MediaFileAPI.IsTVFile(MediaObject)) {
             MediaTitle = AiringAPI.GetAiringTitle(MediaObject);		
         }

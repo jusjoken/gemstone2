@@ -1042,8 +1042,6 @@ public class ADMutil {
         if (cState.equals(QLMCloseType.HOME_MM_LEFT_CLOSE.toString())){
             CloseOptionsMenu();
             ADMAction.ExecuteWidget(MainMenuWidgetSymbol);
-        }else if (cState.equals(QLMCloseType.HOME_CLOSE_LEFT_MM.toString())){
-            CloseOptionsMenu();
         }else{
             //default to HOME_CLOSE_LEFT_CLOSE
             CloseOptionsMenu();

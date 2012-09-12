@@ -175,7 +175,7 @@ public class Flow {
     
     public static ArrayList<String> MoveFlowinList(ArrayList<String> inFlows, String thisFlow, Integer Delta){
         Integer CurrentFlowLocation = inFlows.indexOf(thisFlow);
-        Boolean Moved = Boolean.FALSE;
+        //Boolean Moved = Boolean.FALSE;
         if (CurrentFlowLocation==-1){
             LOG.debug("MoveFlowinList: '" + thisFlow + "' not found in list");
             return inFlows;
@@ -184,13 +184,13 @@ public class Flow {
                 if (CurrentFlowLocation+Delta<inFlows.size()){
                     inFlows.remove(thisFlow);
                     inFlows.add(CurrentFlowLocation+Delta, thisFlow);
-                    Moved = Boolean.TRUE;
+                    //Moved = Boolean.TRUE;
                 }
             }else{ //move up in list
                 if (CurrentFlowLocation+Delta>=0){
                     inFlows.remove(thisFlow);
                     inFlows.add(CurrentFlowLocation+Delta, thisFlow);
-                    Moved = Boolean.TRUE;
+                    //Moved = Boolean.TRUE;
                 }
             }
         }

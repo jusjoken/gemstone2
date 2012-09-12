@@ -40,10 +40,9 @@ public class DateConverter {
     }
 
     public static Date GetCurrentDate() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  H:mm:ss");
-        Date date = new Date();
-
-        return date;
+        //DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd  H:mm:ss");
+        //Date date = new Date();
+        return new Date();
     }
 
     public static void main(String[] args) {
