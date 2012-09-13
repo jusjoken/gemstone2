@@ -24,7 +24,15 @@ public class Widget {
     public static Map<String,Integer> InternalWidgetListSections = new HashMap<String,Integer>();
     public static Map<String,Integer> InternalWidgetListDefaultListSize = new HashMap<String,Integer>();
     public static Map<String,Object> InternalWidgetLists = new HashMap<String,Object>();
+    private static boolean ListLoaderActive = false;
     
+    public static boolean IsListLoaderActive(){
+        return ListLoaderActive;
+    }
+    public static void SetListLoaderActive(boolean value){
+        ListLoaderActive = value;
+    }
+
     public static void SetWidgetList(String WidgetType, Object List){
         InternalWidgetLists.put(WidgetType, List);
     }

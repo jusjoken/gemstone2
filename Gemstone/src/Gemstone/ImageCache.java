@@ -72,6 +72,7 @@ public class ImageCache {
     private static final String ImageCacheTypesList = ImageCacheTypes.OFF + util.ListToken + ImageCacheTypes.BACKGROUND + util.ListToken + ImageCacheTypes.NOQUEUE + util.ListToken + ImageCacheTypes.BYIMAGETYPE;
     private static final String ImageCacheTypesListByImageType = ImageCacheTypes.OFF + util.ListToken + ImageCacheTypes.BACKGROUND + util.ListToken + ImageCacheTypes.NOQUEUE;
     public static final String CreateImageTag = "GemstoneImages";
+    private static boolean QueueActive = false;
     
     //Initialize the Cache and the Queue
     public static void Init(){
@@ -80,6 +81,13 @@ public class ImageCache {
         ICache = new SoftHashMap(GetMinSize());
         ClearQueue();
         LOG.debug("Init: imagecache init completed: " + util.LogInfo());
+    }
+    
+    public static boolean IsQueueActive(){
+        return QueueActive;
+    }
+    public static void SetQueueActive(boolean value){
+        QueueActive = value;
     }
     
     //Clear all lists - Queue and Cache

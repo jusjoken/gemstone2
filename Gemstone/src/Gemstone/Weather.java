@@ -24,7 +24,15 @@ public class Weather {
     private static String implList = util.ConvertListtoString(phoenix.weather2.GetWeatherImplKeys());
     private static final String implDefault = "world";
     private static final String unitsDefault = "Standard";
+    private static boolean LoaderActive = false;
 
+    public static boolean IsLoaderActive(){
+        return LoaderActive;
+    }
+    public static void SetLoaderActive(boolean value){
+        LoaderActive = value;
+    }
+    
     //always call Init first - should be called in the Gemstone Init 
     public static void Init(){
         LOG.debug("Init: weather init started: " + util.LogInfo());

@@ -74,12 +74,14 @@ public class api {
     public static void ClientStart(){
         //client specific settings
         ADMutil.ClientStart();
+        util.gc(2);
         
     }
 
     public static void ClientExit(String UIContext){
         //remove client specific settings for Menus
         ADMutil.ClientExit(UIContext);
+        util.gc(2);
         
     }
     
