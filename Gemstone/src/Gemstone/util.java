@@ -977,6 +977,10 @@ public class util {
     public static String WeatherLocation(){
         return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "Weather";
     }
+
+    public static String GemstoneSTVFile(){
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + "Gemstone.xml";
+    }
     
     public static String GetSageTVRootDir(){
         return sagex.phoenix.Phoenix.getInstance().getSageTVRootDir().toString();
@@ -1039,6 +1043,25 @@ public class util {
         }
         return null;
     }   
+    
+    public static boolean DisableGemstonePlugin(){
+        UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+        Object thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"DiamondSTVi");
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI,thisPlugin)){
+            boolean ret = false;
+            ret = sagex.api.PluginAPI.DisablePlugin(tUI, thisPlugin);
+            if (ret){
+                LOG.debug("DisableGemstonePlugin: Gemstone plugin found and disabled");
+            }else{
+                LOG.debug("DisableGemstonePlugin: Gemstone plugin found but could not be disabled");
+            }
+            return ret;
+        }else{
+            LOG.debug("DisableGemstonePlugin: Gemstone plugin was not enabled");
+            return false;
+        }
+        
+    }
     
     public static Boolean HandleNonCompatiblePlugins(){
         LOG.debug("HandleNonCompatiblePlugins: start checking for non-compatible plugins: " + LogInfo());
