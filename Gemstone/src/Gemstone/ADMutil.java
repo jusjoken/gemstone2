@@ -155,6 +155,8 @@ public class ADMutil {
     public static void ClientStart(){
         String UIContext = sagex.api.Global.GetUIContextName();
         LOG.debug("ClientStart: started for '" + UIContext + "': " + util.LogInfo());
+        //first ensure that the One Time init has occured
+        LoadADM();
         //initiate items that may differ per UIContext - the UI needs to ensure this only gets loaded once
         //Load the menu items
         ADMMenuNode.LoadMenus();
@@ -194,7 +196,6 @@ public class ADMutil {
         //LOG.debug("ClearAll: load default menus");
         //ADMMenuNode.LoadMenuItemDefaults();
         LOG.debug("ClearAll: initialize settings");
-        LoadADM();
         ClientStart();
         LOG.debug("ClearAll: complete - settings restored to defaults");
         
@@ -205,7 +206,6 @@ public class ADMutil {
         //clear all the Sage property settings for ADM
         LOG.debug("ReloadADMSettings: reload ADM settings");
         ADMInitComplete = Boolean.FALSE;
-        LoadADM();
         ClientStart();
         LOG.debug("ReloadADMSettings: complete");
         

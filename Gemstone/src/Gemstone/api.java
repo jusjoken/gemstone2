@@ -46,9 +46,8 @@ public class api {
         LOG.debug("Load: api load started: " + util.LogInfo());
 
         //initialize the ADM settings
-        //util.HandleNonCompatiblePlugins();
-        
-        ADMutil.LoadADM();
+        //these are now called directly by the client start
+        //ADMutil.LoadADM();
         
         //Init the common Weather interface
         Weather.Init();
