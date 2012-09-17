@@ -106,23 +106,28 @@ public class Weather {
     
     public static void UpdateWeather(){
         if (phoenix.weather2.Update()){
-            //based on the Sage Menu that is displayed - refresh the screen
-            //do this for the current context as well as each connected client
-            List<String> clientList = new ArrayList<String>();
-            clientList.addAll(GemstonePlugin.getNonPCClients());
-            if (!clientList.contains(sagex.api.Global.GetUIContextName())){
-                clientList.add(sagex.api.Global.GetUIContextName());
-            }
-            for (String client:clientList){
-                RefreshWeatherScreens(client);
-            }
-            LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " at " + phoenix.weather2.GetLocation() + " weather updated for '" + phoenix.weather2.GetLocationName() + "'(" + phoenix.weather2.GetLocation() + ") as of '" + phoenix.weather2.GetRecordedDate() + "'. Units '" + phoenix.weather2.GetUnits() + "' for clients '" + clientList + "'");
+            RefreshAllClients();
+            LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " at " + phoenix.weather2.GetLocation() + " weather updated for '" + phoenix.weather2.GetLocationName() + "'(" + phoenix.weather2.GetLocation() + ") as of '" + phoenix.weather2.GetRecordedDate() + "'. Units '" + phoenix.weather2.GetUnits() + "'");
         }else{
             if (phoenix.weather2.HasError()){
                 LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " weather update not performed. '" + phoenix.weather2.GetError() + "'");
             }else{
+                RefreshAllClients();
                 LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " weather update not performed. Last updated '" + sagex.api.Utility.PrintDateFull(phoenix.weather2.GetRecordedDate().getTime()) + " " + sagex.api.Utility.PrintTimeShort(phoenix.weather2.GetRecordedDate().getTime()) + "'");
             }
+        }
+    }
+    
+    private static void RefreshAllClients(){
+        //based on the Sage Menu that is displayed - refresh the screen
+        //do this for the current context as well as each connected client
+        List<String> clientList = new ArrayList<String>();
+        clientList.addAll(GemstonePlugin.getNonPCClients());
+        if (!clientList.contains(sagex.api.Global.GetUIContextName())){
+            clientList.add(sagex.api.Global.GetUIContextName());
+        }
+        for (String client:clientList){
+            RefreshWeatherScreens(client);
         }
     }
     
@@ -133,17 +138,18 @@ public class Weather {
         if (thisMenu.equals("Main Menu")){
             if (Widget.HasWeatherWidget()){
                 //refresh each of the valid widget areas
-                if (Widget.ShowWidget("WeatherBasic")){
-                    sagex.api.Global.RefreshArea(tUI, "WeatherBasicCurrentConditions");
-                }
-                if (Widget.ShowWidget("WeatherExtended")){
-                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherCenter");
-                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherVWP");
-                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherRecordedat");
-                }
-                if (Widget.ShowWidget("WeatherForecast")){
-                    sagex.api.Global.RefreshArea(tUI, "Forecast Area Panel");
-                }
+//                if (Widget.ShowWidget("WeatherBasic")){
+//                    sagex.api.Global.RefreshArea(tUI, "WeatherBasicCurrentConditions");
+//                }
+//                if (Widget.ShowWidget("WeatherExtended")){
+//                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherCenter");
+//                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherVWP");
+//                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherRecordedat");
+//                }
+//                if (Widget.ShowWidget("WeatherForecast")){
+//                    sagex.api.Global.RefreshArea(tUI, "Forecast Area Panel");
+//                }
+                sagex.api.Global.RefreshArea(tUI,"Main Menu Widget Panel");
                 LOG.debug("RefreshWeatherScreens: refreshed weather widgets for UI '" + Context + "'");
             }else{
                 sagex.api.Global.RefreshArea(tUI, HeaderRefreshArea);
