@@ -22,7 +22,7 @@ public class api {
 
     public static Logger LOG=Logger.getLogger(api.class);
 
-    public static String Version = "1.016" + "";
+    public static String Version = "1.017" + "";
     private static boolean STVAppStarted = false;
     
     public static boolean IsSTVAppStarted(){
@@ -73,6 +73,8 @@ public class api {
     public static void ClientStart(){
         //client specific settings
         ADMutil.ClientStart();
+        util.LogConnectedClients();
+        util.LogPlugins();
         util.gc(2);
         
     }
@@ -80,6 +82,7 @@ public class api {
     public static void ClientExit(String UIContext){
         //remove client specific settings for Menus
         ADMutil.ClientExit(UIContext);
+        util.LogConnectedClients();
         util.gc(2);
         
     }

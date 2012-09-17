@@ -7,10 +7,12 @@ package Gemstone;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
+import sagex.UIContext;
 import sagex.phoenix.weather.IForecastPeriod;
 
 
@@ -104,9 +106,55 @@ public class Weather {
     
     public static void UpdateWeather(){
         if (phoenix.weather2.Update()){
-            LOG.debug("UpdateWeather: " + phoenix.weather2.GetLocation() + " weather updated for '" + phoenix.weather2.GetLocationName() + "'(" + phoenix.weather2.GetLocation() + ") as of '" + phoenix.weather2.GetRecordedDate() + "'. Units '" + phoenix.weather2.GetUnits() + "'");
+            //based on the Sage Menu that is displayed - refresh the screen
+            //do this for the current context as well as each connected client
+            List<String> clientList = new ArrayList<String>();
+            clientList.addAll(GemstonePlugin.getNonPCClients());
+            if (!clientList.contains(sagex.api.Global.GetUIContextName())){
+                clientList.add(sagex.api.Global.GetUIContextName());
+            }
+            for (String client:clientList){
+                RefreshWeatherScreens(client);
+            }
+            LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " at " + phoenix.weather2.GetLocation() + " weather updated for '" + phoenix.weather2.GetLocationName() + "'(" + phoenix.weather2.GetLocation() + ") as of '" + phoenix.weather2.GetRecordedDate() + "'. Units '" + phoenix.weather2.GetUnits() + "' for clients '" + clientList + "'");
         }else{
-            LOG.debug("UpdateWeather: weather update not performed. '" + phoenix.weather2.GetError() + "'");
+            if (phoenix.weather2.HasError()){
+                LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " weather update not performed. '" + phoenix.weather2.GetError() + "'");
+            }else{
+                LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " weather update not performed. Last updated '" + sagex.api.Utility.PrintDateFull(phoenix.weather2.GetRecordedDate().getTime()) + " " + sagex.api.Utility.PrintTimeShort(phoenix.weather2.GetRecordedDate().getTime()) + "'");
+            }
+        }
+    }
+    
+    private static void RefreshWeatherScreens(String Context){
+        UIContext tUI = new UIContext(Context);
+        String HeaderRefreshArea = "WeatherConditionsArea";
+        String thisMenu = sagex.api.WidgetAPI.GetWidgetName(sagex.api.WidgetAPI.GetCurrentMenuWidget(tUI));
+        if (thisMenu.equals("Main Menu")){
+            if (Widget.HasWeatherWidget()){
+                //refresh each of the valid widget areas
+                if (Widget.ShowWidget("WeatherBasic")){
+                    sagex.api.Global.RefreshArea(tUI, "WeatherBasicCurrentConditions");
+                }
+                if (Widget.ShowWidget("WeatherExtended")){
+                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherCenter");
+                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherVWP");
+                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherRecordedat");
+                }
+                if (Widget.ShowWidget("WeatherForecast")){
+                    sagex.api.Global.RefreshArea(tUI, "Forecast Area Panel");
+                }
+                LOG.debug("RefreshWeatherScreens: refreshed weather widgets for UI '" + Context + "'");
+            }else{
+                sagex.api.Global.RefreshArea(tUI, HeaderRefreshArea);
+                LOG.debug("RefreshWeatherScreens: refreshed main menu header for UI '" + Context + "'");
+            }
+        }else if (thisMenu.equals("Gemstone Weather")){
+            sagex.api.Global.Refresh(tUI);
+            LOG.debug("RefreshWeatherScreens: refreshed Gemstone Weather for UI '" + Context + "'");
+        }else{
+            sagex.api.Global.RefreshArea(tUI, HeaderRefreshArea);
+            LOG.debug("RefreshWeatherScreens: refreshed header for UI '" + Context + "'");
         }
     }
     

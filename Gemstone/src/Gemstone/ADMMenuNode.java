@@ -312,24 +312,24 @@ public class ADMMenuNode {
         
         //if we got this far then the Image was not in the FileSystem Cache
         UIContext UIc = new UIContext(sagex.api.Global.GetUIContextName());
-        Integer UIWidth = sagex.api.Global.GetFullUIWidth(UIc);
-        Double scalewidth = 1.0;
-        Double finalscalewidth = scalewidth * UIWidth;
+        //Integer UIWidth = sagex.api.Global.GetFullUIWidth(UIc);
+        //Double scalewidth = 1.0;
+        //Double finalscalewidth = scalewidth * UIWidth;
         try {
             //ThisImage = phoenix.image.CreateImage(Key, CreateImageTag, Key, "{name: scale, width: " + finalscalewidth + ", height: -1}", true);
             ThisImage = phoenix.image.CreateImage(Key, Const.CreateBGImageTag, Key, "{name: dummy}", true);
             LOG.debug("CreateBGImage: Image = '" + ThisImage + "' for Key '" + Key + "'");
         } catch (Exception e) {
-            LOG.debug("CreateBGImage: phoenix.image.CreateImage FAILED - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "' Error: '" + e + "'");
+            LOG.debug("CreateBGImage: phoenix.image.CreateImage FAILED for Image = '" + Key + "' Error: '" + e + "'");
             return null;
         }
         if (!sagex.api.Utility.IsImageLoaded(UIc, ThisImage)){
-            LOG.debug("CreateBGImage: Loaded using LoagImage(loadImage)) - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "'");
+            LOG.debug("CreateBGImage: Loaded using LoagImage(loadImage)) - for Image = '" + Key + "'");
             sagex.api.Utility.LoadImage(UIc, sagex.api.Utility.LoadImage(UIc, ThisImage));
         }else{
             sagex.api.Utility.UnloadImage(UIc, ThisImage.toString());
             sagex.api.Utility.LoadImage(UIc, sagex.api.Utility.LoadImage(UIc, ThisImage));
-            LOG.debug("CreateBGImage: already Loaded - finalscalewidth = '" + finalscalewidth + "' for Image = '" + Key + "'");
+            LOG.debug("CreateBGImage: already Loaded for Image = '" + Key + "'");
         }
         return ThisImage;
     }
@@ -340,6 +340,7 @@ public class ADMMenuNode {
         try {
             if (MenuNodeList().get(Name).BGImageFilePath==null){
                 if (MenuNodeList().get(Name).Parent.equals(ADMutil.TopMenu)){
+                    LOG.debug("GetMenuItemBGImageFilePath for '" + Name + "' returning null for TopMenu item.");
                     return null;
                 }else{
                     return GetMenuItemBGImageFilePath(MenuNodeList().get(Name).Parent);

@@ -30,6 +30,7 @@ import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
 import java.util.Timer;
 import java.util.TimerTask;
+import sagex.api.PluginAPI;
 
 
 /**
@@ -1061,6 +1062,54 @@ public class util {
             return false;
         }
         
+    }
+
+    public static void LogPlugins(){
+        if (LOG.isDebugEnabled()){
+            UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+            //List system plugins
+            Object[] plugins = PluginAPI.GetInstalledPlugins(tUI);
+            LOG.debug("LogPlugins: checking system plugins: " + LogInfo());
+            if (plugins != null && plugins.length > 0) {
+                String enabledText;
+                for (Object plugin : plugins) {
+                    if (PluginAPI.IsPluginEnabled(tUI,plugin)){
+                        enabledText = "Y";
+                    }else{
+                        enabledText = "N";
+                    }
+                    LOG.debug("    : System Plugin: Enabled '" + enabledText + "' ID '" + PluginAPI.GetPluginIdentifier(tUI,plugin)+ "' Name: '" + PluginAPI.GetPluginName(tUI, plugin) + "'");
+                }
+            }else{
+                LOG.debug("    : None found");
+            }
+            //List client plugins
+            plugins = PluginAPI.GetInstalledClientPlugins(tUI);
+            LOG.debug("LogPlugins: checking client plugins: " + LogInfo());
+            if (plugins != null && plugins.length > 0) {
+                String enabledText;
+                for (Object plugin : plugins) {
+                    if (PluginAPI.IsPluginEnabled(tUI,plugin)){
+                        enabledText = "Y";
+                    }else{
+                        enabledText = "N";
+                    }
+                    LOG.debug("    : Client Plugin: Enabled '" + enabledText + "' ID '" + PluginAPI.GetPluginIdentifier(tUI,plugin)+ "' Name: '" + PluginAPI.GetPluginName(tUI, plugin) + "'");
+                }
+            }else{
+                LOG.debug("    : None found");
+            }
+        }
+    }
+    
+    public static void LogConnectedClients(){
+        if (LOG.isDebugEnabled()){
+            UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+            LOG.debug("LogConnectedClients: checking remote connected clients: " + LogInfo());
+            for (String client:GemstonePlugin.getNonPCClients()){
+                LOG.debug("    : Internal List: '" + client + "'");
+            }
+        }
     }
     
     public static Boolean HandleNonCompatiblePlugins(){

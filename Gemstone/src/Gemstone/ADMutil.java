@@ -482,7 +482,6 @@ public class ADMutil {
     public static String GetSageBGFile(String Option){
         //see if using a GlobalVariable from a Theme or a path to an image file
         if (Option==null || Option.equals("") || Option.equals(ListNone)){
-            //LOG.debug("SetBGImageFileandPath for '" + bBGImageFile + "' - null found");
             //LOG.debug("GetSageBGFile for '" + Option + "' Invalid request passed in");
             return null;
         }
@@ -496,7 +495,7 @@ public class ADMutil {
             }else{
                 //remove the Not Found key if it was created as part of the Get
                 RemoveServerProperty(PropLocation);
-                //LOG.debug("GetSageBGFile for '" + Option + "' Invalid request passed in");
+                LOG.debug("GetSageBGFile for '" + Option + "' Invalid request passed in");
                 return null;
             }
         }else{
@@ -505,7 +504,7 @@ public class ADMutil {
             String BGImageFilePath = "";
             BGImageFilePath = EvaluateAttribute(Option);
             if (BGImageFilePath.equals(OptionNotFound)){
-                //LOG.debug("GetSageBGFile for '" + Option + "' Evaluate Failed");
+                LOG.debug("GetSageBGFile for '" + Option + "' Evaluate Failed");
                 return null;
             }else{
                 //LOG.debug("GetSageBGFile for '" + Option + "' = '" + BGImageFilePath + "'");

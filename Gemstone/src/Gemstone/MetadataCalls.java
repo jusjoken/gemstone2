@@ -396,8 +396,8 @@ public class MetadataCalls {
     
     //get a list of all the categories with Movies/Film removed and unknown assigned if no category exists
     public static ArrayList<String> GetAllShowCategories(Object MediaObject) {
-        LOG.debug("====== " + GetMediaTitle(MediaObject) + "========");
-        LOG.debug("GetShowCategoriesString = '" + sagex.api.ShowAPI.GetShowCategoriesString(MediaObject) + "'");
+        //LOG.debug("====== " + GetMediaTitle(MediaObject) + "========");
+        //LOG.debug("GetShowCategoriesString = '" + sagex.api.ShowAPI.GetShowCategoriesString(MediaObject) + "'");
         String SplitChars = "[,;/]";
         String[] Cats = sagex.api.ShowAPI.GetShowCategoriesString(MediaObject).split(SplitChars);
         
@@ -411,18 +411,18 @@ public class MetadataCalls {
                 cat1 = cat1.trim();
                 String cat2 = andsplit[1];
                 cat2 = cat2.trim();
-                LOG.debug("Adding Category ='" + cat1 + "'");
+                //LOG.debug("Adding Category ='" + cat1 + "'");
                 AllCats.add(cat1);
-                LOG.debug("Adding Category ='" + cat2 + "'");
+                //LOG.debug("Adding Category ='" + cat2 + "'");
                 AllCats.add(cat2);
             } else if (curr.toLowerCase().equals("movie") || curr.toLowerCase().equals("film")) {
                 //do not add as we want to skip these
-                LOG.debug("Skipping 'movie or film' category");
+                //LOG.debug("Skipping 'movie or film' category");
             } else if (curr.equals("")) {
-                LOG.debug("Adding 'unknown' category");
+                //LOG.debug("Adding 'unknown' category");
                 AllCats.add("unknown");
             } else {
-                LOG.debug("Adding single categories = '" + curr + "'");
+                //LOG.debug("Adding single categories = '" + curr + "'");
                 AllCats.add(curr);
             }
         }

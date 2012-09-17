@@ -23,7 +23,7 @@ public class GemstonePlugin extends AbstractPlugin {
     static private final Logger LOG = Logger.getLogger(GemstonePlugin.class);
     private static boolean OneTimeStartComplete = false;
     private static boolean OneTimePluginLoadedComplete = false;
-    public static List<String> NonPCClients = new LinkedList<String>(); 
+    private static List<String> NonPCClients = new LinkedList<String>(); 
     
     public GemstonePlugin(SageTVPluginRegistry registry) { 
         super(registry); 
@@ -32,13 +32,12 @@ public class GemstonePlugin extends AbstractPlugin {
 
     @SageEvent(value = SageEvents.AllPluginsLoaded, background = true)
     public void onPluginsLoaded() {  
-        if (!OneTimePluginLoadedComplete){
+        if (OneTimePluginLoadedComplete){
+            LOG.debug("onPluginsLoaded: Plugins previously loaded: " + util.LogInfo());
+        }else{
             OneTimePluginLoadedComplete = true;
             LOG.debug("onPluginsLoaded: All Plugins Loaded: " + util.LogInfo());
-        }else{
-            LOG.debug("onPluginsLoaded: Plugins previously loaded: " + util.LogInfo());
         }
-        //util.HandleNonCompatiblePlugins();
     }  
     
     @SageEvent(value=SageEvents.ClientConnected, background=true)
@@ -71,7 +70,7 @@ public class GemstonePlugin extends AbstractPlugin {
             }else{
                 String tClient = args.get("MACAddress").toString();
                 if (NonPCClients.contains(tClient)){
-                    LOG.debug("onClientDisconnected: client found: '" + tClient + "' IP '" + args.get("IPAddress") + "' " + util.LogInfo());
+                    LOG.debug("onClientDisconnected: client found and removed: '" + tClient + "' IP '" + args.get("IPAddress") + "' " + util.LogInfo());
                     NonPCClients.remove(tClient);
                     api.ClientExit(tClient);
                 }else{
@@ -94,6 +93,10 @@ public class GemstonePlugin extends AbstractPlugin {
         }
         LOG.debug("start: Sage Start called: " + util.LogInfo());
         super.start(); 
+    }
+
+    public static List<String> getNonPCClients() {
+        return NonPCClients;
     }
     
 }

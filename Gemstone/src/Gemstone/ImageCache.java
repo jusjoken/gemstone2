@@ -608,9 +608,8 @@ public class ImageCache {
     
     //generic routine to get a default or custom scale width
     public static Double GetScaleWidth(MediaArtifactType FanartType, Boolean OriginalSize){
-        UIContext UIc = new UIContext(sagex.api.Global.GetUIContextName());
         //based on the ImageType determine the scalewidth to use
-        Integer UIWidth = sagex.api.Global.GetFullUIWidth(UIc);
+        Integer UIWidth = GetUIWidth();
         Double scalewidth = 1.0;
         if (OriginalSize){
             if (FanartType.equals(MediaArtifactType.BACKGROUND)){ //full background
@@ -733,6 +732,38 @@ public class ImageCache {
         if (Value>0){
         }else{
             Value = GetImageScaleDefault(ImageType);
+        }
+        util.SetProperty(tProp, Value.toString());
+    }
+
+    public static Integer GetUIWidth(){
+        String tProp = ICacheProps + Const.PropDivider + Const.UIWidth;
+        Integer UIWidth = util.GetPropertyAsInteger(tProp, -1);
+        if (UIWidth<1){
+            //cleanup 0 value if needed
+            if (UIWidth==0){
+                SetUIWidth(0);
+            }
+            return sagex.api.Global.GetFullUIWidth(new UIContext(sagex.api.Global.GetUIContextName()));
+        }else{
+            return UIWidth;
+        }
+    }
+    public static String GetUIWidthButtonText(){
+        String tProp = ICacheProps + Const.PropDivider + Const.UIWidth;
+        Integer UIWidth = util.GetPropertyAsInteger(tProp, -1);
+        if (UIWidth<1){
+            //not found or default so return system info as default
+            return "Default (" + sagex.api.Global.GetFullUIWidth(new UIContext(sagex.api.Global.GetUIContextName())) + ")";
+        }else{
+            return "Override (" + UIWidth.toString() + ")";
+        }
+    }
+    public static void SetUIWidth(Integer Value){
+        String tProp = ICacheProps + Const.PropDivider + Const.UIWidth;
+        if (Value>0){
+        }else{
+            Value = sagex.api.Global.GetFullUIWidth(new UIContext(sagex.api.Global.GetUIContextName()));
         }
         util.SetProperty(tProp, Value.toString());
     }

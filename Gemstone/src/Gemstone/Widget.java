@@ -404,4 +404,12 @@ public class Widget {
         return tHeight/GetWidgetHeight(WidgetType);
     }
     
+    public static boolean HasWeatherWidget(){
+        if (GetUseWidgets()){
+            if (ShowWidget("WeatherBasic") || ShowWidget("WeatherExtended") || ShowWidget("WeatherForecast")){
+                return true;
+            }
+        }
+        return false;
+    }
 }

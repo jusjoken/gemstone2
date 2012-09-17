@@ -58,6 +58,7 @@ public class Const {
     public static final String ImageCheckFoldersFirst = "ImageCheckFoldersFirst";
     public static final String ImageFoldersFirstName = "ImageFoldersFirstName";
     public static final String ImageScale = "ImageScale";
+    public static final String UIWidth = "UIWidth";
     public static final String InstantSearchFilteredJumpTo = "InstantSearchFilteredJumpTo";
     public static final String InstantSearchExecuteAutoSelect = "InstantSearchExecuteAutoSelect";
     public static final String InstantSearchJumpToPercentAlpha = "InstantSearchJumpToPercentAlpha";
