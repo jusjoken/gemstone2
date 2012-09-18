@@ -4,7 +4,6 @@
  */
 package Gemstone;
 
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
@@ -63,7 +62,7 @@ public class ImageCache {
     // - CacheType - NoQueue - items get added to the Cache and returned
     // - CacheType - Off - items get returned and NOT added to Queue NOR Cache
     // - CacheType - ByImageType - 
-    
+        
     static private final Logger LOG = Logger.getLogger(ImageCache.class);
     private static final String ICacheProps = Const.BaseProp + Const.PropDivider + Const.ImageCacheProp;
     private static LinkedHashMap<String,ImageCacheKey> IQueue = new LinkedHashMap<String,ImageCacheKey>();
@@ -80,7 +79,7 @@ public class ImageCache {
         
         ICache = new SoftHashMap(GetMinSize());
         ClearQueue();
-        LOG.debug("Init: imagecache init completed: " + util.LogInfo());
+        LOG.debug("Init: imagecache init completed: MinSize set to '" + GetMinSize() + "' " + util.LogInfo());
     }
     
     public static boolean IsQueueActive(){
@@ -112,6 +111,7 @@ public class ImageCache {
         //LOG.debug("RemoveItemFromCache: Test get retrieved '" + Test + "'");
     }
 
+    
     //This will return a background and refresh that specific area
     //Check for null in the STV to not change the background if that is desired
     public static Object GetBackground(IMediaResource imediaresource, String RefreshArea){
@@ -197,6 +197,7 @@ public class ImageCache {
     public static Object GetImage(IMediaResource imediaresource, String resourcetype, Boolean originalSize){
         return GetImage(imediaresource, resourcetype, originalSize, null);
     }
+    
     public static Object GetImage(IMediaResource imediaresource, String resourcetype, Boolean originalSize, String defaultImage){
         //return the default image passed in when none found or waiting for background processing from the queue
         //LOG.debug("GetImage: imediaresource '" + imediaresource + "' resourcetype '" + resourcetype + "' defaultImage '" + defaultImage + "'");
@@ -239,14 +240,15 @@ public class ImageCache {
                         //see if the item is already in the queue
                         if (IQueue.containsKey(Key.getKey())){
                             ImageCacheKey tItem = IQueue.get(Key.getKey());
-                            if (Key.HasRefreshArea()){
-                                if (Key.getRefreshArea().equals(tItem.getRefreshArea())){
-                                    LOG.debug("GetImage: FromKey: already in the Queue '" + Key.getKey() + "' defaultImage returned '" + Key.getDefaultImage() + "' QueueSize '" + IQueue.size() + "'");
-                                }else{ //different RefreshAreas for set to RefreshAll
-                                    LOG.debug("GetImage: FromKey: already in the Queue but different RefreshArea - RefreshAll will be used '" + Key.getKey() + "' defaultImage returned '" + Key.getDefaultImage() + "' QueueSize '" + IQueue.size() + "'");
-                                    tItem.setRefreshAll(Boolean.TRUE);
-                                }
-                            }
+                            tItem.MergeKey(Key);
+//                            if (Key.HasRefreshArea()){
+//                                if (Key.getRefreshArea().equals(tItem.getRefreshArea())){
+//                                    LOG.debug("GetImage: FromKey: already in the Queue '" + Key.getKey() + "' defaultImage returned '" + Key.getDefaultImage() + "' QueueSize '" + IQueue.size() + "'");
+//                                }else{ //different RefreshAreas for set to RefreshAll
+//                                    LOG.debug("GetImage: FromKey: already in the Queue but different RefreshArea - RefreshAll will be used '" + Key.getKey() + "' defaultImage returned '" + Key.getDefaultImage() + "' QueueSize '" + IQueue.size() + "'");
+//                                    tItem.setRefreshAll(Boolean.TRUE);
+//                                }
+//                            }
                             return Key.getDefaultImage();
                         }else{
                             //add the imagestring to the queue for background processing later
@@ -351,7 +353,7 @@ public class ImageCache {
                 //"show" - get the first item in the group and use it for the image
                 //else - get the first item in the group and use it for the image
             }
-            if (Grouping.equals("show")){
+            if ("show".equals(Grouping)){
                 //need to know if this is a TV show grouping to get a Series fanart item
                 childmediaresource = GetChild(imediaresource, Boolean.FALSE);
                 if (phoenix.media.IsMediaType( childmediaresource , "TV" )){
@@ -369,7 +371,7 @@ public class ImageCache {
                     }
                     faMediaObject = phoenix.media.GetMediaObject(childmediaresource);
                 }
-            }else if (Grouping.equals("genre")){
+            }else if ("genre".equals(Grouping)){
                 LOG.debug("GetImageKey: genre group found '" + phoenix.media.GetTitle(imediaresource) + "' using Child for Fanart");
                 childmediaresource = GetChild(imediaresource, Boolean.FALSE);
                 faMediaObject = phoenix.media.GetMediaObject(childmediaresource);
@@ -378,22 +380,22 @@ public class ImageCache {
                 // File[] Files = phoenix.util.GetFiles("Path", new String[] {"jpg","gif","png"}, Boolean.FALSE);
                 // File[] Files = phoenix.util.GetImages("Path");
                 
-            }else if (Grouping.equals("season")){
+            }else if ("season".equals(Grouping)){
                 //LOG.debug("GetImageKey: season group found '" + phoenix.media.GetTitle(imediaresource) + "' using Child for Fanart");
                 //just use a child item so you get fanart for the specific season
-                if (resourcetype.equals("background")){
+                if ("background".equals(resourcetype)){
                     //only for backgrounds get a random child so the backgrounds vary
                     childmediaresource = GetChild(imediaresource, Boolean.TRUE);
                 }else{
                     childmediaresource = GetChild(imediaresource, Boolean.FALSE);
                 }
                 faMediaObject = phoenix.media.GetMediaObject(childmediaresource);
-            }else if (Grouping.equals("NoGroup")){
+            }else if ("NoGroup".equals(Grouping)){
                 LOG.debug("GetImageKey: Folder found but no grouping for '" + phoenix.media.GetTitle(imediaresource) + "' using passed in object for Fanart");
                 faMediaObject = phoenix.media.GetMediaObject(imediaresource);
             }else{
                 LOG.debug("GetImageKey: unhandled grouping found '" + Grouping + "' for Title '" + phoenix.media.GetTitle(imediaresource) + "' using Child for Fanart");
-                if (resourcetype.equals("background")){
+                if ("background".equals(resourcetype)){
                     //only for backgrounds get a random child so the backgrounds vary
                     childmediaresource = GetChild(imediaresource, Boolean.TRUE);
                 }else{
@@ -412,7 +414,7 @@ public class ImageCache {
                     if (CheckFoldersFirst(resourcetype)){
                         tImageString = GetFolderImage(faMediaObject, resourcetype);
                     }
-                    if (tImageString.equals("")){
+                    if ("".equals(tImageString)){
                         tImageString = phoenix.fanart.GetEpisode(faMediaObject);
                     }
                     
@@ -433,7 +435,7 @@ public class ImageCache {
                     }else{
                         //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
                     }
-                }else if (resourcetype.equals("background") && originalSize){
+                }else if ("background".equals(resourcetype) && originalSize){
                     //use SERIES level Background
                     //LOG.debug("GetImageKey: Full Size Background requested for '" + phoenix.media.GetTitle(imediaresource) + "'");
                     faMetadata = Collections.emptyMap();
@@ -449,7 +451,7 @@ public class ImageCache {
                 
         }
         
-        if (tImageString.equals("")){
+        if ("".equals(tImageString)){
             String tMediaType = null;
             if (faMediaType!=null){
                 tMediaType = faMediaType.toString();
@@ -457,7 +459,7 @@ public class ImageCache {
             if (CheckFoldersFirst(resourcetype)){
                 tImageString = GetFolderImage(faMediaObject, resourcetype);
             }
-            if (tImageString.equals("")){
+            if ("".equals(tImageString)){
                 tImageString = GetFanartArtifact(faMediaObject, tMediaType, faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
             }
         }
@@ -521,16 +523,17 @@ public class ImageCache {
             //get the image and add it to the cache then return it
             Object tImage = CreateImage(tItem);
             if (tImage!=null){
-                if (tItem.HasRefreshAll()){
-                    sagex.api.Global.Refresh(UIc);
-                    tRefresh = "All";
-                }else if (tItem.HasRefreshArea()){
-                    tRefresh = tItem.getRefreshArea();
-                    sagex.api.Global.RefreshArea(UIc, tRefresh);
-                }else if (tItem.HasRefreshKey()){
-                    tRefresh = tItem.getRefreshKey();
-                    sagex.api.Global.RefreshAreaForVariable(UIc, "MediaKey", tRefresh);
-                }
+                tRefresh = tItem.Refresh();
+//                if (tItem.HasRefreshAll()){
+//                    sagex.api.Global.Refresh(UIc);
+//                    tRefresh = "All";
+//                }else if (tItem.HasRefreshArea()){
+//                    tRefresh = tItem.getRefreshArea();
+//                    sagex.api.Global.RefreshArea(UIc, tRefresh);
+//                }else if (tItem.HasRefreshKey()){
+//                    tRefresh = tItem.getRefreshKey();
+//                    sagex.api.Global.RefreshAreaForVariable(UIc, "MediaKey", tRefresh);
+//                }
                 ICache.put(tItem.getKey(), tImage);
                 LOG.debug("GetImageFromQueue: remaining(" + IQueue.size() + ") Refresh '" + tRefresh + "' adding to Cache '" + tItem + "'");
             }
@@ -798,7 +801,7 @@ public class ImageCache {
     
     public static Integer GetMinSize(){
         String tProp = ICacheProps + Const.PropDivider + Const.ImageCacheMinSize;
-        return util.GetPropertyAsInteger(tProp, 100);
+        return util.GetPropertyAsInteger(tProp, 10);
     }
     public static void SetMinSize(Integer Value){
         String tProp = ICacheProps + Const.PropDivider + Const.ImageCacheMinSize;

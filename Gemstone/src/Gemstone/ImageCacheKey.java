@@ -4,6 +4,10 @@
  */
 package Gemstone;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
+import org.apache.log4j.Logger;
+import sagex.UIContext;
 import sagex.phoenix.metadata.MediaArtifactType;
 
 /**
@@ -22,30 +26,38 @@ public class ImageCacheKey {
     private String RefreshKey = null;
     private Boolean KeepFilenameOnKey = Boolean.FALSE;
     private Boolean RefreshAll = Boolean.FALSE;
+    private SortedSet<String> UIList = new TreeSet();
+    static private final Logger LOG = Logger.getLogger(ImageCache.class);
 
     public ImageCacheKey() {
+        UIList.add(sagex.api.Global.GetUIContextName());
     }
 
     public ImageCacheKey(String ImagePath) {
         this.ImagePath = ImagePath;
+        UIList.add(sagex.api.Global.GetUIContextName());
     }
     
     public ImageCacheKey(String ImagePath, Boolean OriginalSize) {
         this.ImagePath = ImagePath;
+        UIList.add(sagex.api.Global.GetUIContextName());
         this.OriginalSize = OriginalSize;
     }
     public ImageCacheKey(String ImagePath, Boolean OriginalSize, MediaArtifactType ArtifactType) {
         this.ImagePath = ImagePath;
+        UIList.add(sagex.api.Global.GetUIContextName());
         this.OriginalSize = OriginalSize;
         this.ArtifactType = ArtifactType;
     }
     public ImageCacheKey(String ImagePath, Boolean OriginalSize, String ArtifactType) {
         this.ImagePath = ImagePath;
+        UIList.add(sagex.api.Global.GetUIContextName());
         this.OriginalSize = OriginalSize;
         this.ArtifactType = ConvertStringtoMediaArtifactType(ArtifactType);
     }
     public ImageCacheKey(String ImagePath, Boolean OriginalSize, String ArtifactType, Boolean KeepFilenameOnKey) {
         this.ImagePath = ImagePath;
+        UIList.add(sagex.api.Global.GetUIContextName());
         this.OriginalSize = OriginalSize;
         this.ArtifactType = ConvertStringtoMediaArtifactType(ArtifactType);
         this.KeepFilenameOnKey = KeepFilenameOnKey;
@@ -53,7 +65,7 @@ public class ImageCacheKey {
 
     @Override
     public String toString() {
-        return "ImageCacheKey{" + "ImagePath=" + ImagePath + ", OriginalSize=" + OriginalSize + ", ArtifactType=" + ArtifactType + ", Key=" + getKey() + ", DefaultEpisodeImage=" + DefaultEpisodeImage + ", defaultImage=" + defaultImage + '}';
+        return "ImageCacheKey{" + "ImagePath=" + ImagePath + ", OriginalSize=" + OriginalSize + ", ArtifactType=" + ArtifactType + ", Key=" + getKey() + ", DefaultEpisodeImage=" + DefaultEpisodeImage + ", defaultImage=" + defaultImage + " UIList=[" + UIList + "]}";
     }
     
     public String getKey(){
@@ -102,9 +114,61 @@ public class ImageCacheKey {
     public void setDefaultImage(String defaultImage) {
         this.defaultImage = defaultImage;
     }
+    
+    public boolean containsUI(String UI){
+        return UIList.contains(UI);
+    }
+    public void addUI(String UI){
+        UIList.add(UI);
+    }
+
+    public SortedSet<String> getUIList() {
+        return UIList;
+    }
+
+    public String Refresh(){
+        //refresh each of the UI's
+        String tRefresh = "";
+        for (String UI:this.UIList){
+            UIContext UIc = new UIContext(UI);
+            if (this.HasRefreshAll()){
+                sagex.api.Global.Refresh(UIc);
+                tRefresh = "All";
+            }else if (this.HasRefreshArea()){
+                tRefresh = this.getRefreshArea();
+                sagex.api.Global.RefreshArea(UIc, tRefresh);
+            }else if (this.HasRefreshKey()){
+                tRefresh = this.getRefreshKey();
+                sagex.api.Global.RefreshAreaForVariable(UIc, "MediaKey", tRefresh);
+            }
+        }
+        return tRefresh;
+    }
+    
+    public void MergeKey(ImageCacheKey inKey){
+        //add in all the UI's from the input Key to this Key
+        for (String UI:inKey.getUIList()){
+            UIList.add(UI);
+            LOG.debug("MergeKey: added UI '" + UI + "' to UIList '" + this.UIList + "'");
+        }
+        //handle the merge of the refresh settings
+        if (inKey.HasRefreshArea()){
+            if (!inKey.RefreshArea.equals(this.RefreshArea)){
+                setRefreshAll(Boolean.TRUE);
+            }
+        }
+        if (inKey.HasRefreshKey()){
+            if (!inKey.RefreshKey.equals(this.RefreshKey)){
+                setRefreshAll(Boolean.TRUE);
+            }
+        }
+        LOG.debug("MergeKey: already in the Queue '" + inKey.getKey() + "' defaultImage returned '" + inKey.getDefaultImage() + "' RefreshArea '" + this.RefreshArea + "' RefreshAll '" + this.RefreshAll + "' RefreshKey '" + this.RefreshKey + "' UIList '" + this.UIList + "'");
+    }
 
     public void setRefreshAll(Boolean RefreshAll) {
         this.RefreshAll = RefreshAll;
+        this.RefreshArea = null;
+        this.RefreshKey = null;
     }
 
     public String getRefreshArea() {

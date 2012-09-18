@@ -136,19 +136,8 @@ public class Weather {
         String HeaderRefreshArea = "WeatherConditionsArea";
         String thisMenu = sagex.api.WidgetAPI.GetWidgetName(sagex.api.WidgetAPI.GetCurrentMenuWidget(tUI));
         if (thisMenu.equals("Main Menu")){
+            //refresh each of the valid widget areas
             if (Widget.HasWeatherWidget()){
-                //refresh each of the valid widget areas
-//                if (Widget.ShowWidget("WeatherBasic")){
-//                    sagex.api.Global.RefreshArea(tUI, "WeatherBasicCurrentConditions");
-//                }
-//                if (Widget.ShowWidget("WeatherExtended")){
-//                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherCenter");
-//                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherVWP");
-//                    sagex.api.Global.RefreshArea(tUI, "WeatherExtendedWeatherRecordedat");
-//                }
-//                if (Widget.ShowWidget("WeatherForecast")){
-//                    sagex.api.Global.RefreshArea(tUI, "Forecast Area Panel");
-//                }
                 sagex.api.Global.RefreshArea(tUI,"Main Menu Widget Panel");
                 LOG.debug("RefreshWeatherScreens: refreshed weather widgets for UI '" + Context + "'");
             }else{
