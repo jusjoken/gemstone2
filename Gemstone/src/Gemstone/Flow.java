@@ -145,6 +145,19 @@ public class Flow {
     }
     
     public static Boolean IsValidFlow(String Element){
+        if (Element==null){
+            return Boolean.FALSE;
+        }else{
+            if (GetFlowName(Element).equals(Const.FlowNameNotFound)){
+                return Boolean.FALSE;
+            }else{
+                return Boolean.TRUE;
+            }
+        }
+    }
+    
+    //old method did not always return a valid result
+    public static Boolean IsValidFlowOld(String Element){
         String[] FlowItems = sagex.api.Configuration.GetSubpropertiesThatAreBranches(new UIContext(sagex.api.Global.GetUIContextName()),GetFlowsBaseProp());
         if (FlowItems.length>0){
             if (Arrays.asList(FlowItems).contains(Element)){
@@ -318,8 +331,19 @@ public class Flow {
     
     public static void CreateDefaultFlows(){
         for (String tFlow: FlowTypes()){
-            CreateNewFlow(tFlow, tFlow);
+            if (!IsDuplicate(tFlow)){
+                CreateNewFlow(tFlow, tFlow);
+            }
         }
+    }
+    
+    public static boolean IsDuplicate(String FlowName){
+        for (String flow:GetFlows()){
+            if (GetFlowName(flow).equals(FlowName)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String GetFlowSource(String name){
