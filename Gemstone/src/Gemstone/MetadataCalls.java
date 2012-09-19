@@ -572,7 +572,7 @@ public class MetadataCalls {
         if (imediaresource!=null){ 
             String tReturn = phoenix.series.GetFinaleDate(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
             //LOG.debug("GetRunningInfo: GetFinaleDate returned '" + tReturn + "' for '" + imediaresource + "'");
-            if (tReturn.isEmpty()){
+            if (tReturn==null || tReturn.isEmpty()){
                 return "Series continuing";
             }else{
                 return "Series ended";
@@ -587,7 +587,7 @@ public class MetadataCalls {
         if (imediaresource!=null){ 
             String tReturn = phoenix.series.GetNetwork(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
             //LOG.debug("GetNetwork: GetGetNetwork returned '" + tReturn + "' for '" + imediaresource + "'");
-            if (tReturn.isEmpty()){
+            if (tReturn==null || tReturn.isEmpty()){
                 return "";
             }else{
                 return tReturn;

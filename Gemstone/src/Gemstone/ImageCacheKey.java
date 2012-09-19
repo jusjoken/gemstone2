@@ -147,22 +147,26 @@ public class ImageCacheKey {
     
     public void MergeKey(ImageCacheKey inKey){
         //add in all the UI's from the input Key to this Key
+        boolean changed = false;
         for (String UI:inKey.getUIList()){
-            UIList.add(UI);
-            LOG.debug("MergeKey: added UI '" + UI + "' to UIList '" + this.UIList + "'");
+            changed = UIList.add(UI);
         }
         //handle the merge of the refresh settings
         if (inKey.HasRefreshArea()){
             if (!inKey.RefreshArea.equals(this.RefreshArea)){
+                changed = true;
                 setRefreshAll(Boolean.TRUE);
             }
         }
         if (inKey.HasRefreshKey()){
             if (!inKey.RefreshKey.equals(this.RefreshKey)){
+                changed = true;
                 setRefreshAll(Boolean.TRUE);
             }
         }
-        LOG.debug("MergeKey: already in the Queue '" + inKey.getKey() + "' defaultImage returned '" + inKey.getDefaultImage() + "' RefreshArea '" + this.RefreshArea + "' RefreshAll '" + this.RefreshAll + "' RefreshKey '" + this.RefreshKey + "' UIList '" + this.UIList + "'");
+        if (changed){
+            LOG.debug("MergeKey: already in the Queue but updated '" + inKey.getKey() + "' defaultImage returned '" + inKey.getDefaultImage() + "' RefreshArea '" + this.RefreshArea + "' RefreshAll '" + this.RefreshAll + "' RefreshKey '" + this.RefreshKey + "' UIList '" + this.UIList + "'");
+        }
     }
 
     public void setRefreshAll(Boolean RefreshAll) {

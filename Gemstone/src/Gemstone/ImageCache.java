@@ -524,16 +524,6 @@ public class ImageCache {
             Object tImage = CreateImage(tItem);
             if (tImage!=null){
                 tRefresh = tItem.Refresh();
-//                if (tItem.HasRefreshAll()){
-//                    sagex.api.Global.Refresh(UIc);
-//                    tRefresh = "All";
-//                }else if (tItem.HasRefreshArea()){
-//                    tRefresh = tItem.getRefreshArea();
-//                    sagex.api.Global.RefreshArea(UIc, tRefresh);
-//                }else if (tItem.HasRefreshKey()){
-//                    tRefresh = tItem.getRefreshKey();
-//                    sagex.api.Global.RefreshAreaForVariable(UIc, "MediaKey", tRefresh);
-//                }
                 ICache.put(tItem.getKey(), tImage);
                 LOG.debug("GetImageFromQueue: remaining(" + IQueue.size() + ") Refresh '" + tRefresh + "' adding to Cache '" + tItem + "'");
             }

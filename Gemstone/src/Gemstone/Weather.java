@@ -132,10 +132,16 @@ public class Weather {
     }
     
     private static void RefreshWeatherScreens(String Context){
+        if (Context==null){
+            LOG.debug("RefreshWeatherScreens: called with null Context");
+            return;
+        }
         UIContext tUI = new UIContext(Context);
         String HeaderRefreshArea = "WeatherConditionsArea";
         String thisMenu = sagex.api.WidgetAPI.GetWidgetName(sagex.api.WidgetAPI.GetCurrentMenuWidget(tUI));
-        if (thisMenu.equals("Main Menu")){
+        if (thisMenu==null){
+            LOG.debug("RefreshWeatherScreens: null MenuWidget found.");
+        }else if (thisMenu.equals("Main Menu")){
             //refresh each of the valid widget areas
             if (Widget.HasWeatherWidget()){
                 sagex.api.Global.RefreshArea(tUI,"Main Menu Widget Panel");
