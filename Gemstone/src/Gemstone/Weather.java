@@ -65,9 +65,19 @@ public class Weather {
         boolean success = true;
         phoenix.weather2.SetWeatherImpl(impl);
         if (!impl.equals(phoenix.weather2.GetWeatherImplKey())){
-            LOG.error("setImpl: failed to set the phoenix weather to '" + impl + "'. Using '" + phoenix.weather2.GetWeatherImplKey() + "' instead.");
-            success = false;
-        }else{
+            //the change failed so try changing to the next in the list
+            util.SetListOptionNext(Const.WeatherProp, Const.WeatherImpl, implList);
+            String implNext = util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault);
+            LOG.error("setImpl: failed to set the phoenix weather to '" + impl + "'. Trying '" + implNext + "' instead.");
+            phoenix.weather2.SetWeatherImpl(implNext);
+            if (!implNext.equals(phoenix.weather2.GetWeatherImplKey())){
+                LOG.error("setImpl: failed to set the phoenix weather to '" + impl + "' or '" + implNext + "'. Using '" + phoenix.weather2.GetWeatherImplKey() + "' instead.");
+                success = false;
+            }else{
+                success = true;
+            }
+        }
+        if (success){
             LOG.debug("setImpl: phoenix weather set to '" + phoenix.weather2.GetWeatherImplKey() + "'");
             //as the impl changed... set units and location if required and do an update
             setUnits();

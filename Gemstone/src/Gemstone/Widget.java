@@ -24,6 +24,7 @@ public class Widget {
     public static Map<String,Integer> InternalWidgetListSections = new HashMap<String,Integer>();
     public static Map<String,Integer> InternalWidgetListDefaultListSize = new HashMap<String,Integer>();
     public static Map<String,Object> InternalWidgetLists = new HashMap<String,Object>();
+    public static List<String> InternalListWidgets = new ArrayList<String>();
     private static boolean ListLoaderActive = false;
     
     public static boolean IsListLoaderActive(){
@@ -67,13 +68,20 @@ public class Widget {
     }
     
     public static void AddWidgetType(String WidgetType, Integer Sections){
-        AddWidgetType(WidgetType, Sections, 1);
+        AddWidgetType(WidgetType, Sections, -1);
     }
     public static void AddWidgetType(String WidgetType, Integer Sections, Integer DefaultListSize){
         if (!InternalWidgetList.contains(WidgetType)){
             InternalWidgetList.add(WidgetType);
             InternalWidgetListSections.put(WidgetType, Sections);
-            InternalWidgetListDefaultListSize.put(WidgetType, DefaultListSize);
+            if (DefaultListSize==-1){
+                //this item does not have a list so just default it to 1
+                InternalWidgetListDefaultListSize.put(WidgetType, 1);
+            }else{
+                //this is a list so set its size and add it to the list of lists
+                InternalWidgetListDefaultListSize.put(WidgetType, DefaultListSize);
+                InternalListWidgets.add(WidgetType);
+            }
         }
     }
 
@@ -412,4 +420,16 @@ public class Widget {
         }
         return false;
     }
+
+    public static boolean HasListWidget(){
+        if (GetUseWidgets()){
+            for (String list:InternalListWidgets){
+                if (ShowWidget(list)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
