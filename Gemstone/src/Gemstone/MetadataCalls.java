@@ -472,6 +472,7 @@ public class MetadataCalls {
     //return a consistent Title dependent on the media item and the type
     public static String GetTitle(IMediaResource imediaresource){
         if (imediaresource==null){
+            LOG.debug("GetTitle: null imediaresource");
             return "";
         }
         if (imediaresource.toString().contains("BlankItem")){
@@ -479,8 +480,10 @@ public class MetadataCalls {
         }
         String sType = Source.GetSpecialType(imediaresource);
         String tTitle = imediaresource.getTitle();
+        LOG.debug("GetTitle: sType '" + sType + "' tTitle '" + tTitle + "'");
         if (sType.equals("tv")){  //return the episode name
             String eTitle = phoenix.metadata.GetEpisodeName(imediaresource);
+            LOG.debug("GetTitle: eTitle '" + eTitle + "'");
             if (eTitle==null){
                 return tTitle;
             }else if (eTitle.equals("")){
