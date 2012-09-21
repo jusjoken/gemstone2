@@ -1419,6 +1419,16 @@ public class ImageCache {
         //LOG.debug("GetFanartKey: Key '" + Key + "'");
         return Key;
     }
+
+    public static String GetFanartImageType(Object IMR){
+        IMediaResource imediaresource = Source.GetTVIMediaResource(IMR);
+        String specialType = Source.GetSpecialType(imediaresource);
+        String fanartType = "poster";
+        if ("tv".equals(specialType) || "airing".equals(specialType) || "recording".equals(specialType)){
+            fanartType = "background";
+        }
+        return fanartType;
+    }
     
     //returns a BufferedImage Object with the passed in Label text displayed
     public static BufferedImage GetImageLabel(String Label, String DisplayFont, int FontSize){

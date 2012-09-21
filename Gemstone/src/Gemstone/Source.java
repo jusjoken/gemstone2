@@ -896,33 +896,36 @@ public class Source {
                 //LOG.debug("GetSpecialType: Group '" + Grouping + "' found");
                 if (Grouping.equals("show")){
                     if (IsChildTV(imediaresource)){
-                        return "series";
-                    }else{
-                        return "show";
+                        Grouping = "series";
                     }
                 }
                 return Grouping;
             }
         }else{
+            Grouping = "other";
             if (phoenix.media.IsMediaType( imediaresource , "TV" )){
-                //LOG.debug("GetSpecialType: tv found");
-                return "tv";
+                if (phoenix.media.IsMediaType( imediaresource , "RECORDING" )){
+                    Grouping = "recording";
+                }else if (phoenix.media.IsMediaType( imediaresource , "EPG_AIRING" )){
+                    Grouping = "airing";
+                }else{
+                    Grouping = "tv";
+                }
+                //LOG.debug("GetSpecialType: TV - subtype       FILE '" + phoenix.media.IsMediaType( imediaresource , "FILE" ) + "' for '" + imediaresource.getTitle() + "'");
+                //LOG.debug("              : TV - subtype  RECORDING '" + phoenix.media.IsMediaType( imediaresource , "RECORDING" ) + "' for '" + imediaresource.getTitle() + "'");
+                //LOG.debug("              : TV - subtype EPG_AIRING '" + phoenix.media.IsMediaType( imediaresource , "EPG_AIRING" ) + "' for '" + imediaresource.getTitle() + "'");
             }else if (phoenix.media.IsMediaType( imediaresource , "VIDEO" )){
-                //LOG.debug("GetSpecialType: video found");
-                return "movie";
+                Grouping = "movie";
             }else if (phoenix.media.IsMediaType( imediaresource , "DVD" )){
-                //LOG.debug("GetSpecialType: dvd found");
-                return "movie";
+                Grouping = "movie";
             }else if (phoenix.media.IsMediaType( imediaresource , "BLURAY" )){
-                //LOG.debug("GetSpecialType: bluray found");
-                return "movie";
+                Grouping = "movie";
             }else if (phoenix.media.IsMediaType( imediaresource , "MUSIC" )){
-                //LOG.debug("GetSpecialType: music found");
-                return "music";
+                Grouping = "music";
             }
         }
-        //LOG.debug("GetSpecialType: Nothing found - returning 'other'");
-        return "other";
+        LOG.debug("GetSpecialType: returning '" + Grouping + "' for '" + imediaresource.getTitle() + "'");
+        return Grouping;
     }
     //Convenience method that will convert the incoming object parameter to a IMediaResource type 
     public static String GetSpecialType(Object imediaresource){
