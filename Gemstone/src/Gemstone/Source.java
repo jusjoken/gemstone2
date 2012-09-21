@@ -883,9 +883,6 @@ public class Source {
     }
     
     //<editor-fold defaultstate="collapsed" desc="phoenix api additions">
-    public static Boolean IsFileCurrentlyRecording(IMediaFile res){
-        return sagex.api.MediaFileAPI.IsFileCurrentlyRecording(((IMediaFile)res).getMediaObject());
-    }
 
     //check for special handling types - genre, episode or other
     public static String GetSpecialType(IMediaResource imediaresource){

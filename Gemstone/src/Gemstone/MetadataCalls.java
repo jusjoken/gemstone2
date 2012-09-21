@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.apache.log4j.Logger;
+import sagex.phoenix.vfs.IMediaFile;
 import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
 
@@ -480,10 +481,10 @@ public class MetadataCalls {
         }
         String sType = Source.GetSpecialType(imediaresource);
         String tTitle = imediaresource.getTitle();
-        LOG.debug("GetTitle: sType '" + sType + "' tTitle '" + tTitle + "'");
+        //LOG.debug("GetTitle: sType '" + sType + "' tTitle '" + tTitle + "'");
         if (sType.equals("tv")){  //return the episode name
             String eTitle = phoenix.metadata.GetEpisodeName(imediaresource);
-            LOG.debug("GetTitle: eTitle '" + eTitle + "'");
+            //LOG.debug("GetTitle: eTitle '" + eTitle + "'");
             if (eTitle==null){
                 return tTitle;
             }else if (eTitle.equals("")){
@@ -525,6 +526,35 @@ public class MetadataCalls {
         return "";
     }
 
+    //use for single file or folder requests
+    public static Boolean IsCurrentlyRecording(Object IMR){
+        IMediaResource imediaresource = Source.ConvertToIMR(IMR);
+        if (imediaresource==null){
+            return Boolean.FALSE;
+        }else{
+            if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+                ViewFolder Folder = (ViewFolder) imediaresource;
+                List Children = phoenix.media.GetAllChildren(Folder);
+                //see if any children are being recorded
+                Integer Count = sagex.api.Utility.Size(sagex.api.Utility.GetSubgroup(sagex.api.Database.GroupByMethod(Children,"Gemstone_MetadataCalls_IsFileCurrentlyRecording"),true));
+                //LOG.debug("IsCurrentlyRecording: FOLDER - Recording '" + Count + "' of '" + Children.size() + "' Items");
+                if (Count>0){
+                    return Boolean.TRUE;
+                }else{
+                    return Boolean.FALSE;
+                }
+            }else{
+                return sagex.api.MediaFileAPI.IsFileCurrentlyRecording(imediaresource.getMediaObject());
+            }
+        }
+    }
+
+    //use for single file requests
+    public static boolean IsFileCurrentlyRecording(Object MediaObject){
+        return sagex.api.MediaFileAPI.IsFileCurrentlyRecording(((IMediaFile)MediaObject).getMediaObject());
+    }
+    
+    
     public static String GetUserCategory(Object IMR){
         IMediaResource imediaresource = Source.ConvertToIMR(IMR);
         if (imediaresource!=null){ 
