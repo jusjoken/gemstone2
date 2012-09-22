@@ -982,6 +982,7 @@ public class Source {
 
     public static IMediaResource ConvertToIMR(Object imediaresource){
         if (imediaresource == null || imediaresource.toString().isEmpty() || imediaresource.toString().contains("BlankItem")) {
+            //LOG.debug("ConvertToIMR: returning null for '" + imediaresource + "'");
             return null;
         }
         //LOG.debug("ConvertToIMR: Convenience method called with Class = '" + imediaresource.getClass() + "'");
@@ -1001,10 +1002,10 @@ public class Source {
             return null;
         }
         IMediaResource IMR = ConvertToIMR(imediaresource);
-        String sType = GetSpecialType(IMR);
-        if (sType.equals("series") || sType.equals("season")){  //only valid for series or season
+        String specialType = GetSpecialType(IMR);
+        if ("series".equals(specialType) || "season".equals(specialType)){  //only valid for series or season
             return ImageCache.GetChild(IMR, Boolean.FALSE);
-        }else if (sType.equals("tv")){
+        }else if ("tv".equals(specialType) || "airing".equals(specialType) || "recording".equals(specialType)){
             return IMR;
         }
         return null;

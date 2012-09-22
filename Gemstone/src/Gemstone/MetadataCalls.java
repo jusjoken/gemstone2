@@ -479,10 +479,10 @@ public class MetadataCalls {
         if (imediaresource.toString().contains("BlankItem")){
             return "";
         }
-        String sType = Source.GetSpecialType(imediaresource);
+        String specialType = Source.GetSpecialType(imediaresource);
         String tTitle = imediaresource.getTitle();
         //LOG.debug("GetTitle: sType '" + sType + "' tTitle '" + tTitle + "'");
-        if (sType.equals("tv")){  //return the episode name
+        if ("tv".equals(specialType) || "airing".equals(specialType) || "recording".equals(specialType)){  //return the episode name
             String eTitle = phoenix.metadata.GetEpisodeName(imediaresource);
             //LOG.debug("GetTitle: eTitle '" + eTitle + "'");
             if (eTitle==null){
@@ -513,10 +513,10 @@ public class MetadataCalls {
             String tReturn = phoenix.series.GetTitle(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
             //LOG.debug("GetSeriesTitle: series.GetTitle returned '" + tReturn + "' for '" + imediaresource + "'");
             if (tReturn==null){
-                LOG.debug("GetSeriesTitle: null found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
+                //LOG.debug("GetSeriesTitle: null found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
                 return GetTitle(imediaresource);
             }else if (tReturn.isEmpty()){
-                LOG.debug("GetSeriesTitle: empty found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
+                //LOG.debug("GetSeriesTitle: empty found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
                 return GetTitle(imediaresource);
             }else{
                 //LOG.debug("GetSeriesTitle: good return value found '" + tReturn + "' for '" + imediaresource + "'");

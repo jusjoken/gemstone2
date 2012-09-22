@@ -421,6 +421,10 @@ public class ImageCache {
                     if (tImageString==null || tImageString.equals("")){
                         //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' using Fanart based on GetDefaultEpisode");
                         DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
+                        if (DefaultEpisodeImage==null){
+                            //try to get a TV Thumbnail from Sage
+                            DefaultEpisodeImage = GetDefaultThumbnail(faMediaObject);
+                        }
                         //Build a imagestring that will be unique for this episode
                         tImageString = phoenix.media.GetTitle(imediaresource);
                         IMediaFile mf = phoenix.media.GetMediaFile(faMediaObject);
@@ -1097,6 +1101,50 @@ public class ImageCache {
             if (MediaFile!=null){
                 FinalThumb = GetImage(MediaFile,"backbround");
                 LOG.debug("GetTVThumbnail: Trying Gemstone fanart as last resort");
+            }
+        }
+        return FinalThumb;
+    }
+
+    public static Object GetDefaultThumbnail(Object MediaFile){
+        UIContext uIContext = new UIContext(sagex.api.Global.GetUIContextName());
+        Object FinalThumb = null;
+        if(MediaFile==null){
+            //find some sort of image to display
+            LOG.debug("GetDefaultThumbnail: null MediaFile");
+        }else{
+            //check if Sage has a Thumb for this MediaFile - xShowImage
+            Boolean ImageFound = Boolean.FALSE;
+            String[] ImageTypeList = {"PosterWide", "PosterTall", "PhotoWide", "PhotoTall"};
+            for (String ImageType:ImageTypeList){
+                if (sagex.api.ShowAPI.GetShowImageCount( uIContext, MediaFile, ImageType )>0){
+                    FinalThumb = sagex.api.ShowAPI.GetShowImage( uIContext, MediaFile, ImageType, 0, 2 );
+                    LOG.debug("GetDefaultThumbnail: Using ShowAPI.GetShowImage");
+                    ImageFound = Boolean.TRUE;
+                    break;
+                }
+            }
+            if (!ImageFound){
+                //No Zap2it-provided show images; try thumbnail
+                if (sagex.api.MediaFileAPI.HasAnyThumbnail(uIContext,MediaFile)){
+                    if (MetadataCalls.IsMediaTypeTV(MediaFile)  &&  sagex.api.ShowAPI.GetShowCategory(uIContext,MediaFile).indexOf("Movie") == -1){
+                        FinalThumb = sagex.api.MediaFileAPI.GetThumbnail(uIContext,MediaFile);
+                        LOG.debug("GetDefaultThumbnail: Using MediaFileAPI.GetThumbnail");
+                    }
+                }else{
+                    //try Series
+                    Object SeriesInfo = sagex.api.ShowAPI.GetShowSeriesInfo(uIContext,MediaFile);
+                    if (sagex.api.SeriesInfoAPI.HasSeriesImage(uIContext,SeriesInfo)){
+                        //xSeriesInfo
+                        FinalThumb = sagex.api.SeriesInfoAPI.GetSeriesImage(uIContext,MediaFile);
+                        LOG.debug("GetDefaultThumbnail: Using SeriesInfoAPI.GetSeriesImage");
+                    }else{
+                        //try Channel Logo
+                        FinalThumb = sagex.api.ChannelAPI.GetChannelLogo( uIContext, MediaFile, "Large", 1, true );
+                        LOG.debug("GetDefaultThumbnail: Using ChannelAPI.GetChannelLogo");
+                    }
+                            
+                }
             }
         }
         return FinalThumb;
