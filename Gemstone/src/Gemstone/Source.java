@@ -928,7 +928,7 @@ public class Source {
                 Grouping = "music";
             }
         }
-        LOG.debug("GetSpecialType: returning '" + Grouping + "' for '" + imediaresource.getTitle() + "'");
+        //LOG.debug("GetSpecialType: returning '" + Grouping + "' for '" + imediaresource.getTitle() + "'");
         return Grouping;
     }
     //Convenience method that will convert the incoming object parameter to a IMediaResource type 
