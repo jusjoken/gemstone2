@@ -886,6 +886,10 @@ public class Source {
 
     //check for special handling types - genre, episode or other
     public static String GetSpecialType(IMediaResource imediaresource){
+        if (imediaresource==null){
+            LOG.debug("GetSpecialType: called with null imediaresource");
+            return "null";
+        }
         String Grouping = "NoGroup";
         if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
             ViewFolder Parent = (ViewFolder) phoenix.media.GetParent(imediaresource);
