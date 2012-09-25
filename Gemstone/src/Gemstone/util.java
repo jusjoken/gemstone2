@@ -983,6 +983,10 @@ public class util {
         return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + "Gemstone.xml";
     }
     
+    public static String ThemeLocation(){
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + "Themes" + File.separator + "Gemstone";
+    }
+
     public static String GetSageTVRootDir(){
         return sagex.phoenix.Phoenix.getInstance().getSageTVRootDir().toString();
     }
