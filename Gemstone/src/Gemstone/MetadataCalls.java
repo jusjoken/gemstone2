@@ -442,7 +442,7 @@ public class MetadataCalls {
         List<String> ListValue = phoenix.metadata.GetGenres(imediaresource);
         if (ListValue.size()>0){
             for (String ListItem : ListValue){
-                if (ListItem.equalsIgnoreCase("movie")||ListItem.equalsIgnoreCase("film")){
+                if (ListItem.equalsIgnoreCase("movie")||ListItem.equalsIgnoreCase("film")||ListItem.equalsIgnoreCase("")){
                     //skip these
                 }else{
                     if (Value.equals("")){
@@ -451,6 +451,7 @@ public class MetadataCalls {
                         Value = Value + Separator + ListItem;
                     }
                 }
+                //LOG.debug("GetGenresasString: checked '" + ListItem + "' result '" + Value + "'");
             }
         }
         return Value;
