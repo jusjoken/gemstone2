@@ -42,6 +42,7 @@ public class GemstonePlugin extends AbstractPlugin {
     
     @SageEvent(value=SageEvents.ClientConnected, background=true)
     public void onClientConnected(Map args) {
+        System.out.println("*****GEMSTONE onClientConnected - args '" + args + "' - " + util.LogInfo());
         if (args.containsKey("MACAddress")){
             if (args.get("MACAddress")==null){
                 LOG.debug("onClientConnected: MACAddress null so must be a PC client. Client will handle ClientStart. '" + args + "' " + util.LogInfo());
@@ -83,7 +84,8 @@ public class GemstonePlugin extends AbstractPlugin {
     }    
 
     @Override
-    public void start() {      
+    public void start() {  
+        System.out.println("*****GEMSTONE start" + util.LogInfo());
         if (!OneTimeStartComplete){
             api.Load();
             //api.clientStart() is called from the STV ApplicationStarted hook to ensure all prerequisites are loaded first
