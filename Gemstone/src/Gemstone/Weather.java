@@ -27,6 +27,7 @@ public class Weather {
     private static final String implDefault = "world";
     private static final String unitsDefault = "Standard";
     private static boolean LoaderActive = false;
+    private static boolean weatherInit = false;
 
     public static boolean IsLoaderActive(){
         return LoaderActive;
@@ -48,10 +49,7 @@ public class Weather {
             setUnits();
             SetLocation();
         }
-        
-        //TODO: remove old weather calls when new phoenix calls are complete
-//        GemstoneWeather = new WeatherAPI();
-//        GemstoneWeather.Init();
+        weatherInit = true;
         LOG.debug("Init: weather init completed: " + util.LogInfo());
     }
     
@@ -115,6 +113,9 @@ public class Weather {
     }
     
     public static void UpdateWeather(){
+        if (!weatherInit){
+            Init();
+        }
         if (phoenix.weather2.Update()){
             RefreshAllClients();
             LOG.debug("UpdateWeather: " + phoenix.weather2.GetWeatherImplKey() + " at " + phoenix.weather2.GetLocation() + " weather updated for '" + phoenix.weather2.GetLocationName() + "'(" + phoenix.weather2.GetLocation() + ") as of '" + phoenix.weather2.GetRecordedDate() + "'. Units '" + phoenix.weather2.GetUnits() + "'");

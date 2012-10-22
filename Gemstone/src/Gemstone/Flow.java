@@ -219,11 +219,14 @@ public class Flow {
             return "0";
         }
         String Element = util.GenerateRandomName();
+        System.out.print("CreateNewFlow: Element '" + Element + "'");
         Integer NewSort = GetFlows().size()+1;  //sort numbers are base of 1 - 0 is invalid
         //Save the Name and Type for the Flow
         String FlowNameProp = GetFlowBaseProp(Element) + Const.PropDivider + Const.FlowName;
+        System.out.print("CreateNewFlow: FlowNameProp '" + FlowNameProp + "' ViewName '" + ViewName + "'");
         util.SetProperty(FlowNameProp, ViewName);
         String FlowTypeProp = GetFlowBaseProp(Element) + Const.PropDivider + Const.FlowType;
+        System.out.print("CreateNewFlow: FlowTypeProp '" + FlowTypeProp + "' ViewType '" + ViewType + "'");
         util.SetProperty(FlowTypeProp, ViewType);
         //Save the sort order
         SetFlowSort(Element, NewSort);

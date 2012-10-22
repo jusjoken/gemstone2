@@ -67,9 +67,9 @@ public class ImageCache {
     private static final String ICacheProps = Const.BaseProp + Const.PropDivider + Const.ImageCacheProp;
     private static LinkedHashMap<String,ImageCacheKey> IQueue = new LinkedHashMap<String,ImageCacheKey>();
     private static SoftHashMap ICache = new SoftHashMap(GetMinSize());
-    public static enum ImageCacheTypes{OFF,BACKGROUND,NOQUEUE,BYIMAGETYPE};
-    private static final String ImageCacheTypesList = ImageCacheTypes.OFF + util.ListToken + ImageCacheTypes.BACKGROUND + util.ListToken + ImageCacheTypes.NOQUEUE + util.ListToken + ImageCacheTypes.BYIMAGETYPE;
-    private static final String ImageCacheTypesListByImageType = ImageCacheTypes.OFF + util.ListToken + ImageCacheTypes.BACKGROUND + util.ListToken + ImageCacheTypes.NOQUEUE;
+    public static enum ImageCacheTypes{BACKGROUND,NOQUEUE,BYIMAGETYPE,OFF};
+    private static final String ImageCacheTypesList = ImageCacheTypes.BACKGROUND + util.ListToken + ImageCacheTypes.NOQUEUE + util.ListToken + ImageCacheTypes.BYIMAGETYPE  + util.ListToken + ImageCacheTypes.OFF;
+    private static final String ImageCacheTypesListByImageType = ImageCacheTypes.BACKGROUND + util.ListToken + ImageCacheTypes.NOQUEUE  + util.ListToken + ImageCacheTypes.OFF;
     public static final String CreateImageTag = "GemstoneImages";
     private static boolean QueueActive = false;
     
@@ -803,10 +803,10 @@ public class ImageCache {
     }
 
     public static String GetCacheType(){
-        return util.GetListOptionName(ICacheProps, Const.ImageCacheType, ImageCacheTypesList, ImageCacheTypes.BACKGROUND.toString());
+        return util.GetListOptionName(Const.ImageCacheProp, Const.ImageCacheType, ImageCacheTypesList, ImageCacheTypes.BACKGROUND.toString());
     }
     public static void SetCacheTypeNext(){
-        util.SetListOptionNext(ICacheProps, Const.ImageCacheType, ImageCacheTypesList);
+        util.SetListOptionNext(Const.ImageCacheProp, Const.ImageCacheType, ImageCacheTypesList);
     }
 
     public static String GetCacheType(String ImageType){
@@ -814,7 +814,7 @@ public class ImageCache {
     }
     public static String GetCacheType(MediaArtifactType ImageType){
         if (GetCacheType().equals(ImageCacheTypes.BYIMAGETYPE.toString())){
-            String tProp = ICacheProps + Const.PropDivider + Const.ImageCacheType;
+            String tProp = Const.ImageCacheProp + Const.PropDivider + Const.ImageCacheType;
             return util.GetListOptionName(tProp, ImageType.toString(), ImageCacheTypesListByImageType, ImageCacheTypes.BACKGROUND.toString());
         }else{
             return GetCacheType();
@@ -825,7 +825,7 @@ public class ImageCache {
     }
     public static void SetCacheTypeNext(MediaArtifactType ImageType){
         if (GetCacheType().equals(ImageCacheTypes.BYIMAGETYPE.toString())){
-            String tProp = ICacheProps + Const.PropDivider + Const.ImageCacheType;
+            String tProp = Const.ImageCacheProp + Const.PropDivider + Const.ImageCacheType;
             util.SetListOptionNext(tProp, ImageType.toString(), ImageCacheTypesListByImageType);
         }
     }

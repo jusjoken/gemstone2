@@ -24,6 +24,7 @@ public class api {
 
     public static String Version = "1.0175" + "";
     private static boolean STVAppStarted = false;
+    private static boolean LoadCompleted = false;
     
     public static boolean IsSTVAppStarted(){
         return STVAppStarted;
@@ -41,37 +42,38 @@ public class api {
     //load any Gemstone settings that need to load at application start
     //should be called from GemstonePlugin on the start event
     public static void Load(){
-        //get the gemstone instance which will also initiate logging
-        Gemstone.getInstance();
-        LOG.debug("Load: api load started: " + util.LogInfo());
+        if (LoadCompleted){
+            LOG.debug("Load: api load called again - already loaded: " + util.LogInfo());
+        }else{
+            //get the gemstone instance which will also initiate logging
+            Gemstone.getInstance();
+            LOG.debug("Load: api load started: " + util.LogInfo());
 
-        //initialize the ADM settings
-        //these are now called directly by the client start
-        //ADMutil.LoadADM();
-        
-        //Init the common Weather interface
-        Weather.Init();
-        
-        //generate symbols to be used for new names
-        util.InitNameGen();
-        
-        //ensure the gemstone file location exists
-        try{
-            boolean success = (new File(util.UserDataLocation())).mkdirs();
-            if (success) {
-                LOG.debug("Load: Directories created for '" + util.UserDataLocation() + "'");
-               }
+            //initialize the ADM settings
+            //these are now called directly by the client start
+            //ADMutil.LoadADM();
 
-            }catch (Exception ex){//Catch exception if any
-                LOG.debug("Load: - error creating '" + util.UserDataLocation() + "'" + ex.getMessage());
-            }
-        ImageCache.Init();
-        LOG.debug("Load: api load completed: " + util.LogInfo());
+            //Init the common Weather interface
+            Weather.Init();
+
+            //generate symbols to be used for new names
+            util.InitNameGen();
+
+            //ensure the gemstone file location exists
+            util.InitLocations();
+
+            //prepare the image cache
+            ImageCache.Init();
+
+            LoadCompleted = true;
+            LOG.debug("Load: api load completed: " + util.LogInfo());
+        }
         
    }
 
     public static void ClientStart(){
         //client specific settings
+        util.InitLocations(); //call just to ensure this is completed
         ADMutil.ClientStart();
         util.LogConnectedClients();
         util.LogPlugins();

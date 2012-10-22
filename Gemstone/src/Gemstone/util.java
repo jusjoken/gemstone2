@@ -45,6 +45,8 @@ public class util {
 
     static private final Logger LOG = Logger.getLogger(util.class);
     private static final char[] symbols = new char[36];
+    private static boolean symbolsInit = false;
+    private static boolean locationsInit = false;
     private static final Random random = new Random();
     public static final String OptionNotFound = "Option not Found";
     public static enum TriState{YES,NO,OTHER};
@@ -322,9 +324,13 @@ public class util {
             util.symbols[idx] = (char) ('0' + idx);
         for (int idx = 10; idx < 36; ++idx)
             util.symbols[idx] = (char) ('a' + idx - 10);
+        symbolsInit = true;
     }
     
     public static String GenerateRandomName(){
+        if (!symbolsInit){
+            InitNameGen();
+        }
         char[] buf = new char[10];
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = symbols[random.nextInt(symbols.length)];
@@ -715,12 +721,14 @@ public class util {
             tProp = Const.BaseProp + Const.PropDivider + PropSection + Const.PropDivider + PropName;
         }
         String CurrentValue = util.GetProperty(tProp, OptionNotFound);
-        //LOG.debug("SetListOptionNextBase: currentvalue '" + CurrentValue + "' for '" + tProp + "'");
+        LOG.debug("SetListOptionNextBase: currentvalue '" + CurrentValue + "' for '" + tProp + "'");
         List<String> FullList = ConvertStringtoList(OptionList);
         if (CurrentValue.equals(OptionNotFound)){
+            LOG.debug("SetListOptionNextBase: Not Found so setting to 2nd item '" + FullList.get(1) + "' for '" + tProp + "'");
             util.SetProperty(tProp, FullList.get(1));  //default to the 2nd item
         }else{
             Integer pos = FullList.indexOf(CurrentValue);
+            LOG.debug("SetListOptionNextBase: Found - pos = " + pos + "' for '" + tProp + "'");
             if (pos==-1){ //not found
                 util.SetProperty(tProp, FullList.get(0));
             }else if(pos==FullList.size()-1){ //last item
@@ -1353,6 +1361,21 @@ public class util {
             tMessage = tMessage + ": " + LogInfo();
         }
         LOG.info(tMessage);
+    }
+
+    public static void InitLocations(){
+        if (!locationsInit){
+            try{
+                boolean success = (new File(util.UserDataLocation())).mkdirs();
+                if (success) {
+                    LOG.debug("InitLocations: Directories created for '" + util.UserDataLocation() + "'");
+                   }
+
+                }catch (Exception ex){//Catch exception if any
+                    LOG.debug("InitLocations: - error creating '" + util.UserDataLocation() + "'" + ex.getMessage());
+                }
+            locationsInit = true;
+        }
     }
     
 }
