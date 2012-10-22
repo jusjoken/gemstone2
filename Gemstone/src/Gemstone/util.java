@@ -721,14 +721,14 @@ public class util {
             tProp = Const.BaseProp + Const.PropDivider + PropSection + Const.PropDivider + PropName;
         }
         String CurrentValue = util.GetProperty(tProp, OptionNotFound);
-        LOG.debug("SetListOptionNextBase: currentvalue '" + CurrentValue + "' for '" + tProp + "'");
+        //LOG.debug("SetListOptionNextBase: currentvalue '" + CurrentValue + "' for '" + tProp + "'");
         List<String> FullList = ConvertStringtoList(OptionList);
         if (CurrentValue.equals(OptionNotFound)){
-            LOG.debug("SetListOptionNextBase: Not Found so setting to 2nd item '" + FullList.get(1) + "' for '" + tProp + "'");
+            //LOG.debug("SetListOptionNextBase: Not Found so setting to 2nd item '" + FullList.get(1) + "' for '" + tProp + "'");
             util.SetProperty(tProp, FullList.get(1));  //default to the 2nd item
         }else{
             Integer pos = FullList.indexOf(CurrentValue);
-            LOG.debug("SetListOptionNextBase: Found - pos = " + pos + "' for '" + tProp + "'");
+            //LOG.debug("SetListOptionNextBase: Found - pos = " + pos + "' for '" + tProp + "'");
             if (pos==-1){ //not found
                 util.SetProperty(tProp, FullList.get(0));
             }else if(pos==FullList.size()-1){ //last item
