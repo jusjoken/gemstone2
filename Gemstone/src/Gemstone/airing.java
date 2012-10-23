@@ -178,15 +178,27 @@ public class airing
     {
         //LOG.debug("GetNextShow: for '" + MediaObjects + "'");
         Object LastWatched = airing.GetLastWatched(MediaObjects);
-        //LOG.debug("GetNextShow: LastWatched '" + LastWatched + "'");
+        LOG.debug("GetNextShow: LastWatched '" + LastWatched + "'");
         if(phoenix.media.IsWatched(LastWatched)){
-            MediaObjects = Database.Sort(MediaObjects, false, "phoenix_metadata_GetOriginalAirDate");
+            //MediaObjects = Database.Sort(MediaObjects, false, "phoenix_metadata_GetOriginalAirDate");
+            MediaObjects = Database.Sort(MediaObjects, false, "Gemstone_airing_GetRealWatchedStartTime");
             int index = Utility.FindElementIndex(MediaObjects, LastWatched);
+            LOG.debug("GetNextShow: Watched so finding index '" + index + "' size '" + Utility.Size(MediaObjects) + "'");
 
-            if(index >= Utility.Size(MediaObjects)){	
-                return null;
+            if(index+1 >= Utility.Size(MediaObjects)){	
+                //return the last item
+                return Utility.GetElement(MediaObjects, Utility.Size(MediaObjects)-1);
+            }else if(index==-1){
+                //return the last item
+                return Utility.GetElement(MediaObjects, Utility.Size(MediaObjects)-1);
             }else{
-                return Utility.GetElement(MediaObjects, index+1);}
+                return Utility.GetElement(MediaObjects, index+1);
+            }
+//            if(index >= Utility.Size(MediaObjects)){	
+//                return null;
+//            }else{
+//                return Utility.GetElement(MediaObjects, index+1);
+//            }
         }else{
             return LastWatched;	
         }
