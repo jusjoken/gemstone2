@@ -29,6 +29,7 @@ public class Export {
     private Boolean FLOWExport = Boolean.FALSE;
     private Date ExportDateTime = new Date();
     private Boolean ConvertedADMMenus = Boolean.FALSE;
+    private boolean UseServerFilePath = false;
 
     public Export(String FileName){
         this.FileName = FileName;
@@ -186,6 +187,14 @@ public class Export {
         this.FileName = FileName;
     }
 
+    public boolean getUseServerFilePath() {
+        return UseServerFilePath;
+    }
+
+    public void setUseServerFilePath(boolean UseServerFilePath) {
+        this.UseServerFilePath = UseServerFilePath;
+    }
+
     //Function to use Export to Save the Menus to an external file
     public void SaveMenus(){
         this.FLOWS = Boolean.FALSE;
@@ -306,7 +315,11 @@ public class Export {
                     LOG.debug("Execute: stopped as no FileName specified or nothing to Export");
                 }
             }
-            this.FilePath = util.UserDataLocation() + File.separator + this.FileName + ".properties";
+            if (this.UseServerFilePath){
+                this.FilePath = util.UserDataLocationServer() + File.separator + this.FileName + ".properties";
+            }else{
+                this.FilePath = util.UserDataLocation() + File.separator + this.FileName + ".properties";
+            }
         }
         if (ContinueProcessing){
 

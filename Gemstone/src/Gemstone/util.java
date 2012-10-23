@@ -974,6 +974,9 @@ public class util {
     public static String UserDataLocation(){
         return GetSageTVRootDir() + File.separator + "userdata" + File.separator + "Gemstone";
     }
+    public static String UserDataLocationServer(){
+        return sagex.api.Utility.GetWorkingDirectory() + File.separator + "userdata" + File.separator + "Gemstone";
+    }
 
     public static String DefaultsLocation(){
         return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "defaults";

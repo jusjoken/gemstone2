@@ -184,6 +184,7 @@ public class ImageCache {
             return "USE:DEFALUT";
         }
         tKey.setRefreshArea(RefreshArea);
+        LOG.debug("*****GetArtifact: calling GetImage with tKey '" + tKey + "'");
         return GetImage(tKey);
     }
     
@@ -227,20 +228,22 @@ public class ImageCache {
 
         //make sure there is a valid key available
         if (Key.IsValidKey()){
-            //LOG.debug("GetImage: FromKey: '" + Key + "'");
+            LOG.debug("GetImage: FromKey: '" + Key + "'");
             //see if we are caching or just returning an image
             if (UseCache(faArtifactType)){
                 //see if the image is in the cache and if so return it
                 mediaObject = ICache.get(Key.getKey());
                 if (mediaObject!=null){
-                    //LOG.debug("GetImage: FromKey: found Image in Cache and return it based on '" + tImageString + "' and Key '" + Key.getKey() + "'");
+                    LOG.debug("GetImage: FromKey: found Image in Cache and return it based on Key '" + Key.getKey() + "'");
                     return mediaObject;
                 }else{
                     if (UseQueue(faArtifactType) && !SkipQueue){
+                        LOG.debug("GetImage: FromKey: using Queue for key '" + Key.getKey() + "'");
                         //see if the item is already in the queue
                         if (IQueue.containsKey(Key.getKey())){
                             ImageCacheKey tItem = IQueue.get(Key.getKey());
                             tItem.MergeKey(Key);
+                            LOG.debug("GetImage: FromKey: already in the Queue - merging keys '" + Key.getKey() + "' returning DefaultImage '" + Key.getDefaultImage() + "'");
 //                            if (Key.HasRefreshArea()){
 //                                if (Key.getRefreshArea().equals(tItem.getRefreshArea())){
 //                                    LOG.debug("GetImage: FromKey: already in the Queue '" + Key.getKey() + "' defaultImage returned '" + Key.getDefaultImage() + "' QueueSize '" + IQueue.size() + "'");
@@ -258,6 +261,7 @@ public class ImageCache {
                         }
                     }else{
                         //get the image and add it to the cache then return it
+                        LOG.debug("GetImage: FromKey: NOT using Queue for key '" + Key.getKey() + "'");
                         tImage = CreateImage(Key);
                         if (tImage==null){
                             LOG.debug("GetImage: FromKey: null image returned from CreateImage '" + Key.getKey() + "'");
