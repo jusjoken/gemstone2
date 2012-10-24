@@ -129,5 +129,23 @@ public class PropertiesExt extends Properties {
         return ReturnList;
         
     }
-    
+    public void load(String inString){
+        //used to parse the input string into properties
+        String lines[] = inString.split("\\r?\\n"); 
+        for (String line:lines){
+            if (line.startsWith("#")){
+                //skip comment
+                LOG.debug("load: from String: skipping comment = '" + line + "'");
+            }else{
+                String entrys[] = line.split("=");
+                String key = entrys[0];
+                String value = "";
+                if (entrys.length>1){
+                    value = entrys[1];
+                }
+                this.setProperty(key, value);
+                LOG.debug("load: from String: key = '" + key + "' value = '" + value + "'");
+            }
+        }
+    }
 }

@@ -5,13 +5,15 @@
 package Gemstone;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.Properties;
+import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
+import sagex.api.Global;
+import sagex.phoenix.stv.DownloadUtil;
+import sagex.phoenix.util.TimerUtil;
 
 /**
  *
@@ -21,6 +23,8 @@ public class Export {
     static private final Logger LOG = Logger.getLogger(Export.class);
     private String FileName = "";
     private String FilePath = "";
+    private String ServerCopySourcePath = "";
+    private String ServerCopyDestPath = "";
     private Boolean MENUS = Boolean.FALSE;
     private Boolean FLOWS = Boolean.FALSE;
     private Boolean WIDGETS = Boolean.FALSE;
@@ -30,6 +34,7 @@ public class Export {
     private Date ExportDateTime = new Date();
     private Boolean ConvertedADMMenus = Boolean.FALSE;
     private boolean UseServerFilePath = false;
+    private boolean CopyExporttoServer = false;
 
     public Export(String FileName){
         this.FileName = FileName;
@@ -195,6 +200,14 @@ public class Export {
         this.UseServerFilePath = UseServerFilePath;
     }
 
+    public boolean isCopyExporttoServer() {
+        return CopyExporttoServer;
+    }
+
+    public void setCopyExporttoServer(boolean CopyExporttoServer) {
+        this.CopyExporttoServer = CopyExporttoServer;
+    }
+
     //Function to use Export to Save the Menus to an external file
     public void SaveMenus(){
         this.FLOWS = Boolean.FALSE;
@@ -316,7 +329,14 @@ public class Export {
                 }
             }
             if (this.UseServerFilePath){
-                this.FilePath = util.UserDataLocationServer() + File.separator + this.FileName + ".properties";
+                if (this.CopyExporttoServer){
+                    this.ServerCopySourcePath = util.UserDataLocation();
+                    //this.ServerCopyDestPath = util.UserDataLocationServer() + File.separator + "temp";
+                    this.ServerCopyDestPath = util.UserDataLocationServer();
+                    this.FilePath = util.UserDataLocation() + File.separator + this.FileName + ".properties";
+                }else{
+                    this.FilePath = util.UserDataLocationServer() + File.separator + this.FileName + ".properties";
+                }
             }else{
                 this.FilePath = util.UserDataLocation() + File.separator + this.FileName + ".properties";
             }
@@ -382,7 +402,55 @@ public class Export {
                 } catch (Exception ex) {
                     LOG.debug("Execute: error exporting properties " + util.class.getName() + ex);
                 }
-                LOG.debug("Execute: properties saved to '" + this.FilePath + "'");
+                if (this.CopyExporttoServer){
+                    //the saved file now needs to be copied to the server and then removed from the local client
+                    String tFileName = this.FileName + ".properties";
+                    Object success = sagex.api.Global.StartFileCopy(UIContext.SAGETV_PROCESS_LOCAL_UI, tFileName, this.ServerCopySourcePath, new File(this.ServerCopyDestPath));
+                    LOG.debug("Execute: CopyExporttoServer success = '" + success + "' filename '" + tFileName + "' source '" + this.ServerCopySourcePath + "' dest '" + this.ServerCopyDestPath + "'");
+                    if ((Boolean) success){
+                        //start a background process to try and delete the source file after the copy is complete
+                        TimerUtil.runOnce(0, new TimerTask() {
+                            @Override
+                            public void run() {
+                                try {
+                                    int maxtries = 10;
+                                    int tries = 0;
+                                    boolean error = false;
+                                    while (true) {
+                                        tries++;
+                                        Object status = Global.GetFileCopyStatus(UIContext.SAGETV_PROCESS_LOCAL_UI);
+                                        if (DownloadUtil.isDownloadComplete(status)) {
+                                            Boolean success = sagex.api.Utility.DeleteLocalFilePath(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(FilePath));
+                                            LOG.debug("Execute: CopyExporttoServer - deleteting local source on try '" + tries + "' - success = '" + success + "'");
+                                            break;
+                                        }
+                                        if (DownloadUtil.isDownloadError(status)) {
+                                            LOG.debug("Execute: CopyExporttoServer - deleteting local source failed - error '" + (String) status + "' for file '" + FilePath + "'");
+                                            error = true;
+                                            break;
+                                        }
+                                        if (tries>=maxtries){
+                                            LOG.debug("Execute: CopyExporttoServer - deleteting local source - failed due to max retires");
+                                            error = true;
+                                            break;
+                                        }
+                                        TimerUtil.sleep(300);
+                                    }
+
+                                    if (error)
+                                        return;
+                                } finally {
+                                    //nothing to do here
+                                }
+                            }
+                        });
+                        LOG.debug("Execute: properties saved to Server location '" + this.ServerCopyDestPath + File.separator + tFileName + "'");
+                    }else{
+                        LOG.debug("Execute: properties could not be saved to Server so saved local to '" + this.FilePath + "'");
+                    }
+                }else{
+                    LOG.debug("Execute: properties saved to '" + this.FilePath + "'");
+                }
             }else{
                 LOG.debug("Execute: no properties to export");
             }

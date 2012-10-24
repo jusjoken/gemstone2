@@ -5,6 +5,7 @@
 package Gemstone;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -26,7 +27,7 @@ public class Import {
     static private final Logger LOG = Logger.getLogger(Import.class);
     private util.ExportType eType = util.ExportType.GENERAL;
     private String FilePath = "";
-    private Properties Props = new Properties();
+    private PropertiesExt Props = new PropertiesExt();
     private Boolean IsValid = Boolean.FALSE;
     private String Description = "";
     private String Name = "";
@@ -60,6 +61,9 @@ public class Import {
         Load();
     }
     public Import(String FilePath){
+        this(FilePath,false);
+    }
+    public Import(String FilePath, boolean FromServer){
         this.FilePath = FilePath;
 
         Boolean KeepProcessing = Boolean.TRUE;
@@ -68,16 +72,23 @@ public class Import {
             KeepProcessing = Boolean.FALSE;
         }else{
             //read the properties from the properties file
-            try {
-                FileInputStream in = new FileInputStream(FilePath);
+            if (FromServer){
+                String ServerImportProps = sagex.api.Utility.GetFileAsString(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(FilePath));
+                Props.load(ServerImportProps);
+                LOG.debug("Import: loaded '" + Props.size() + "' properties from the server");
+                //KeepProcessing = Boolean.FALSE;
+            }else{
                 try {
-                    Props.load(in);
-                } finally {
-                    in.close();
+                    FileInputStream in = new FileInputStream(FilePath);
+                    try {
+                        Props.load(in);
+                    } finally {
+                        in.close();
+                    }
+                } catch (Exception ex) {
+                    LOG.debug("Import: file not found inporting properties " + util.class.getName() + ex);
+                    KeepProcessing = Boolean.FALSE;
                 }
-            } catch (Exception ex) {
-                LOG.debug("Import: file not found inporting properties " + util.class.getName() + ex);
-                KeepProcessing = Boolean.FALSE;
             }
         }
         if (KeepProcessing){
