@@ -24,6 +24,7 @@ import sagex.phoenix.vfs.util.HasOptions;
  * @author jusjoken
  * - 04/04/2012 - updated for Gemstone
  */
+//TODO:: remove once the new phoenix version is released which now has this included
 public class FirstLetterTitleRegexGrouper extends TitleGrouper implements HasOptions {
 	/**
 	 * {@value}

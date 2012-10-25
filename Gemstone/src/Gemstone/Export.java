@@ -330,10 +330,11 @@ public class Export {
             }
             if (this.UseServerFilePath){
                 if (this.CopyExporttoServer){
-                    this.ServerCopySourcePath = util.UserDataLocation();
+                    this.ServerCopySourcePath = util.UserDataLocationTemp();
                     //this.ServerCopyDestPath = util.UserDataLocationServer() + File.separator + "temp";
                     this.ServerCopyDestPath = util.UserDataLocationServer();
-                    this.FilePath = util.UserDataLocation() + File.separator + this.FileName + ".properties";
+                    //use a temp location for the local file so it can be removed later
+                    this.FilePath = util.UserDataLocationTemp() + File.separator + this.FileName + ".properties";
                 }else{
                     this.FilePath = util.UserDataLocationServer() + File.separator + this.FileName + ".properties";
                 }

@@ -974,6 +974,9 @@ public class util {
     public static String UserDataLocation(){
         return GetSageTVRootDir() + File.separator + "userdata" + File.separator + "Gemstone";
     }
+    public static String UserDataLocationTemp(){
+        return GetSageTVRootDir() + File.separator + "userdata" + File.separator + "Gemstone" + File.separator + "temp";
+    }
     public static String UserDataLocationServer(){
         return sagex.api.Utility.GetWorkingDirectory() + File.separator + "userdata" + File.separator + "Gemstone";
     }
@@ -1368,16 +1371,25 @@ public class util {
 
     public static void InitLocations(){
         if (!locationsInit){
-            try{
-                boolean success = (new File(util.UserDataLocation())).mkdirs();
-                if (success) {
-                    LOG.debug("InitLocations: Directories created for '" + util.UserDataLocation() + "'");
-                   }
-
-                }catch (Exception ex){//Catch exception if any
-                    LOG.debug("InitLocations: - error creating '" + util.UserDataLocation() + "'" + ex.getMessage());
-                }
+            InitLocation(util.UserDataLocation());
+            InitLocation(util.UserDataLocationTemp());
             locationsInit = true;
+        }else{
+            LOG.debug("InitLocations: called but previously run so nothing completed this time");
+        }
+    }
+
+    private static void InitLocation(String LocationPath){
+        try{
+            boolean success = (new File(LocationPath)).mkdirs();
+            if (success) {
+                LOG.debug("InitLocation: Directories created for '" + LocationPath + "'");
+            }else{
+                LOG.debug("InitLocation: mkdirs returned false for '" + LocationPath + "'");
+            }
+
+        }catch (Exception ex){//Catch exception if any
+            LOG.debug("InitLocation: - error creating '" + LocationPath + "'" + ex.getMessage());
         }
     }
     
