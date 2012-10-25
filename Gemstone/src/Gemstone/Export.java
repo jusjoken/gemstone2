@@ -420,8 +420,15 @@ public class Export {
                                         tries++;
                                         Object status = Global.GetFileCopyStatus(UIContext.SAGETV_PROCESS_LOCAL_UI);
                                         if (DownloadUtil.isDownloadComplete(status)) {
-                                            Boolean success = sagex.api.Utility.DeleteLocalFilePath(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(FilePath));
-                                            LOG.debug("Execute: CopyExporttoServer - deleteting local source on try '" + tries + "' - success = '" + success + "'");
+                                            //Boolean success = sagex.api.Utility.DeleteLocalFilePath(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(sagex.api.Utility.GetAbsoluteFilePath(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(FilePath))));
+                                            Boolean success = new File(FilePath).delete();
+                                            if (success){
+                                                LOG.debug("Execute: CopyExporttoServer - deleted local source on try '" + tries + "' for File '" + FilePath + "'");
+                                            }else{
+                                                LOG.debug("Execute: CopyExporttoServer - failed to delete local source on try '" + tries + "' for File '" + FilePath + "'");
+                                                LOG.debug("Execute: CopyExporttoServer - deleteOnExit of VM will be tried when Sage Exits for File '" + FilePath + "'");
+                                                new File(FilePath).deleteOnExit();
+                                            }
                                             break;
                                         }
                                         if (DownloadUtil.isDownloadError(status)) {
