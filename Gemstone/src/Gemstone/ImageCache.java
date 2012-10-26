@@ -171,7 +171,7 @@ public class ImageCache {
     }
     public static Object GetArtifact(IMediaResource imediaresource, String resourcetype, String RefreshArea, Boolean originalSize, Boolean ForceSeries){
         //return the default image passed in when none found or waiting for background processing from the queue
-        LOG.debug("GetArtifact: imediaresource '" + imediaresource + "' resourcetype '" + resourcetype + "' RefreshArea '" + RefreshArea + "' originalSize '" + originalSize + "'");
+        LOG.debug("GetArtifact: ***** START GetArtifact for '" + resourcetype + "' imediaresource '" + imediaresource + "' RefreshArea '" + RefreshArea + "' originalSize '" + originalSize + "'");
         if (imediaresource == null) {
             LOG.debug("GetArtifact: imediaresource is NULL so returning NULL");
             return null;
@@ -184,7 +184,7 @@ public class ImageCache {
             return "USE:DEFALUT";
         }
         tKey.setRefreshArea(RefreshArea);
-        LOG.debug("*****GetArtifact: calling GetImage with tKey '" + tKey + "'");
+        LOG.debug("GetArtifact: calling GetImage with tKey '" + tKey + "'");
         return GetImage(tKey);
     }
     

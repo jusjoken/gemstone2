@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.log4j.Logger;
+import sagex.api.AiringAPI;
+import sagex.api.MediaFileAPI;
 import sagex.phoenix.factory.ConfigurableOption;
 import sagex.phoenix.factory.Factory;
 import sagex.phoenix.vfs.MediaResourceType;
@@ -28,9 +30,12 @@ import sagex.phoenix.Phoenix;
 import sagex.phoenix.factory.BaseConfigurable;
 import sagex.phoenix.factory.IConfigurable;
 import sagex.phoenix.util.HasName;
+import sagex.phoenix.vfs.DecoratedMediaFile;
 import sagex.phoenix.vfs.IMediaFile;
 import sagex.phoenix.vfs.IMediaFolder;
 import sagex.phoenix.vfs.IMediaResource;
+import sagex.phoenix.vfs.sage.SageMediaFile;
+import sagex.phoenix.vfs.views.ViewItem;
 
 /**
  *
@@ -149,6 +154,9 @@ public class Source {
             InternalFilterTypes.put(FilterName, FilterType);
         }
     }
+    public static Boolean IsFilterValid(String FilterName){
+        return InternalFilterTypes.containsKey(FilterName);
+    }
     public static Boolean IsFilterTypeValid(String FilterType){
         if (FilterType.equals("Off-Include-Exclude")){
             return Boolean.TRUE;
@@ -167,6 +175,10 @@ public class Source {
         //Apply genre filter if any
         if (HasGenreFilter(ViewName)){
             AllFilters.add(GetGenreFilter(ViewName));
+        }
+        //Apply genre filter if any
+        if (HasUserCategoryFilter(ViewName)){
+            AllFilters.add(GetUserCategoryFilter(ViewName));
         }
         //Apply Folder filter if any
         if (HasFolderFilter(ViewName)){
@@ -562,16 +574,25 @@ public class Source {
     }
     
     public static Boolean IsTitleSort(ViewFolder view){
-        //get the current level
-        String tSortName = view.getPresentation().getSorters().get(0).getName();
-        String tSortLabel = view.getPresentation().getSorters().get(0).getLabel();
-        //Integer tLevels = view.getViewFactory().getViewPresentations().size();
-        //Integer tChildren = view.getChildren().size();
-        LOG.debug("IsTitleSort: SortName '" + tSortName + "' SortLabel '" + tSortLabel + "' for '" + view + "'");
-        if (tSortName.equals("title")){
-            return Boolean.TRUE;
+        if (view==null){
+            LOG.debug("IsTitleSort: null view passed in so returning FALSE");
+            return Boolean.FALSE;
         }
-        return Boolean.FALSE;
+        //get the current level
+        if (view.getPresentation().hasSorters()){
+            String tSortName = view.getPresentation().getSorters().get(0).getName();
+            String tSortLabel = view.getPresentation().getSorters().get(0).getLabel();
+            if (tSortName.equals("title")){
+                LOG.debug("IsTitleSort: title sort found so returning TRUE - SortLabel '" + tSortLabel + "' for '" + view + "'");
+                return Boolean.TRUE;
+            }else{
+                LOG.debug("IsTitleSort: returning FALSE for SortName '" + tSortName + "' SortLabel '" + tSortLabel + "' for '" + view + "'");
+                return Boolean.FALSE;
+            }
+        }else{
+            LOG.debug("IsTitleSort: returning FALSE as No sorters for view '" + view + "'");
+            return Boolean.FALSE;
+        }
     }
     
     private static HashSet<String> CreateDescribeView(ViewFolder view, String ViewName){
@@ -697,6 +718,79 @@ public class Source {
         phoenix.umb.Refresh(Folder);
         return new ArrayList<String>(RatingList);
     }
+
+    public static ArrayList<String> GetUserCategories(){
+        //Go through all tv media and stored usercategories and build list
+        TreeSet<String> AllCatList = new TreeSet<String>();
+        String delim = "[,;/]";
+        String Cats = "";
+
+        Object tSource = BaseSourceCache.get(Const.BaseTVSource);
+        if (tSource==null){
+            tSource = phoenix.umb.CreateView(Const.BaseTVSource);
+            BaseSourceCache.put(Const.BaseTitleSource, tSource);
+            LOG.debug("GetUserCategories: Loaded Source and placed in cache '" + tSource + "'");
+        }
+        //go through all TV media and add any usercategories
+        for (Object Item: phoenix.media.GetChildren((ViewFolder) tSource)){
+            if (Item instanceof IMediaFile) {
+                Item = ((IMediaFile) Item).getMediaObject();
+                //LOG.debug("GetUserCategories: checking for usercateries '" + Item + "'");
+                Cats = MediaFileAPI.GetMediaFileMetadata(Item, "UserCategory");
+                for (String Cat:Cats.split(delim)){
+                    //add each found cat to the list
+                    if (!Cat.trim().equals("")){
+                        if (!AllCatList.contains(Cat.trim())){
+                            AllCatList.add(Cat.trim());
+                            LOG.debug("GetUserCategories: added Mediafile Cat '" + Cat + "' to '" + AllCatList + "' from Media Item '" + Item + "'");
+                        }else{
+                            LOG.debug("GetUserCategories: MediaFile Cat '" + Cat + "' already in '" + AllCatList + "'");
+                        }
+                    }
+                }
+                //now check the manual recording property for Manual Recordings and Favorites
+                if (AiringAPI.IsManualRecord(Item) || AiringAPI.IsFavorite(Item)){
+                    Cats = AiringAPI.GetManualRecordProperty(Item, "UserCategory");
+                    for (String Cat:Cats.split(delim)){
+                        //add each found cat to the list
+                        if (!Cat.trim().equals("")){
+                            if (!AllCatList.contains(Cat.trim())){
+                                AllCatList.add(Cat.trim());
+                                LOG.debug("GetUserCategories: added MR or Fav Cat '" + Cat + "' to '" + AllCatList + "' from Media Item '" + Item + "'");
+                            }else{
+                                LOG.debug("GetUserCategories: MR or Fav Cat '" + Cat + "' already in '" + AllCatList + "'");
+                            }
+                        }
+                    }
+                }
+            } else {
+                LOG.debug("GetUserCategories: not a MediaFile so skipping '" + Item + "'");
+            }
+        }
+        //add in the user added categories from the server properties
+        Cats = util.GetServerProperty( "tv_categories/user_added", "" );
+        for (String Cat:Cats.split(delim)){
+            if (!Cat.trim().equals("")){
+                if (!AllCatList.contains(Cat.trim())){
+                    AllCatList.add(Cat.trim());
+                    LOG.debug("GetUserCategories: added user added Cat '" + Cat + "' to '" + AllCatList + "'");
+                }else{
+                    LOG.debug("GetUserCategories: user added Cat '" + Cat + "' already in '" + AllCatList + "'");
+                }
+            }
+        }
+        return new ArrayList<String>(AllCatList);
+    }
+    
+    public static Boolean HasUserCategoryFilter(String ViewName){
+        String tProp = Flow.GetFlowBaseProp(ViewName) + Const.PropDivider + Const.FlowUserCategoryFilters;
+        List<String> FilterList = util.GetPropertyAsList(tProp);
+        if (FilterList.isEmpty()){
+            return Boolean.FALSE;
+        }else{
+            return Boolean.TRUE;
+        }
+    }
     
     public static Boolean HasGenreFilter(String ViewName){
         String tProp = Flow.GetFlowBaseProp(ViewName) + Const.PropDivider + Const.FlowGenreFilters;
@@ -736,9 +830,35 @@ public class Source {
         return null;
     }
 
+    public static Filter GetUserCategoryFilter(String ViewName){
+        //LOG.debug("ApplyFilters: = '" + ViewName + "'");
+        //make sure we have a filter
+        String tProp = Flow.GetFlowBaseProp(ViewName) + Const.PropDivider + Const.FlowUserCategoryFilters;
+        String FilterString = util.ConvertListtoString(util.GetPropertyAsList(tProp),"|");
+        LOG.debug("GetUserCategoryFilter: FilterString = '" + FilterString + "'");
+        if (!FilterString.equals("")){
+            FilterString = "(" + FilterString + ")";
+            Filter NewFilter = phoenix.umb.CreateFilter("usercategory");
+            ConfigurableOption tOption = phoenix.umb.GetOption(NewFilter, "scope");
+            tProp = Flow.GetFlowBaseProp(ViewName) + Const.PropDivider + Const.FlowUserCategoryFilterMode;
+            if (util.GetPropertyAsBoolean(tProp, Boolean.TRUE)){
+                phoenix.opt.SetValue(tOption, "include");
+                LOG.debug("GetUserCategoryFilter: include = '" + Flow.GetFlowName(ViewName) + "' Filter = '" + FilterString + "'");
+            }else{
+                phoenix.opt.SetValue(tOption, "exclude");
+                LOG.debug("GetUserCategoryFilter: exclude = '" + Flow.GetFlowName(ViewName) + "' Filter = '" + FilterString + "'");
+            }
+            tOption = phoenix.umb.GetOption(NewFilter, "value");
+            phoenix.opt.SetValue(tOption, FilterString);
+            phoenix.umb.SetChanged(NewFilter);
+            return NewFilter;
+        }
+        return null;
+    }
+
     //check all filter types to see if there are any filters set
     public static Boolean HasFilter(String ViewName){
-        if (HasGenreFilter(ViewName) || HasFolderFilter(ViewName)){
+        if (HasGenreFilter(ViewName) || HasFolderFilter(ViewName) || HasUserCategoryFilter(ViewName)){
             return Boolean.TRUE;
         }else{
             //now check any valid Filter Type

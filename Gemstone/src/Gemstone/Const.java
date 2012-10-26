@@ -32,6 +32,8 @@ public class Const {
     public static final String FlowOverride = "FlowOverride";
     public static final String FlowPathFilters = "Filters/FlowPathFilters";
     public static final String FlowGenreFilters = "Filters/GenreFilterList";
+    public static final String FlowUserCategoryFilters = "Filters/UserCategoryFilterList";
+    public static final String FlowUserCategoryFilterMode = "UserCategoryFilterMode";
     public static final String FlowFilters = "Filters";
     public static final String FlowGenreFilterMode = "GenreFilterMode";
     public static final String FlowNameNotFound = "Flow Name Not Found";
@@ -90,6 +92,7 @@ public class Const {
     public static final Integer SystemMessageAlertLevelError = 3;
     public static final String CreateBGImageTag = "GemstoneMenuBG";
     public static final String BaseSource = "gemstone.base.all";
+    public static final String BaseTVSource = "gemstone.base.tv";
     public static final String BaseTitleSource = "gemstone.source.firstletter";
     public static final String BaseGenreSource = "BaseGenreSource";
     public static final String BaseRatingsSource = "BaseRatingsSource";
