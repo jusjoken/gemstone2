@@ -152,8 +152,12 @@ public class Source {
     public static void AddFilterType(String FilterName, String FilterType){
         if (IsFilterTypeValid(FilterType)){
             InternalFilterTypes.put(FilterName, FilterType);
+            LOG.debug("AddFilterType: added '" + FilterName + "' with type '" + FilterType + "' InternalFilterTypes [" + InternalFilterTypes + "]");
+        }else{
+            LOG.debug("AddFilterType: invalid FilterType '" + FilterType + "' so '" + FilterName + "' not added to InternalFilterTypes [" + InternalFilterTypes + "]");
         }
     }
+    //can be used in the STV to see if the filter has been added before using it or setting it's settings
     public static Boolean IsFilterValid(String FilterName){
         return InternalFilterTypes.containsKey(FilterName);
     }
