@@ -5,8 +5,11 @@
 package Gemstone;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Collection;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
@@ -30,7 +33,6 @@ public class Theme {
         //LOG.debug("GetHighlightSets: found '" + tList + "'");
         return tList;
     }
-    
     
     
 }

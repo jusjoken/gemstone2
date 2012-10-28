@@ -729,12 +729,7 @@ public class Source {
         String delim = "[,;/]";
         String Cats = "";
 
-        Object tSource = BaseSourceCache.get(Const.BaseTVSource);
-        if (tSource==null){
-            tSource = phoenix.umb.CreateView(Const.BaseTVSource);
-            BaseSourceCache.put(Const.BaseTitleSource, tSource);
-            LOG.debug("GetUserCategories: Loaded Source and placed in cache '" + tSource + "'");
-        }
+        Object tSource = phoenix.umb.CreateView(Const.BaseTVSource);
         //go through all TV media and add any usercategories
         for (Object Item: phoenix.media.GetChildren((ViewFolder) tSource)){
             if (Item instanceof IMediaFile) {
@@ -838,10 +833,9 @@ public class Source {
         //LOG.debug("ApplyFilters: = '" + ViewName + "'");
         //make sure we have a filter
         String tProp = Flow.GetFlowBaseProp(ViewName) + Const.PropDivider + Const.FlowUserCategoryFilters;
-        String FilterString = util.ConvertListtoString(util.GetPropertyAsList(tProp),"|");
+        String FilterString = util.ConvertListtoString(util.GetPropertyAsList(tProp),",");
         LOG.debug("GetUserCategoryFilter: FilterString = '" + FilterString + "'");
         if (!FilterString.equals("")){
-            FilterString = "(" + FilterString + ")";
             Filter NewFilter = phoenix.umb.CreateFilter("usercategory");
             ConfigurableOption tOption = phoenix.umb.GetOption(NewFilter, "scope");
             tProp = Flow.GetFlowBaseProp(ViewName) + Const.PropDivider + Const.FlowUserCategoryFilterMode;
