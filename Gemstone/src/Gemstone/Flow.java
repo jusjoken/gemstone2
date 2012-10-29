@@ -67,6 +67,10 @@ public class Flow {
         util.SetOptionBase(Boolean.TRUE, PropSection, PropName, NewValue);
     }
     
+    public static void RemoveOption(String PropSection, String PropName){
+        util.RemoveOptionBase(Boolean.TRUE, PropSection, PropName);
+    }
+    
     public static String GetListOptionName(String PropSection, String PropName, String OptionList, String DefaultValue){
         return util.GetListOptionNameBase(Boolean.TRUE, PropSection, PropName, OptionList, DefaultValue);
     }

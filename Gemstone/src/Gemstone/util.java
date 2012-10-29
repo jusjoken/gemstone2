@@ -766,7 +766,20 @@ public class util {
         util.SetProperty(tProp, NewValue);
     }
 
-
+    //remove an option property
+    public static void RemoveOption(String PropSection, String PropName){
+        RemoveOptionBase(Boolean.FALSE, PropSection, PropName);
+    }
+    public static void RemoveOptionBase(Boolean bFlow, String PropSection, String PropName){
+        String tProp = "";
+        if (bFlow){
+            tProp = Flow.GetFlowBaseProp(PropSection) + Const.PropDivider + PropName;
+        }else{
+            tProp = Const.BaseProp + Const.PropDivider + PropSection + Const.PropDivider + PropName;
+        }
+        RemoveProperty(tProp);
+    }
+    
     public static String PropertyListasString(String PropSection, String PropName){
         return PropertyListasStringBase(Boolean.FALSE, PropSection, PropName);
     }
