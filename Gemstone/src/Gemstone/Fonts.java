@@ -4,6 +4,8 @@
  */
 package Gemstone;
 
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.Collection;
@@ -139,8 +141,23 @@ public class Fonts {
         if (IncludeGemstoneFonts){
             LoadFontsFromFolder(Const.FontPathGemstone, FontSource.Gemstone);
         }
+        //get the Sage specific fonts from the Sage root Fonts folder
         if (IncludeSageFonts){
             LoadFontsFromFolder(Const.FontPathSage, FontSource.Sage);
+        }
+        //get the system fonts that java can use
+                
+        if (IncludeSystemFonts){
+//            Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
+//            LOG.debug("LoadFonts: ***** getAllFonts()");
+//            for ( int i = 0; i < fonts.length; ++i ) {
+//                LOG.debug("LoadFonts: FontName '" + fonts[i].getFontName() + "' Family '" + fonts[i].getFamily() + "' Name '" + fonts[i].getName() + "'");
+//            }
+//            LOG.debug("LoadFonts: ***** getAvailableFontFamilyNames()");
+            String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+            for ( int i = 0; i < names.length; ++i ){
+                AddFont(names[i],names[i],FontSource.System);
+            }
         }
         
         //do a last check to ensure the Current - if any - is included in the list
