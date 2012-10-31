@@ -146,14 +146,7 @@ public class Fonts {
             LoadFontsFromFolder(Const.FontPathSage, FontSource.Sage);
         }
         //get the system fonts that java can use
-                
         if (IncludeSystemFonts){
-//            Font[] fonts = GraphicsEnvironment.getLocalGraphicsEnvironment().getAllFonts();
-//            LOG.debug("LoadFonts: ***** getAllFonts()");
-//            for ( int i = 0; i < fonts.length; ++i ) {
-//                LOG.debug("LoadFonts: FontName '" + fonts[i].getFontName() + "' Family '" + fonts[i].getFamily() + "' Name '" + fonts[i].getName() + "'");
-//            }
-//            LOG.debug("LoadFonts: ***** getAvailableFontFamilyNames()");
             String[] names = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
             for ( int i = 0; i < names.length; ++i ){
                 AddFont(names[i],names[i],FontSource.System);
