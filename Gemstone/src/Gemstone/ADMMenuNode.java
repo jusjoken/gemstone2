@@ -274,6 +274,7 @@ public class ADMMenuNode {
     
     public static Object GetMenuItemBGImage(String Name){
         String BGKey = GetMenuItemBGImageFilePath(Name);
+        LOG.debug("GetMenuItemBGImage: BGKey '" + BGKey + "' for '" + Name + "'");
         Object BGImage = null;
         if (BGKey==null){
             LOG.debug("GetMenuItemBGImage: null Key returned from GetMenuItemBGImageFilePath for '" + Name + "'");
@@ -281,7 +282,7 @@ public class ADMMenuNode {
         }else{
             BGImage = BGCache.get(BGKey);
             if (BGImage!=null){
-                //LOG.debug("GetMenuItemBGImage: BGImage found in Cache for Key '" + BGKey + "'");
+                LOG.debug("GetMenuItemBGImage: BGImage found in Cache for Key '" + BGKey + "'");
                 return BGImage;
             }else{
                 //add it to the Cache and then return it
