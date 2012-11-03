@@ -385,6 +385,31 @@ public class ADMutil {
         }
     }
 
+    public static String GetSageBGVariablesButtonTextFormatted(String Option){
+        if (Option==null || Option.equals(ListNone)){
+            return ListNone;
+        }
+        String ButtonName = SageBGVariablesProps.getProperty(Option, ListNone);
+        String VarValue = EvaluateAttribute(Option);
+        return ButtonName + " (" + LastofString(VarValue,30) + ")";
+    }
+    
+    private static String LastofString(String text, int maxSize){
+        String tStr = text.substring(Math.max(0, text.length() - maxSize));
+        if (tStr.length()==maxSize){
+            return ".." + tStr;
+        }else{
+            return tStr;
+        }
+    }
+
+    public static Collection<String> GetSageBGVariablesListNoNone(){
+        List<String> tVariables = new LinkedList<String>(); 
+        tVariables.addAll(SageBGVariablesKeys);
+        tVariables.remove(ListNone);
+        return tVariables;
+    }
+
     public static Collection<String> GetSageBGVariablesList(){
         return SageBGVariablesKeys;
     }
