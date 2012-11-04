@@ -27,6 +27,8 @@ import org.apache.log4j.Logger;
 public class ADMutil {
 
     static private final Logger LOG = Logger.getLogger(ADMutil.class);
+    public static final String DefaultBG = "gBackgroundImage";
+    public static final String DefaultBGName = "Default";
     public static final String ListToken = ":&&:";
     public static final String MenuManagerBaseProp = Const.BaseProp + Const.PropDivider + Const.MenuManagerProp + Const.PropDivider;
     //public static final String PropertyComment = "---Menu Manager MenuItem Properties - Do Not Manually Edit---";
@@ -391,7 +393,7 @@ public class ADMutil {
         }
         String ButtonName = SageBGVariablesProps.getProperty(Option, ListNone);
         String VarValue = EvaluateAttribute(Option);
-        return ButtonName + " (" + LastofString(VarValue,30) + ")";
+        return ButtonName + " (" + LastofString(VarValue,50) + ")";
     }
     
     private static String LastofString(String text, int maxSize){
@@ -413,9 +415,59 @@ public class ADMutil {
     public static Collection<String> GetSageBGVariablesList(){
         return SageBGVariablesKeys;
     }
+    
+    public static boolean IsSageBGMatch(String Option1, String Option2){
+        return (GetSageBGFile(Option1).equals(GetSageBGFile(Option2)));
+    }
+    
+    public static void SetSageBGVariable(String VariableName, String NewValue){
+        if (VariableName==null || NewValue==null){
+            LOG.debug("SetSageBGVariable: null passed for VariableName or NewValue - no change made");
+            return;
+        }
+        if (VariableName.equals(DefaultBG)){
+            LOG.debug("SetSageBGVariable: cannot change the value of the protected Default BG Variable '" + VariableName + "' NOT set to '" + NewValue + "'");
+        }else{
+            if (NewValue.equals(util.OptionNotFound)){
+                //don't allow this value to be set so use the themed default value
+                NewValue = EvaluateAttribute(DefaultBG);
+            }
+            UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
+            sagex.api.Global.AddGlobalContext(tUI, VariableName, NewValue);
+            //now save the setting to the properties file to be reloaded at startup
+            String tProp = Const.ThemeBG + Const.PropDivider + VariableName;
+            util.SetOption(Const.ThemeProp, tProp, NewValue);
+            LOG.debug("SetSageBGVariable: set '" + VariableName + "' to Theme Prop '" + tProp + "' for value '" + NewValue + "'");
+        }
+    }
+
+    public static void LoadSageBGOverrides(){
+        //go through all the BG variables and see if there is an override stored in the properties
+        for (String BGVar:GetSageBGVariablesListNoNone()){
+            String tProp = Const.ThemeBG + Const.PropDivider + BGVar;
+            String tValue = util.GetOptionName(Const.ThemeProp, tProp, util.OptionNotFound);
+            if (tValue.equals(util.OptionNotFound)){
+                LOG.debug("LoadSageBGOverrides: no override found for '" + BGVar + "' leaving as themed value '" + EvaluateAttribute(BGVar) + "'");
+            }else{
+                SetSageBGVariable(BGVar, tValue);
+            }
+        }
+    }
+
+    public static void ResetSageBGOverrides(){
+        //go through all the BG variables and set them to the themed default value
+        for (String BGVar:GetSageBGVariablesListNoNone()){
+            String tProp = Const.ThemeBG + Const.PropDivider + BGVar;
+            util.RemoveOption(Const.ThemeProp, tProp);
+            LOG.debug("ResetSageBGOverrides: setting '" + BGVar + "' to themed default background '" + DefaultBG + "' = '" + EvaluateAttribute(DefaultBG) + "'");
+            SetSageBGVariable(BGVar, EvaluateAttribute(DefaultBG));
+        }
+    }
 
     public static void LoadSageBGList(){
         SageBackgrounds.clear();
+        //Manually load the default background so it can be used to reset the others if desired
+        SageBackgrounds.add(DefaultBG);
         //add all the Backgrounds from the available Theme variables
         SageBackgrounds.addAll(SageBGVariablesKeys);
         //remove none as it may not be where we want it in the list
@@ -494,6 +546,12 @@ public class ADMutil {
                 LOG.debug("GetSageBGButtonText for '" + Option + "' Invalid request passed in");
                 return ListNone;
             }
+        }else if(Option.equals(DefaultBG)){
+            if (IsAdvancedMode()){
+                return DefaultBGName + " (" + Option + ")";
+            }else{
+                return DefaultBGName;
+            }
         }else{
         //determine if using Advanced options
             if (IsAdvancedMode()){
@@ -539,7 +597,6 @@ public class ADMutil {
     }
 
     public static void SaveSageBackground(String BackgroundFile){
-        //TODO: SaveSageBackground - should update to save as a relative path if part of the SageTV path - otherwise save the full path
         if (BackgroundFile==null || BackgroundFile.equals("") || BackgroundFile.equals(ListNone)){
             //do nothing
             LOG.debug("SaveSageBackground for '" + BackgroundFile + "' NOTHING FOUND");
