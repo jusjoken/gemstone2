@@ -218,7 +218,20 @@ public class FanartManager {
         }
         //Set the default fanart item if there are any fanart items
         if (!FanartList.isEmpty()){
-            DefaultFanart = ImageCache.GetDefaultArtifact(PrimaryMediaResource, FanartType, faMetadata);
+            //DefaultFanart = ImageCache.GetDefaultArtifact(PrimaryMediaResource, FanartType, faMetadata);
+            String NotNeededString = "NotNeededString";  //used in this call as the value does not matter
+            //LOG.debug("LoadFanartList: getting default from phoenix");
+            //LOG.debug("LoadFanartList: faMediaObject '" + faMediaObject + "'");
+            //LOG.debug("LoadFanartList: faMediaType '" + faMediaType + "'");
+            //LOG.debug("LoadFanartList: FanartType '" + ImageCacheKey.ConvertStringtoMediaArtifactType(FanartType) + "'");
+            //LOG.debug("LoadFanartList: faMetadata '" + faMetadata + "'");
+            File defFile = phoenix.fanart.GetDefaultArtifact(faMediaObject, faMediaType, NotNeededString, ImageCacheKey.ConvertStringtoMediaArtifactType(FanartType), NotNeededString, faMetadata);
+            //LOG.debug("LoadFanartList: deFile '" + defFile + "'");
+            if (defFile==null){
+                DefaultFanart = null;
+            }else{
+                DefaultFanart = defFile.toString();
+            }
             //LOG.debug("LoadFanartList: DegaultFanart '" + DefaultFanart + "' for '" + PrimaryMediaResource.getTitle() + "'");
             //Add the default item (if any) to the TOP of the list - make sure it is also removed from the list
             if (DefaultFanart!=null){
@@ -294,7 +307,9 @@ public class FanartManager {
         File FanartFile = new File(FanartItem);
 
         //Add special SetFanartArtifact method to handle SEASON defaults
-        ImageCache.SetFanartArtifact(faMediaObject, FanartFile, faMediaType, faMediaTitle, FanartType, null, faMetadata);
+        phoenix.fanart.SetFanartArtifact(faMediaObject, FanartFile, faMediaType.toString(), faMediaTitle, FanartType, null, faMetadata);
+        //removed the following as phoenix core handles this as of 11/04/2012
+        //ImageCache.SetFanartArtifact(faMediaObject, FanartFile, faMediaType, faMediaTitle, FanartType, null, faMetadata);
         
         //reload the fanart list
         //LOG.debug("SetFanartAsDefault: DefaultFanart '" + DefaultFanart + "' title '" + this.getTitle() + "'");
