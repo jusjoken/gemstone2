@@ -393,7 +393,24 @@ public class ADMutil {
         }
         String ButtonName = SageBGVariablesProps.getProperty(Option, ListNone);
         String VarValue = EvaluateAttribute(Option);
-        return ButtonName + " (" + LastofString(VarValue,50) + ")";
+        if (HasSageBGOverride(Option)){
+            File tBackground = sagex.api.Utility.CreateFilePath(VarValue, "");
+            String tBackgroundName = sagex.api.Utility.GetFileNameFromPath(tBackground);
+            if (IsAdvancedMode()){
+                return ButtonName + " = {" + tBackgroundName + "}" + " (" + Option + ")";
+            }else{
+                return ButtonName + " = {" + tBackgroundName + "}";
+            }
+                    
+        }else{
+            LOG.debug("GetSageBGVariablesButtonTextFormatted: themed value for Option '" + Option + "' ButtonName '" + ButtonName + "'");
+            if (IsAdvancedMode()){
+                return ButtonName + " = {Themed value}" + " (" + Option + ")";
+            }else{
+                return ButtonName + " = {Themed value}";
+            }
+        }
+        //return ButtonName + " (" + LastofString(VarValue,50) + ")";
     }
     
     private static String LastofString(String text, int maxSize){
@@ -420,7 +437,28 @@ public class ADMutil {
         return (GetSageBGFile(Option1).equals(GetSageBGFile(Option2)));
     }
     
+    public static void SaveSageBGVariable(String VariableName, String NewValue){
+        //saves the setting to the properties
+        if (VariableName==null || NewValue==null){
+            LOG.debug("SaveSageBGVariable: null passed for VariableName or NewValue - no change made");
+            return;
+        }
+        if (VariableName.equals(DefaultBG)){
+            LOG.debug("SaveSageBGVariable: cannot change the value of the protected Default BG Variable '" + VariableName + "' NOT set to '" + NewValue + "'");
+        }else{
+            if (NewValue.equals(util.OptionNotFound)){
+                //don't allow this value to be set so use the themed default value
+                NewValue = EvaluateAttribute(DefaultBG);
+            }
+            //now save the setting to the properties file to be reloaded at startup
+            String tProp = Const.ThemeBG + Const.PropDivider + VariableName;
+            util.SetOption(Const.ThemeProp, tProp, NewValue);
+            LOG.debug("SaveSageBGVariable: saved '" + VariableName + "' to Theme Prop '" + tProp + "' for value '" + NewValue + "'");
+        }
+    }
+    
     public static void SetSageBGVariable(String VariableName, String NewValue){
+        //set the variable to the value (does not save to properties)
         if (VariableName==null || NewValue==null){
             LOG.debug("SetSageBGVariable: null passed for VariableName or NewValue - no change made");
             return;
@@ -434,10 +472,7 @@ public class ADMutil {
             }
             UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
             sagex.api.Global.AddGlobalContext(tUI, VariableName, NewValue);
-            //now save the setting to the properties file to be reloaded at startup
-            String tProp = Const.ThemeBG + Const.PropDivider + VariableName;
-            util.SetOption(Const.ThemeProp, tProp, NewValue);
-            LOG.debug("SetSageBGVariable: set '" + VariableName + "' to Theme Prop '" + tProp + "' for value '" + NewValue + "'");
+            LOG.debug("SetSageBGVariable: set '" + VariableName + "' to value '" + NewValue + "'");
         }
     }
 
@@ -454,13 +489,28 @@ public class ADMutil {
         }
     }
 
+    public static void ResetSageBGOverride(String BGVar){
+        String tProp = Const.ThemeBG + Const.PropDivider + BGVar;
+        util.RemoveOption(Const.ThemeProp, tProp);
+        LOG.debug("ResetSageBGOverride: setting '" + BGVar + "' to themed default background '" + DefaultBG + "' = '" + EvaluateAttribute(DefaultBG) + "'");
+        SetSageBGVariable(BGVar, EvaluateAttribute(DefaultBG));
+    }
     public static void ResetSageBGOverrides(){
         //go through all the BG variables and set them to the themed default value
         for (String BGVar:GetSageBGVariablesListNoNone()){
-            String tProp = Const.ThemeBG + Const.PropDivider + BGVar;
-            util.RemoveOption(Const.ThemeProp, tProp);
-            LOG.debug("ResetSageBGOverrides: setting '" + BGVar + "' to themed default background '" + DefaultBG + "' = '" + EvaluateAttribute(DefaultBG) + "'");
-            SetSageBGVariable(BGVar, EvaluateAttribute(DefaultBG));
+            ResetSageBGOverride(BGVar);
+        }
+    }
+    
+    public static boolean HasSageBGOverride(String VariableName){
+        if (VariableName==null){
+            return false;
+        }
+        String tProp = Const.ThemeBG + Const.PropDivider + VariableName;
+        if (util.GetOptionName(Const.ThemeProp, tProp, util.OptionNotFound).equals(util.OptionNotFound)){
+            return false;
+        }else{
+            return true;
         }
     }
 
@@ -528,6 +578,7 @@ public class ADMutil {
 
     public static String GetSageBGButtonText(String Option){
         if (Option==null || Option.equals(ListNone)){
+            LOG.debug("GetSageBGButtonText for '" + Option + "' Invalid request passed in");
             return ListNone;
         }
 
@@ -547,6 +598,7 @@ public class ADMutil {
                 return ListNone;
             }
         }else if(Option.equals(DefaultBG)){
+            LOG.debug("GetSageBGButtonText for '" + Option + "' Default found '" + DefaultBGName + "'");
             if (IsAdvancedMode()){
                 return DefaultBGName + " (" + Option + ")";
             }else{
@@ -554,6 +606,7 @@ public class ADMutil {
             }
         }else{
         //determine if using Advanced options
+            LOG.debug("GetSageBGButtonText for '" + Option + "' returning SageBGVariablesProps '" + SageBGVariablesProps.getProperty(Option, ListNone) + "'");
             if (IsAdvancedMode()){
                 return SageBGVariablesProps.getProperty(Option, ListNone) + " (" + Option + ")";
             }else{
