@@ -257,6 +257,13 @@ public class FanartManager {
         LoadFanartList();
     }
     
+    public void RemoveFanartItemFromMemory(String FanartItem){
+        RemoveFanartItemFromMemory(FanartItem, Boolean.FALSE);
+        RemoveFanartItemFromMemory(FanartItem, Boolean.TRUE);
+        //reload the fanart list
+        LoadFanartList();
+    }
+    
     private void RemoveFanartItem(String FanartItem, Boolean OriginalSize){
         //clear caches
         phoenix.fanart.ClearMemoryCaches();
@@ -272,6 +279,15 @@ public class FanartManager {
             File tFile = new File(tImage.toString());
             tFile.delete();
         }
+    }
+
+    private void RemoveFanartItemFromMemory(String FanartItem, Boolean OriginalSize){
+        //clear caches
+        phoenix.fanart.ClearMemoryCaches();
+        //remove the fanart item from the cache for this media item
+        String tKey = ImageCache.GetFanartKey(FanartItem, OriginalSize);
+        //LOG.debug("RemoveFanartItem: Removing Key '" + tKey + "'");
+        ImageCache.RemoveItemFromCache(tKey);
     }
 
     public void SetFanartAsDefault(String FanartItem){
