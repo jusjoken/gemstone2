@@ -339,6 +339,7 @@ public class ImageCache {
         String faArtifiactTitle = null;
         Map<String,String> faMetadata = null;
         Object DefaultEpisodeImage = null;
+        Boolean FolderBasedFanart = Boolean.FALSE;
         
         //see if this is a FOLDER item
         //we will need a MediaObject to get any fanart so get it from the passed in resource OR the child if any
@@ -417,6 +418,9 @@ public class ImageCache {
                     //special Episode handling for backgrounds
                     if (CheckFoldersFirst(resourcetype)){
                         tImageString = GetFolderImage(faMediaObject, resourcetype);
+                        if (!"".equals(tImageString)){
+                            FolderBasedFanart = Boolean.TRUE;
+                        }
                     }
                     if ("".equals(tImageString)){
                         tImageString = phoenix.fanart.GetEpisode(faMediaObject);
@@ -466,6 +470,9 @@ public class ImageCache {
             }
             if (CheckFoldersFirst(resourcetype)){
                 tImageString = GetFolderImage(faMediaObject, resourcetype);
+                if (!"".equals(tImageString)){
+                    FolderBasedFanart = Boolean.TRUE;
+                }
             }
             if ("".equals(tImageString)){
                 tImageString = phoenix.fanart.GetFanartArtifact(faMediaObject, tMediaType, faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
@@ -479,11 +486,19 @@ public class ImageCache {
             tICK.setDefaultImage(defaultImage);
             return tICK;
         }
-        ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType);
-        tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
-        tICK.setDefaultImage(defaultImage);
-        //LOG.debug("GetImageKey: Key '" + tICK + "'");
-        return tICK;
+        if (CheckFoldersFirst(resourcetype) && FolderBasedFanart){
+            ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType, Boolean.TRUE);
+            tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
+            tICK.setDefaultImage(defaultImage);
+            LOG.debug("GetImageKey: FolderBasedFanart used - Key '" + tICK + "'");
+            return tICK;
+        }else{
+            ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType);
+            tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
+            tICK.setDefaultImage(defaultImage);
+            LOG.debug("GetImageKey: Key '" + tICK + "'");
+            return tICK;
+        }
     }
     //Convenience method that will convert the incoming object parameter to a IMediaResource type 
     public static ImageCacheKey GetImageKey(Object imediaresource, String resourcetype){
@@ -1444,6 +1459,7 @@ public class ImageCache {
         //handle the special Key for DefaultEpisodeImages
         if (FanartPath.contains(FanartUtil.EPISODE_TITLE)){
             Key = FanartPath;
+            //LOG.debug("GetFanartKey: special key for DefaultEpisodeImages '" + Key + "' for FanartPath '" + FanartPath + "'");
         }else{
             File f = null;
             String central = null;
@@ -1456,11 +1472,14 @@ public class ImageCache {
             if (central!=null) {
                 if (FanartPath.startsWith(central)) {
                     f = new File(FanartPath);
+                    //LOG.debug("GetFanartKey: starts with central - f = '" + f + "'");
                 }else{
                     f = new File(phoenix.fanart.GetFanartCentralFolder(), FanartPath);
+                    //LOG.debug("GetFanartKey: does not start with central - f = '" + f + "'");
                 }
             } else {
                 f = new File(FanartPath);
+                //LOG.debug("GetFanartKey: central is null - f = '" + f + "'");
             }
             Key = f.getPath();
             //remove the filename from the key except for Episodes that need the filename to be unique (only 1 Episode background per episode)
@@ -1475,7 +1494,9 @@ public class ImageCache {
             //LOG.debug("GetFanartKey: Key path after Episode check '" + Key + "'");
             //now remove the central folder from the path
             if (central!=null){
+                //LOG.debug("GetFanartKey: before removed central '" + Key + "'");
                 Key = Key.replace(central, "");
+                //LOG.debug("GetFanartKey: after removed central '" + Key + "'");
             }
         }
         Key = Key + util.ListToken + Size;

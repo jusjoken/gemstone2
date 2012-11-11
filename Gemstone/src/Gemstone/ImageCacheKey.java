@@ -55,6 +55,13 @@ public class ImageCacheKey {
         this.OriginalSize = OriginalSize;
         this.ArtifactType = ConvertStringtoMediaArtifactType(ArtifactType);
     }
+    public ImageCacheKey(String ImagePath, Boolean OriginalSize, MediaArtifactType ArtifactType, Boolean KeepFilenameOnKey) {
+        this.ImagePath = ImagePath;
+        UIList.add(sagex.api.Global.GetUIContextName());
+        this.OriginalSize = OriginalSize;
+        this.ArtifactType = ArtifactType;
+        this.KeepFilenameOnKey = KeepFilenameOnKey;
+    }
     public ImageCacheKey(String ImagePath, Boolean OriginalSize, String ArtifactType, Boolean KeepFilenameOnKey) {
         this.ImagePath = ImagePath;
         UIList.add(sagex.api.Global.GetUIContextName());
