@@ -490,13 +490,13 @@ public class ImageCache {
             ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType, Boolean.TRUE);
             tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
             tICK.setDefaultImage(defaultImage);
-            LOG.debug("GetImageKey: FolderBasedFanart used - Key '" + tICK + "'");
+            //LOG.debug("GetImageKey: FolderBasedFanart used - Key '" + tICK + "'");
             return tICK;
         }else{
             ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType);
             tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
             tICK.setDefaultImage(defaultImage);
-            LOG.debug("GetImageKey: Key '" + tICK + "'");
+            //LOG.debug("GetImageKey: Key '" + tICK + "'");
             return tICK;
         }
     }
