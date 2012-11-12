@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.api.MediaFileAPI;
@@ -521,7 +522,20 @@ public class ImageCache {
             LOG.debug("GetFolderImage: could not convert '" + mediaObject + "' to IMediaResource");
             return "";
         }
-        File FolderImage = new File(sagex.api.MediaFileAPI.GetParentDirectory(mediaObject) + File.separator + FoldersFirstName(resourcetype));
+        String FoldersFirstName = FoldersFirstName(resourcetype);
+        if (FoldersFirstName.contains("*")){
+            //"*" represents the media file name so swap it out in the expected folder file name
+            File tFile = sagex.api.MediaFileAPI.GetFileForSegment(mediaObject,0);
+            if (tFile==null){
+                FoldersFirstName.replace("*", "");
+                LOG.debug("GetFolderImage: * found in '" + FoldersFirstName + " but GetFileForSegment returned null so skipping replace for '" + mediaObject + "'");
+            }else{
+                String tFileName = FilenameUtils.removeExtension(tFile.getName());
+                FoldersFirstName = FoldersFirstName.replace("*", tFileName);
+                LOG.debug("GetFolderImage: * found and replaced - using '" + FoldersFirstName + " for '" + mediaObject + "'");
+            }
+        }
+        File FolderImage = new File(sagex.api.MediaFileAPI.GetParentDirectory(mediaObject) + File.separator + FoldersFirstName);
         if (FolderImage==null){
             LOG.debug("GetFolderImage: could not create a image file for '" + mediaObject + "' '" + resourcetype + "'" );
             return "";

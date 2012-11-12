@@ -219,7 +219,11 @@ public class Widget {
     }
     
     public static Boolean ShowWidget(String WidgetType){
-        return util.GetPropertyAsBoolean(WidgetProps + WidgetType + Const.PropDivider + "Show",false);
+        if (GetUseWidgets()){
+            return util.GetPropertyAsBoolean(WidgetProps + WidgetType + Const.PropDivider + "Show",false);
+        }else{
+            return Boolean.FALSE;
+        }
     }
     public static String GetSize(String WidgetType){
         return util.GetProperty(WidgetProps + WidgetType + Const.PropDivider + "Size","Off");
