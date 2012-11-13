@@ -478,19 +478,28 @@ public class MetadataCalls {
             return "";
         }
         if (imediaresource.toString().contains("BlankItem")){
+            LOG.debug("GetTitle: title request for BlankItem");
             return "";
         }
         String specialType = Source.GetSpecialType(imediaresource);
         String tTitle = imediaresource.getTitle();
-        //LOG.debug("GetTitle: sType '" + sType + "' tTitle '" + tTitle + "'");
         if ("tv".equals(specialType) || "airing".equals(specialType) || "recording".equals(specialType)){  //return the episode name
-            String eTitle = phoenix.metadata.GetEpisodeName(imediaresource);
-            //LOG.debug("GetTitle: eTitle '" + eTitle + "'");
+            String eTitle = null;
+            if ("tv".equals(specialType)){
+                eTitle = phoenix.metadata.GetEpisodeName(imediaresource);
+                //LOG.debug("GetTitle: tv - eTitle from phoenix '" + eTitle + "'");
+            }else{ //special handling for airings (EPG) to use the show object
+                eTitle = sagex.api.ShowAPI.GetShowEpisode(phoenix.media.GetMediaObject(imediaresource));
+                //LOG.debug("GetTitle: airing - eTitle from ShowAPI.GetShowEpisode '" + eTitle + "'");
+            }
             if (eTitle==null){
+                LOG.debug("GetTitle: sType '" + specialType + "' no episode title so using default Title '" + tTitle + "'");
                 return tTitle;
             }else if (eTitle.equals("")){
+                LOG.debug("GetTitle: sType '" + specialType + "' no episode title so using default Title '" + tTitle + "'");
                 return tTitle;
             }else{
+                LOG.debug("GetTitle: sType '" + specialType + "' episode title found '" + eTitle + "'");
                 return eTitle;
             }
         }
@@ -501,6 +510,7 @@ public class MetadataCalls {
         }else{
             tTitle = tTitle + " (" + Disc + ")";
         }
+        LOG.debug("GetTitle: sType '" + specialType + "' non tv type so using default Title '" + tTitle + "'");
         return tTitle;
     }
     public static String GetTitle(Object imediaresource){
@@ -511,16 +521,24 @@ public class MetadataCalls {
     public static String GetSeriesTitle(Object IMR){
         IMediaResource imediaresource = Source.GetTVIMediaResource(IMR);
         if (imediaresource!=null){ 
-            String tReturn = phoenix.series.GetTitle(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
-            //LOG.debug("GetSeriesTitle: series.GetTitle returned '" + tReturn + "' for '" + imediaresource + "'");
+            String tReturn = null;
+            String specialType = Source.GetSpecialType(imediaresource);
+            //special handling for Airing (EPG) items
+            if (specialType.equals("airing") || specialType.equals("recording")){
+                tReturn = sagex.api.AiringAPI.GetAiringTitle(phoenix.media.GetMediaObject(imediaresource));
+                //LOG.debug("GetSeriesTitle: SpecialType '" + Source.GetSpecialType(imediaresource) + "' returned '" + tReturn + "' for '" + imediaresource + "'");
+            }else{
+                tReturn = phoenix.series.GetTitle(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
+                //LOG.debug("GetSeriesTitle: series.GetTitle returned '" + tReturn + "' for '" + imediaresource + "'");
+            }
             if (tReturn==null){
-                //LOG.debug("GetSeriesTitle: null found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
+                LOG.debug("GetSeriesTitle: type '" + specialType + "' null found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
                 return GetTitle(imediaresource);
             }else if (tReturn.isEmpty()){
-                //LOG.debug("GetSeriesTitle: empty found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
+                LOG.debug("GetSeriesTitle: type '" + specialType + "' empty found so using GetTitle instead '" + GetTitle(imediaresource) + "' for '" + imediaresource + "'");
                 return GetTitle(imediaresource);
             }else{
-                //LOG.debug("GetSeriesTitle: good return value found '" + tReturn + "' for '" + imediaresource + "'");
+                LOG.debug("GetSeriesTitle: type '" + specialType + "' good return value found '" + tReturn + "' for '" + imediaresource + "'");
                 return tReturn;
             }
         }

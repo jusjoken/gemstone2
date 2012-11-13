@@ -415,7 +415,7 @@ public class ImageCache {
                 //for TV items we need to get an Episode Fanart
                 //the resourcetype changes to a background as poster and banner fanaet are not available
                 faMediaObject = phoenix.media.GetMediaObject(imediaresource);
-                if (resourcetype.equals("background") && !originalSize){
+                if (resourcetype.equals("background") && !originalSize){//
                     //special Episode handling for backgrounds
                     if (CheckFoldersFirst(resourcetype)){
                         tImageString = GetFolderImage(faMediaObject, resourcetype);
@@ -450,9 +450,46 @@ public class ImageCache {
                     }
                 }else if ("background".equals(resourcetype) && originalSize){
                     //use SERIES level Background
-                    //LOG.debug("GetImageKey: Full Size Background requested for '" + phoenix.media.GetTitle(imediaresource) + "'");
+                    LOG.debug("GetImageKey: Full Size Background requested for '" + phoenix.media.GetTitle(imediaresource) + "'");
                     faMetadata = Collections.emptyMap();
                     faMediaType = MediaType.TV;
+                    //try to get a full size background from phoenix fanart call
+                    tImageString = phoenix.fanart.GetFanartArtifact(faMediaObject, faMediaType.toString(), faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
+                    if (tImageString==null || tImageString.equals("")){
+                        LOG.debug("GetImageKey: Full Size Background NOT FOUND. Looking for an EPISODE one for '" + phoenix.media.GetTitle(imediaresource) + "'");
+                        //now try to get an episode background
+                        if (CheckFoldersFirst(resourcetype)){
+                            tImageString = GetFolderImage(faMediaObject, resourcetype);
+                            if (!"".equals(tImageString)){
+                                FolderBasedFanart = Boolean.TRUE;
+                            }
+                        }
+                        if ("".equals(tImageString)){
+                            tImageString = phoenix.fanart.GetEpisode(faMediaObject);
+                        }
+
+                        if (tImageString==null || tImageString.equals("")){
+                            //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' using Fanart based on GetDefaultEpisode");
+                            DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
+                            if (DefaultEpisodeImage==null){
+                                //try to get a TV Thumbnail from Sage
+                                DefaultEpisodeImage = GetDefaultThumbnail(faMediaObject);
+                            }
+                            //Build a imagestring that will be unique for this episode
+                            tImageString = phoenix.media.GetTitle(imediaresource);
+                            IMediaFile mf = phoenix.media.GetMediaFile(faMediaObject);
+                            if (mf!=null){
+                                IMetadata md = mf.getMetadata();
+                                tImageString = tImageString + "-" + FanartUtil.EPISODE_TITLE + "-" + md.getEpisodeName();
+                                if (md.getEpisodeNumber()>0) {
+                                    tImageString = tImageString + "{S" + String.valueOf(md.getSeasonNumber()) + "E" + String.valueOf(md.getEpisodeNumber()) + "}";
+                                }
+                            }
+
+                        }else{
+                            //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
+                        }
+                    }
                 }else{
                     //LOG.debug("GetImageKey: TV found for other than background '" + phoenix.media.GetTitle(imediaresource) + "'");
                 }
@@ -477,12 +514,13 @@ public class ImageCache {
             }
             if ("".equals(tImageString)){
                 tImageString = phoenix.fanart.GetFanartArtifact(faMediaObject, tMediaType, faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
+                //LOG.debug("GetImageKey: faMediaObject '" + faMediaObject + "' tMediaType '" + tMediaType + "' faMediaTitle '" + faMediaTitle + "' faMetadata '" + faMetadata + "' tImageString = '" + tImageString + "'");
                 //removed old internal call as phoenix now handles this as of 11/4/2012
                 //tImageString = GetFanartArtifact(faMediaObject, tMediaType, faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
             }
         }
         if (tImageString==null || tImageString.equals("")){
-            //LOG.debug("GetImageKey: tImageString blank or NULL so returning defaultImage");
+            LOG.debug("GetImageKey: tImageString blank or NULL so returning defaultImage");
             ImageCacheKey tICK = new ImageCacheKey();
             tICK.setDefaultImage(defaultImage);
             return tICK;
@@ -491,13 +529,13 @@ public class ImageCache {
             ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType, Boolean.TRUE);
             tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
             tICK.setDefaultImage(defaultImage);
-            //LOG.debug("GetImageKey: FolderBasedFanart used - Key '" + tICK + "'");
+            LOG.debug("GetImageKey: FolderBasedFanart used - Key '" + tICK + "'");
             return tICK;
         }else{
             ImageCacheKey tICK = new ImageCacheKey(tImageString,originalSize,faArtifactType);
             tICK.setDefaultEpisodeImage(DefaultEpisodeImage);
             tICK.setDefaultImage(defaultImage);
-            //LOG.debug("GetImageKey: Key '" + tICK + "'");
+            LOG.debug("GetImageKey: Key '" + tICK + "'");
             return tICK;
         }
     }
