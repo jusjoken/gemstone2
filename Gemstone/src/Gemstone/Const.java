@@ -76,6 +76,7 @@ public class Const {
     public static final String MainMenuProp = "MainMenu";
     public static final String ThemeProp = "Theme";
     public static final String ThemeBG = "Background";
+    public static final String ThemeTrans = "Transparency";
     public static final String WidgetProp = "Widgets";
     public static final String WeatherProp = "Widgets/Weather";
     public static final String WeatherImpl = "WeatherImpl";

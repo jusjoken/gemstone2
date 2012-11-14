@@ -526,14 +526,14 @@ public class util {
     }
     
     public static String EvaluateAttribute(String Attribute){
-        //LOG.debug("EvaluateAttribute: Attribute = '" + Attribute + "'");
+        LOG.debug("EvaluateAttribute: Attribute = '" + Attribute + "'");
         Object[] passvalue = new Object[1];
         passvalue[0] = sagex.api.WidgetAPI.EvaluateExpression(new UIContext(sagex.api.Global.GetUIContextName()), Attribute);
         if (passvalue[0]==null){
             LOG.debug("EvaluateAttribute for Attribute = '" + Attribute + "' not evaluated.");
             return OptionNotFound;
         }else{
-            //LOG.debug("EvaluateAttribute for Attribute = '" + Attribute + "' = '" + passvalue[0].toString() + "'");
+            LOG.debug("EvaluateAttribute for Attribute = '" + Attribute + "' = '" + passvalue[0].toString() + "'");
             return passvalue[0].toString();
         }
         
