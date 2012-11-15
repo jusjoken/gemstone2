@@ -37,9 +37,7 @@ public class Theme {
         String tProp = Const.BaseProp + Const.PropDivider + Const.ThemeProp + Const.PropDivider + Const.ThemeTrans + Const.PropDivider + ThemedVariable;
         //determine the default value from the themed variable
         Float fDefault = 1.0f;
-        LOG.debug("GetTransparencyPercent: BEFORE EvaluateAttribute for ThemedVariableDefault '" + ThemedVariableDefault + "'");
         String transAsString = util.EvaluateAttribute(ThemedVariableDefault);
-        LOG.debug("GetTransparencyPercent: EvaluateAttribute '" + transAsString + "'");
         if (!transAsString.equals(util.OptionNotFound)){
             fDefault = Float.valueOf(transAsString);
         }
@@ -49,17 +47,16 @@ public class Theme {
         return value;
     }
     public static Float GetTransparency(String ThemedVariable,String ThemedVariableDefault){
-        return (float) (GetTransparencyPercent(ThemedVariable, ThemedVariableDefault) /100);
+        return (float) GetTransparencyPercent(ThemedVariable, ThemedVariableDefault) /100;
     }
     public static void SetTransparencyPercent(String ThemedVariable,Integer Value){
         String tProp = Const.BaseProp + Const.PropDivider + Const.ThemeProp + Const.PropDivider + Const.ThemeTrans + Const.PropDivider + ThemedVariable;
         util.SetProperty(tProp, Value + "");
-        LOG.debug("SetTransparencyPercent: for '" + ThemedVariable + " value = '" + Value + "'");
         Float fValue = (float) Value/100;
         LOG.debug("SetTransparencyPercent: for '" + ThemedVariable + " Prop '" + tProp + "' value = '" + fValue + "'");
         sagex.api.Global.AddGlobalContext(new UIContext(sagex.api.Global.GetUIContextName()), ThemedVariable, fValue);
     }
-    public static void ResetTransparency(String ThemedVariable,String ThemedVariableDefault){
+    public static void ResetTransparency(String ThemedVariable){
         //set the transparency to the default by just removing the property
         String tProp = Const.BaseProp + Const.PropDivider + Const.ThemeProp + Const.PropDivider + Const.ThemeTrans + Const.PropDivider + ThemedVariable;
         util.RemoveProperty(tProp);
