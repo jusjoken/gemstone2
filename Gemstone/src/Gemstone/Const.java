@@ -98,6 +98,7 @@ public class Const {
     public static final String CreateBGImageTag = "GemstoneMenuBG";
     public static final String BaseSource = "gemstone.base.all";
     public static final String BaseTVSource = "gemstone.base.tv";
+    public static final String BaseTVUserCatsSource = "gemstone.base.tvforusercats";
     public static final String BaseTitleSource = "gemstone.source.firstletter";
     public static final String BaseGenreSource = "BaseGenreSource";
     public static final String BaseRatingsSource = "BaseRatingsSource";

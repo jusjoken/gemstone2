@@ -574,22 +574,22 @@ public class MetadataCalls {
     }
     
     
-    public static String GetUserCategory(Object IMR){
-        IMediaResource imediaresource = Source.ConvertToIMR(IMR);
-        if (imediaresource!=null){ 
-            if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
-                return "FOLDER";
-            }else{
-                String tCat = sagex.api.MediaFileAPI.GetMediaFileMetadata(IMR, "UserCategory");
-                if (tCat==null){
-                    return "null found";
-                }else{
-                    return tCat;
-                }
-            }
-        }
-        return "";
-    }
+//    public static String GetUserCategory(Object IMR){
+//        IMediaResource imediaresource = Source.ConvertToIMR(IMR);
+//        if (imediaresource!=null){ 
+//            if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+//                return "FOLDER";
+//            }else{
+//                String tCat = sagex.api.MediaFileAPI.GetMediaFileMetadata(IMR, "UserCategory");
+//                if (tCat==null){
+//                    return "null found";
+//                }else{
+//                    return tCat;
+//                }
+//            }
+//        }
+//        return "";
+//    }
     
     public static String GetAiredYear(Object IMR){
         IMediaResource imediaresource = Source.ConvertToIMR(IMR);

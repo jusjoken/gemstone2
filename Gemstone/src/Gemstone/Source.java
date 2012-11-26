@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import sagex.api.AiringAPI;
+import sagex.api.FavoriteAPI;
 import sagex.api.MediaFileAPI;
 import sagex.phoenix.factory.ConfigurableOption;
 import sagex.phoenix.factory.Factory;
@@ -729,7 +730,7 @@ public class Source {
         String delim = "[,;/]";
         String Cats = "";
 
-        Object tSource = phoenix.umb.CreateView(Const.BaseTVSource);
+        Object tSource = phoenix.umb.CreateView(Const.BaseTVUserCatsSource);
         //go through all TV media and add any usercategories
         for (Object Item: phoenix.media.GetChildren((ViewFolder) tSource)){
             if (Item instanceof IMediaFile) {
@@ -747,17 +748,32 @@ public class Source {
                         }
                     }
                 }
-                //now check the manual recording property for Manual Recordings and Favorites
-                if (AiringAPI.IsManualRecord(Item) || AiringAPI.IsFavorite(Item)){
+                //now check the manual recording property for Manual Recordings
+                if (AiringAPI.IsManualRecord(Item)){
                     Cats = AiringAPI.GetManualRecordProperty(Item, "UserCategory");
                     for (String Cat:Cats.split(delim)){
                         //add each found cat to the list
                         if (!Cat.trim().equals("")){
                             if (!AllCatList.contains(Cat.trim())){
                                 AllCatList.add(Cat.trim());
-                                LOG.debug("GetUserCategories: added MR or Fav Cat '" + Cat + "' to '" + AllCatList + "' from Media Item '" + Item + "'");
+                                LOG.debug("GetUserCategories: added ManualRecord Cat '" + Cat + "' to '" + AllCatList + "' from Media Item '" + Item + "'");
                             }else{
-                                LOG.debug("GetUserCategories: MR or Fav Cat '" + Cat + "' already in '" + AllCatList + "'");
+                                LOG.debug("GetUserCategories: ManualRecord Cat '" + Cat + "' already in '" + AllCatList + "'");
+                            }
+                        }
+                    }
+                }
+                //now check the media item for Favorites
+                if (AiringAPI.IsFavorite(Item)){
+                    Cats = FavoriteAPI.GetFavoriteProperty(FavoriteAPI.GetFavoriteForAiring(Item),"UserCategory");
+                    for (String Cat:Cats.split(delim)){
+                        //add each found cat to the list
+                        if (!Cat.trim().equals("")){
+                            if (!AllCatList.contains(Cat.trim())){
+                                AllCatList.add(Cat.trim());
+                                LOG.debug("GetUserCategories: added Favorite Cat '" + Cat + "' to '" + AllCatList + "' from Media Item '" + Item + "'");
+                            }else{
+                                LOG.debug("GetUserCategories: Favorite Cat '" + Cat + "' already in '" + AllCatList + "'");
                             }
                         }
                     }
