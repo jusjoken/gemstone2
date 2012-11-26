@@ -157,7 +157,7 @@ public class ADMCopyMode {
     }
     
     //save the current item details to sage properties to assist the copy function
-    public static void SaveMenuItemDetails(String ButtonText, String SubMenu, String CurrentWidgetSymbol, Integer Level){
+    public static void SaveMenuItemDetails(String ButtonText, String SubMenu, String CurrentWidgetSymbol, Integer Level, String UniqueID){
         //clear previously stored Menu Item Details
         ADMutil.RemovePropertyAndChildren(SageCurrentMenuItemPropertyLocation);
         //save the current details
@@ -166,13 +166,14 @@ public class ADMCopyMode {
         ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "ButtonText", ButtonText);
         ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "SubMenu", SubMenu);
         ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "Level", Level.toString());
+        ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "UniqueID", UniqueID);
         
         //determine if there is an Action Widget for this Menu Item
         String ActionWidget = null;
         UIContext tUIContext = new UIContext(sagex.api.Global.GetUIContextName());
         Object[] Children = sagex.api.WidgetAPI.GetWidgetChildren(tUIContext, CurrentWidgetSymbol);
         for (Object Child : Children){
-            //LOG.debug("SaveCurrentMenuItemDetails: WidgetName = '" + sagex.api.WidgetAPI.GetWidgetName(MyUIContext,Child) + "' WidgetType '" + sagex.api.WidgetAPI.GetWidgetType(MyUIContext,Child) + "'");
+            //LOG.debug("SaveCurrentMenuItemDetails: WidgetName = '" + sagex.api.WidgetAPI.GetWidgetName(tUIContext,Child) + "' WidgetType '" + sagex.api.WidgetAPI.GetWidgetType(tUIContext,Child) + "'");
             List<String> validActions = new LinkedList<String>();
             validActions.add("Action");
             validActions.add("Menu");
@@ -190,6 +191,7 @@ public class ADMCopyMode {
             //test for special Action Widget Symbols
             if (ActionWidget.equals(ADMAction.GetWidgetSymbol(ADMAction.TVRecordingView))){
                 //TV RecordingsView found so save the view Type
+                //LOG.debug("SaveCurrentMenuItemDetails: TVRecordingView for ActionWidget '" + ActionWidget + "'");
                 FinalType = ADMAction.TVRecordingView;
                 String tViewFilter = ADMutil.OptionNotFound;
                 String tViewTitlePostfixText = ADMutil.OptionNotFound;
@@ -213,8 +215,13 @@ public class ADMCopyMode {
                 }else{
                     FinalAction = "xAll";
                 }
+            }else if (ActionWidget.equals(ADMAction.GetWidgetSymbol(ADMAction.GemstoneFlow))){
+                FinalAction = UniqueID;
+                FinalType = ADMAction.GemstoneFlow;
+                //LOG.debug("SaveCurrentMenuItemDetails: GemstoneFlow for ActionWidget '" + ActionWidget + "' FinalAction '" + FinalAction + "'");
             }else if (ADMAction.CustomAction.WidgetSymbols.contains(ActionWidget)){
                 //CustomAction found so determine which one 
+                //LOG.debug("SaveCurrentMenuItemDetails: CustomAction for ActionWidget '" + ActionWidget + "'");
                 Boolean tFound = Boolean.FALSE;
                 for (Object Child : Children){
                     //check only Attribute Widgets
@@ -235,13 +242,16 @@ public class ADMCopyMode {
                     FinalType = ADMAction.StandardMenuAction;
                 }
             }else if (ADMAction.GetActionList(ADMAction.StandardMenuAction).contains(ActionWidget)){
+                //LOG.debug("SaveCurrentMenuItemDetails: StandardMenuAction for ActionWidget '" + ActionWidget + "'");
                 FinalType = ADMAction.StandardMenuAction;
             }else{
+                //LOG.debug("SaveCurrentMenuItemDetails: NOTHING for ActionWidget '" + ActionWidget + "' List = [" + ADMAction.CustomAction.WidgetSymbols + "]");
             }
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "Type", FinalType);
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "Action", FinalAction);
         }else{
             //no action found so set to DoNothing
+            //LOG.debug("SaveCurrentMenuItemDetails: NO ACTION '" + ActionWidget + "'");
             ADMutil.SetProperty(SageCurrentMenuItemPropertyLocation + "Type", ADMAction.ActionTypeDefault);
         }
         LOG.debug("SaveCurrentMenuItemDetails: ButtonText '" + ButtonText + "' SubMenu '" + SubMenu + "' WidgetSymbol '" + CurrentWidgetSymbol + "' Level '" + Level + "' Type ='" + FinalType + "' Action = '" + FinalAction + "'");

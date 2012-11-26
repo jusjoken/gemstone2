@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  *
@@ -142,6 +143,7 @@ public class PropertiesExt extends Properties {
                 String value = "";
                 if (entrys.length>1){
                     value = entrys[1];
+                    value = StringEscapeUtils.unescapeJava(value);
                 }
                 this.setProperty(key, value);
                 LOG.debug("load: from String: key = '" + key + "' value = '" + value + "'");
