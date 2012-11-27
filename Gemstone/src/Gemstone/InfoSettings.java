@@ -4,6 +4,8 @@
  */
 package Gemstone;
 
+import java.util.LinkedList;
+import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
@@ -23,8 +25,10 @@ public class InfoSettings {
     private static enum Modes{Off,Auto,AlwaysOn};
     private String ModeList = "Off:&&:Auto:&&:AlwaysOn";
     private static enum Styles{Background,Poster,Split,Simple};
-    private String StyleList = "Background:&&:Poster:&&:Split:&&:Simple";
-    private String StyleListNoSplit = "Background:&&:Poster:&&:Simple";
+    private String DefaultStyleList = "Background:&&:Poster:&&:Split:&&:Simple";
+    private String DefaultStyleListNoSplit = "Background:&&:Poster:&&:Simple";
+    private String StyleList = "";
+    private String StyleDefault = "";
     static private final Logger LOG = Logger.getLogger(InfoSettings.class);
     //TODO: InfoSettings Mode - default based on FlowType
     
@@ -35,6 +39,7 @@ public class InfoSettings {
         this.ForceOn = ForceOn;
         this.ShowCommonOptions = false;
         this.Title = Title;
+        BuildDefaults();
     }
     //use this constructor for EpisodeSimpleList inside of flows
     public InfoSettings(String ID, Boolean EpisodeLevel) {
@@ -43,6 +48,7 @@ public class InfoSettings {
         this.FlowType = Flow.GetFlowType(this.ID);
         this.EpisodeLevel = EpisodeLevel;
         this.Title = "ESL Info Options (" + Flow.GetFlowName(ID) + ")";
+        BuildDefaults();
     }
     //use this constructor for Flows
     public InfoSettings(String ID) {
@@ -50,6 +56,40 @@ public class InfoSettings {
         this.FlowBased = true;
         this.FlowType = Flow.GetFlowType(this.ID);
         this.Title = "Info Options (" + Flow.GetFlowName(ID) + ")";
+        BuildDefaults();
+    }
+    private void BuildDefaults(){
+        //set the default Style to be used
+        if (FlowBased){
+            if (this.EpisodeLevel){
+                StyleDefault = Styles.Background.toString();
+            }else if (this.FlowType.equals("Center Flow")){
+                StyleDefault = Styles.Split.toString();
+            }else if (this.FlowType.equals("Fanart Flow")){
+                StyleDefault = Styles.Poster.toString();
+            }else if (this.FlowType.equals("Sage Flow")){
+                StyleDefault = Styles.Poster.toString();
+            }else{
+                StyleDefault = Styles.Background.toString();
+            }
+        }else{
+            StyleDefault = Styles.Background.toString();
+        }
+        
+        //create a list of Styles 
+        if (FlowBased){
+            if (this.EpisodeLevel){
+                StyleList = DefaultStyleListNoSplit;
+            }else if (this.FlowType.equals("Dual Flow")){
+                StyleList = "HBackground:&&:HPoster:&&:HSimple";
+            }else if (this.FlowType.equals("Center Flow")){
+                StyleList = DefaultStyleList;
+            }else{
+                StyleList = DefaultStyleListNoSplit;
+            }
+        }else{
+            StyleList = DefaultStyleListNoSplit;
+        }
     }
     
     public Boolean IsEpisodeLevel(){
@@ -127,6 +167,8 @@ public class InfoSettings {
                     return Modes.AlwaysOn.toString();
                 }else if (this.FlowType.equals("Simplified Flow")){
                     return Modes.AlwaysOn.toString();
+                }else if (this.FlowType.equals("Dual Flow")){
+                    return Modes.AlwaysOn.toString();
                 }else{
                     return Modes.Off.toString();
                 }
@@ -152,47 +194,13 @@ public class InfoSettings {
         //String tValue = Flow.GetOptionName(ID, PropBase("Style"), util.OptionNotFound);
         if (tValue.equals(util.OptionNotFound)){
             //return the default dependent on the FlowType or other ID
-            if (FlowBased){
-                if (this.EpisodeLevel){
-                    return Styles.Background.toString();
-                }else if (this.FlowType.equals("Center Flow")){
-                    return Styles.Split.toString();
-                }else if (this.FlowType.equals("Fanart Flow")){
-                    return Styles.Poster.toString();
-                }else if (this.FlowType.equals("Sage Flow")){
-                    return Styles.Poster.toString();
-                }else{
-                    return Styles.Background.toString();
-                }
-            }else{
-                return Styles.Background.toString();
-            }
+            return StyleDefault;
         }else{
             return tValue;
         }
     }
     public void StyleNext(){
-        if (FlowBased){
-            if (this.EpisodeLevel){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else if (this.FlowType.equals("Sage Flow")){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else if (this.FlowType.equals("List Flow")){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else if (this.FlowType.equals("Fanart Flow")){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else if (this.FlowType.equals("Wall Flow")){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else if (this.FlowType.equals("Simplified Flow")){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else if (this.FlowType.equals("Inline Flow")){
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-            }else{
-                util.SetListOptionNext(PropSection(), PropBase("Style"), StyleList);
-            }
-        }else{
-            util.SetListOptionNext(PropSection(), PropBase("Style"), StyleListNoSplit);
-        }
+        util.SetListOptionNext(PropSection(), PropBase("Style"), StyleList);
     }
     
     public Integer Delay(){

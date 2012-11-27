@@ -413,15 +413,6 @@ public class ADMutil {
         //return ButtonName + " (" + LastofString(VarValue,50) + ")";
     }
     
-    private static String LastofString(String text, int maxSize){
-        String tStr = text.substring(Math.max(0, text.length() - maxSize));
-        if (tStr.length()==maxSize){
-            return ".." + tStr;
-        }else{
-            return tStr;
-        }
-    }
-
     public static Collection<String> GetSageBGVariablesListNoNone(){
         List<String> tVariables = new LinkedList<String>(); 
         tVariables.addAll(SageBGVariablesKeys);

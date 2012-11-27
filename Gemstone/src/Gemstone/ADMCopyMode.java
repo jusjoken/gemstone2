@@ -216,8 +216,10 @@ public class ADMCopyMode {
                     FinalAction = "xAll";
                 }
             }else if (ActionWidget.equals(ADMAction.GetWidgetSymbol(ADMAction.GemstoneFlow))){
-                FinalAction = UniqueID;
-                FinalType = ADMAction.GemstoneFlow;
+                if (UniqueID!=null){
+                    FinalAction = UniqueID;
+                    FinalType = ADMAction.GemstoneFlow;
+                }
                 //LOG.debug("SaveCurrentMenuItemDetails: GemstoneFlow for ActionWidget '" + ActionWidget + "' FinalAction '" + FinalAction + "'");
             }else if (ADMAction.CustomAction.WidgetSymbols.contains(ActionWidget)){
                 //CustomAction found so determine which one 

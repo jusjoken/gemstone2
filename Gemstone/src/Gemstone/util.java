@@ -1405,6 +1405,15 @@ public class util {
             LOG.debug("InitLocation: - error creating '" + LocationPath + "'" + ex.getMessage());
         }
     }
+
+    public static String LastofString(String text, int maxSize){
+        String tStr = text.substring(Math.max(0, text.length() - maxSize));
+        if (tStr.length()==maxSize){
+            return "..." + tStr;
+        }else{
+            return tStr;
+        }
+    }
     
 }
 
