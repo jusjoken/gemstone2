@@ -4,8 +4,8 @@
  */
 package Gemstone;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
@@ -24,11 +24,13 @@ public class InfoSettings {
     
     private static enum Modes{Off,Auto,AlwaysOn};
     private String ModeList = "Off:&&:Auto:&&:AlwaysOn";
-    private static enum Styles{Background,Poster,Split,Simple};
+    private static enum Styles{Background,Poster,Split,Simple,TPoster,TBackground,TSimple};
     private String DefaultStyleList = "Background:&&:Poster:&&:Split:&&:Simple";
     private String DefaultStyleListNoSplit = "Background:&&:Poster:&&:Simple";
     private String StyleList = "";
+    private boolean isTop = false;
     private String StyleDefault = "";
+    private static Map<String,String> StylesMap = new LinkedHashMap<String,String>();
     static private final Logger LOG = Logger.getLogger(InfoSettings.class);
     //TODO: InfoSettings Mode - default based on FlowType
     
@@ -59,6 +61,16 @@ public class InfoSettings {
         BuildDefaults();
     }
     private void BuildDefaults(){
+        //build the styles map if not already done
+        if (StylesMap.isEmpty()){
+            StylesMap.put("Poster", "Side Poster");
+            StylesMap.put("TPoster", "Top Poster");
+            StylesMap.put("Background", "Side Background");
+            StylesMap.put("TBackground", "Top Background");
+            StylesMap.put("Simple", "Side Simple");
+            StylesMap.put("TSimple", "Top Simple");
+            StylesMap.put("Split", "Split");
+        }
         //set the default Style to be used
         if (FlowBased){
             if (this.EpisodeLevel){
@@ -69,6 +81,8 @@ public class InfoSettings {
                 StyleDefault = Styles.Poster.toString();
             }else if (this.FlowType.equals("Sage Flow")){
                 StyleDefault = Styles.Poster.toString();
+            }else if (this.FlowType.equals("Dual Flow")){
+                StyleDefault = Styles.TPoster.toString();
             }else{
                 StyleDefault = Styles.Background.toString();
             }
@@ -81,7 +95,9 @@ public class InfoSettings {
             if (this.EpisodeLevel){
                 StyleList = DefaultStyleListNoSplit;
             }else if (this.FlowType.equals("Dual Flow")){
-                StyleList = "HBackground:&&:HPoster:&&:HSimple";
+                StyleList = "TBackground:&&:TPoster:&&:TSimple";
+            }else if (this.FlowType.equals("Stage Flow")){
+                StyleList = "Background:&&:Poster:&&:Simple:&&:TBackground:&&:TPoster:&&:TSimple";
             }else if (this.FlowType.equals("Center Flow")){
                 StyleList = DefaultStyleList;
             }else{
@@ -90,6 +106,17 @@ public class InfoSettings {
         }else{
             StyleList = DefaultStyleListNoSplit;
         }
+    }
+
+    public boolean IsTop() {
+        String tStyle = Style();
+        if (tStyle.startsWith("T")){
+            return true;
+        }
+        return false;
+    }
+    public boolean IsSide() {
+        return !IsTop();
     }
     
     public Boolean IsEpisodeLevel(){
@@ -202,7 +229,10 @@ public class InfoSettings {
     public void StyleNext(){
         util.SetListOptionNext(PropSection(), PropBase("Style"), StyleList);
     }
-    
+    public String StyleName(){
+        return StylesMap.get(Style());
+    }
+
     public Integer Delay(){
         //LOG.debug("Delay: Prop '" + PropBaseFull("Delay") + "' Value '" + util.GetPropertyAsInteger(PropBaseFull("Delay"), 5000) + "'");
         return util.GetPropertyAsInteger(PropBaseFull("Delay"), 5000);
