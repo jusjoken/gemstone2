@@ -5,12 +5,14 @@
 package Gemstone;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.phoenix.metadata.MediaArtifactType;
@@ -225,16 +227,17 @@ public class FanartManager {
             //LOG.debug("LoadFanartList: faMediaType '" + faMediaType + "'");
             //LOG.debug("LoadFanartList: FanartType '" + ImageCacheKey.ConvertStringtoMediaArtifactType(FanartType) + "'");
             //LOG.debug("LoadFanartList: faMetadata '" + faMetadata + "'");
-            File defFile = phoenix.fanart.GetDefaultArtifact(faMediaObject, faMediaType, NotNeededString, ImageCacheKey.ConvertStringtoMediaArtifactType(FanartType), NotNeededString, faMetadata);
-            //LOG.debug("LoadFanartList: deFile '" + defFile + "'");
+            File defFile = getDefaultArtifactFullPath(phoenix.fanart.GetDefaultArtifact(faMediaObject, faMediaType, NotNeededString, ImageCacheKey.ConvertStringtoMediaArtifactType(FanartType), NotNeededString, faMetadata));
+            //LOG.debug("LoadFanartList: defFile '" + defFile + "'");
             if (defFile==null){
                 DefaultFanart = null;
             }else{
                 DefaultFanart = defFile.toString();
             }
-            //LOG.debug("LoadFanartList: DegaultFanart '" + DefaultFanart + "' for '" + PrimaryMediaResource.getTitle() + "'");
+            LOG.debug("LoadFanartList: DegaultFanart '" + DefaultFanart + "' for '" + PrimaryMediaResource.getTitle() + "'");
             //Add the default item (if any) to the TOP of the list - make sure it is also removed from the list
             if (DefaultFanart!=null){
+                //LOG.debug("LoadFanartList: DegaultFanart was not null - FanartList '" + FanartList + "'");
                 if (FanartList.contains(DefaultFanart)){
                     FanartList.remove(DefaultFanart);
                     FanartList.add(0, DefaultFanart);
@@ -242,9 +245,33 @@ public class FanartManager {
             }else{
                 //there is NO default so save the first item
                 FirstFanart = FanartList.get(0).toString();
+                LOG.debug("LoadFanartList: DegaultFanart was null - setting FirstFanart '" + FirstFanart + "'");
             }
         }
     }
+    
+    private File getDefaultArtifactFullPath(File defFile){
+        if (defFile !=null) {
+            String defFilePath = defFile.toString();
+            try {
+                defFilePath = defFile.getCanonicalPath();
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(FanartManager.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            defFile = new File(defFilePath.toString());
+            if (defFile.exists() && defFile.isFile()) {
+                LOG.debug("getDefaultArtifactFullPath: valid file being returned '" + defFile + "'");
+                return defFile;
+            }else{
+                LOG.debug("getDefaultArtifactFullPath: invalid file or not found - returning null '" + defFile + "'");
+                return null;
+            }
+        }else{
+            LOG.debug("getDefaultArtifactFullPath: null passed in so returning null ");
+            return null;
+        }
+    }
+    
 
     public void DeleteFanartItem(String FanartItem){
         //remove from the file system
