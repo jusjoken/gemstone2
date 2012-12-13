@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
+import sagex.phoenix.vfs.IMediaResource;
 import sagex.phoenix.vfs.views.ViewFolder;
 
 /**
@@ -75,6 +76,17 @@ public class InstantSearch {
         return InputMediaFiles[Element];
     }
 
+    public static Object JumpToAlpha(Object MediaFiles, String SearchKey){
+        if (MediaFiles==null){
+            LOG.debug("JumpToAlpha: null MediaFiles so returning null. SearchKey '" + SearchKey + "'");
+            return null;
+        }
+        Object[] InputMediaFiles = FanartCaching.toArray(MediaFiles);
+        IMediaResource imr = Source.ConvertToIMR(InputMediaFiles[0]);
+        ViewFolder view = (ViewFolder) phoenix.umb.GetParent(imr);
+        LOG.debug("JumpToAlpha: SearchKey '" + SearchKey + "' using view '" + view + "' based on item '" + imr + "'");
+        return JumpToAlpha(MediaFiles, SearchKey, view);
+    }
     public static Object JumpToAlpha(Object MediaFiles, String SearchKey, ViewFolder view){
         if (MediaFiles==null){
             LOG.debug("JumpToAlpha: null MediaFiles so returning null. SearchKey '" + SearchKey + "'");

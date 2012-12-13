@@ -578,6 +578,16 @@ public class Source {
         return Boolean.FALSE;
     }
     
+    public static Boolean IsTitleSortByParent(IMediaResource imr){
+        if (imr==null){
+            LOG.debug("IsTitleSort: null IMediaResource passed in so returning FALSE");
+            return Boolean.FALSE;
+        }else{
+            ViewFolder view = (ViewFolder) phoenix.umb.GetParent(imr);
+            LOG.debug("IsTitleSortByParent: calling IsTitleSource for view '" + view + "' based on item '" + imr + "'");
+            return IsTitleSort(view);
+        }
+    }
     public static Boolean IsTitleSort(ViewFolder view){
         if (view==null){
             LOG.debug("IsTitleSort: null view passed in so returning FALSE");
