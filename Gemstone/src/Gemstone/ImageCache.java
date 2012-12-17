@@ -19,7 +19,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,20 +26,13 @@ import java.util.logging.Level;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
-import sagex.api.MediaFileAPI;
-import sagex.api.UserRecordAPI;
-import sagex.phoenix.db.UserRecordUtil;
 import sagex.phoenix.fanart.FanartUtil;
 import sagex.phoenix.image.ImageUtil;
 import sagex.phoenix.metadata.IMetadata;
-import sagex.phoenix.metadata.ISageCustomMetadataRW;
 import sagex.phoenix.metadata.MediaArtifactType;
 import sagex.phoenix.metadata.MediaType;
-import sagex.phoenix.util.Utils;
-import sagex.phoenix.vfs.IAlbumInfo;
 import sagex.phoenix.vfs.IMediaFile;
 import sagex.phoenix.vfs.IMediaResource;
-import sagex.phoenix.vfs.MediaResourceType;
 import sagex.phoenix.vfs.views.ViewFolder;
 
 /**
@@ -111,7 +103,6 @@ public class ImageCache {
         //Object Test = ICache.get(Key);
         //LOG.debug("RemoveItemFromCache: Test get retrieved '" + Test + "'");
     }
-
     
     //This will return a background and refresh that specific area
     //Check for null in the STV to not change the background if that is desired
@@ -230,6 +221,13 @@ public class ImageCache {
         //make sure there is a valid key available
         if (Key.IsValidKey()){
             LOG.debug("GetImage: FromKey: '" + Key + "'");
+            
+            //see if there is a DefaultEpisodeImage as we do not cache these so just return it
+            if (Key.HasDefaultEpisodeImage()){
+                LOG.debug("GetImage: FromKey: using DefaultEpisodeImage for Key '" + Key.getKey() + "'");
+                return Key.getDefaultEpisodeImage();
+            }
+            
             //see if we are caching or just returning an image
             if (UseCache(faArtifactType)){
                 //see if the image is in the cache and if so return it
@@ -414,6 +412,7 @@ public class ImageCache {
             if (phoenix.media.IsMediaType( imediaresource , "TV" )){
                 //for TV items we need to get an Episode Fanart
                 //the resourcetype changes to a background as poster and banner fanaet are not available
+                LOG.debug("GetImageKey: TV item. IsAiring '" + phoenix.media.IsMediaType( imediaresource , "EPG_AIRING" ) + "' IsRecording '" + phoenix.media.IsMediaType( imediaresource , "RECORDING" ) + "' for tv item '" + imediaresource + "'");
                 faMediaObject = phoenix.media.GetMediaObject(imediaresource);
                 if (resourcetype.equals("background") && !originalSize){//
                     //special Episode handling for backgrounds
@@ -424,29 +423,37 @@ public class ImageCache {
                         }
                     }
                     if ("".equals(tImageString)){
+                        //try to get Episode level fanart from phoenix first
                         tImageString = phoenix.fanart.GetEpisode(faMediaObject);
+                        LOG.debug("GetImageKey: phoenix.fanart.GetEpisode returned '" + tImageString + "' for '" + phoenix.media.GetTitle(imediaresource) + "' imediaresource [" + imediaresource + "]");
                     }
                     
                     if (tImageString==null || tImageString.equals("")){
-                        //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' using Fanart based on GetDefaultEpisode");
-                        DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
-                        if (DefaultEpisodeImage==null){
-                            //try to get a TV Thumbnail from Sage
-                            DefaultEpisodeImage = GetDefaultThumbnail(faMediaObject);
-                        }
-                        //Build a imagestring that will be unique for this episode
-                        tImageString = phoenix.media.GetTitle(imediaresource);
-                        IMediaFile mf = phoenix.media.GetMediaFile(faMediaObject);
-                        if (mf!=null){
-                            IMetadata md = mf.getMetadata();
-                            tImageString = tImageString + "-" + FanartUtil.EPISODE_TITLE + "-" + md.getEpisodeName();
-                            if (md.getEpisodeNumber()>0) {
-                                tImageString = tImageString + "{S" + String.valueOf(md.getSeasonNumber()) + "E" + String.valueOf(md.getEpisodeNumber()) + "}";
+                        //DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
+                        //LOG.debug("GetImageKey: phoenix.fanart.GetDefaultEpisode returned '" + DefaultEpisodeImage + "' for '" + phoenix.media.GetTitle(imediaresource) + "' imediaresource [" + imediaresource + "]");
+                        
+                        //try to get an image from Sage functions
+                        //NOTE: these Sage based images should not get cached as they are already cached in some means within Sage or are too small to bother with
+                        DefaultEpisodeImage = GetDefaultThumbnail(faMediaObject);
+                        LOG.debug("GetImageKey: GetDefaultThumbnail returned '" + DefaultEpisodeImage + "' for '" + phoenix.media.GetTitle(imediaresource) + "' imediaresource [" + imediaresource + "]");
+                        
+                        //if we have a valid image then build an image string to be used as the key
+                        if (DefaultEpisodeImage!=null){
+                            //Build a imagestring that will be unique for this episode
+                            tImageString = phoenix.media.GetTitle(imediaresource);
+                            IMediaFile mf = phoenix.media.GetMediaFile(faMediaObject);
+                            if (mf!=null){
+                                IMetadata md = mf.getMetadata();
+                                tImageString = tImageString + "-" + FanartUtil.EPISODE_TITLE + "-" + md.getEpisodeName();
+                                if (md.getEpisodeNumber()>0) {
+                                    tImageString = tImageString + "{S" + String.valueOf(md.getSeasonNumber()) + "E" + String.valueOf(md.getEpisodeNumber()) + "}";
+                                }
                             }
+                            LOG.debug("GetImageKey: Derived ImageString for DefaultEpisodeImage '" + tImageString + "' for '" + phoenix.media.GetTitle(imediaresource) + "' imediaresource [" + imediaresource + "]");
                         }
 
                     }else{
-                        //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
+                        LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
                     }
                 }else if ("background".equals(resourcetype) && originalSize){
                     //use SERIES level Background
@@ -469,7 +476,7 @@ public class ImageCache {
                         }
 
                         if (tImageString==null || tImageString.equals("")){
-                            //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' using Fanart based on GetDefaultEpisode");
+                            LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' using Fanart based on GetDefaultEpisode");
                             DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
                             if (DefaultEpisodeImage==null){
                                 //try to get a TV Thumbnail from Sage
@@ -487,16 +494,16 @@ public class ImageCache {
                             }
 
                         }else{
-                            //LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
+                            LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
                         }
                     }
                 }else{
-                    //LOG.debug("GetImageKey: TV found for other than background '" + phoenix.media.GetTitle(imediaresource) + "'");
+                    LOG.debug("GetImageKey: TV found for other than background '" + phoenix.media.GetTitle(imediaresource) + "'");
                 }
             }else{
                 faMediaObject = phoenix.media.GetMediaObject(imediaresource);
                 //faMediaType = MediaType.MOVIE;
-                //LOG.debug("GetImageKey: Title '" + phoenix.media.GetTitle(imediaresource) + "' using passed in object for Fanart");
+                LOG.debug("GetImageKey: Title '" + phoenix.media.GetTitle(imediaresource) + "' using passed in object for Fanart");
             }
                 
         }
@@ -514,7 +521,7 @@ public class ImageCache {
             }
             if ("".equals(tImageString)){
                 tImageString = phoenix.fanart.GetFanartArtifact(faMediaObject, tMediaType, faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
-                //LOG.debug("GetImageKey: faMediaObject '" + faMediaObject + "' tMediaType '" + tMediaType + "' faMediaTitle '" + faMediaTitle + "' faMetadata '" + faMetadata + "' tImageString = '" + tImageString + "'");
+                LOG.debug("GetImageKey: faMediaObject '" + faMediaObject + "' tMediaType '" + tMediaType + "' faMediaTitle '" + faMediaTitle + "' faMetadata '" + faMetadata + "' tImageString = '" + tImageString + "'");
                 //removed old internal call as phoenix now handles this as of 11/4/2012
                 //tImageString = GetFanartArtifact(faMediaObject, tMediaType, faMediaTitle, faArtifactType.toString(), faArtifiactTitle, faMetadata);
             }
@@ -1114,6 +1121,7 @@ public class ImageCache {
         }
     }
     
+    //TODO:: no longer used from STV... can likely remove
     public static Object GetTVThumbnail(Object MediaFile, Boolean UseBackNotThumb){
         UIContext uIContext = new UIContext(sagex.api.Global.GetUIContextName());
         Object FinalThumb = null;
@@ -1192,9 +1200,11 @@ public class ImageCache {
             for (String ImageType:ImageTypeList){
                 if (sagex.api.ShowAPI.GetShowImageCount( uIContext, MediaFile, ImageType )>0){
                     FinalThumb = sagex.api.ShowAPI.GetShowImage( uIContext, MediaFile, ImageType, 0, 2 );
-                    LOG.debug("GetDefaultThumbnail: Using ShowAPI.GetShowImage");
-                    ImageFound = Boolean.TRUE;
-                    break;
+                    if (FinalThumb!=null){
+                        LOG.debug("GetDefaultThumbnail: Using ShowAPI.GetShowImage. Type '" + ImageType + "' returning [" + FinalThumb + "]");
+                        ImageFound = Boolean.TRUE;
+                        break;
+                    }
                 }
             }
             if (!ImageFound){
@@ -1202,21 +1212,42 @@ public class ImageCache {
                 if (sagex.api.MediaFileAPI.HasAnyThumbnail(uIContext,MediaFile)){
                     if (MetadataCalls.IsMediaTypeTV(MediaFile)  &&  sagex.api.ShowAPI.GetShowCategory(uIContext,MediaFile).indexOf("Movie") == -1){
                         FinalThumb = sagex.api.MediaFileAPI.GetThumbnail(uIContext,MediaFile);
-                        LOG.debug("GetDefaultThumbnail: Using MediaFileAPI.GetThumbnail");
+                        if (FinalThumb!=null){
+                            ImageFound = Boolean.TRUE;
+                            LOG.debug("GetDefaultThumbnail: Using MediaFileAPI.GetThumbnail for TV returning [" + FinalThumb + "]");
+                        }
+                    }else{
+                        //this is likely a movie so we need to return something
+                        FinalThumb = sagex.api.MediaFileAPI.GetThumbnail(uIContext,MediaFile);
+                        if (FinalThumb!=null){
+                            ImageFound = Boolean.TRUE;
+                            LOG.debug("GetDefaultThumbnail: Using MediaFileAPI.GetThumbnail for TV Movie returning [" + FinalThumb + "]");
+                        }
                     }
-                }else{
-                    //try Series
-                    Object SeriesInfo = sagex.api.ShowAPI.GetShowSeriesInfo(uIContext,MediaFile);
+                }
+            }
+            if (!ImageFound){
+                //try Series
+                Object SeriesInfo = sagex.api.ShowAPI.GetShowSeriesInfo(uIContext,MediaFile);
+                if (SeriesInfo!=null){
                     if (sagex.api.SeriesInfoAPI.HasSeriesImage(uIContext,SeriesInfo)){
                         //xSeriesInfo
                         FinalThumb = sagex.api.SeriesInfoAPI.GetSeriesImage(uIContext,MediaFile);
-                        LOG.debug("GetDefaultThumbnail: Using SeriesInfoAPI.GetSeriesImage");
-                    }else{
-                        //try Channel Logo
-                        FinalThumb = sagex.api.ChannelAPI.GetChannelLogo( uIContext, MediaFile, "Large", 1, true );
-                        LOG.debug("GetDefaultThumbnail: Using ChannelAPI.GetChannelLogo");
+                        if (FinalThumb!=null){
+                            ImageFound = Boolean.TRUE;
+                            LOG.debug("GetDefaultThumbnail: Using SeriesInfoAPI.GetSeriesImage returning [" + FinalThumb + "]");
+                        }
                     }
-                            
+                }
+            }
+            if (!ImageFound){
+                //try Channel Logo
+                FinalThumb = sagex.api.ChannelAPI.GetChannelLogo( uIContext, MediaFile, "Large", 1, true );
+                if (FinalThumb==null){
+                    LOG.debug("GetDefaultThumbnail: No valid images found - returning null");
+                }else{
+                    ImageFound = Boolean.TRUE;
+                    LOG.debug("GetDefaultThumbnail: Using ChannelAPI.GetChannelLogo returning [" + FinalThumb + "]");
                 }
             }
         }
