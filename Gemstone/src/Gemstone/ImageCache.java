@@ -476,22 +476,23 @@ public class ImageCache {
                         }
 
                         if (tImageString==null || tImageString.equals("")){
-                            LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' using Fanart based on GetDefaultEpisode");
-                            DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
-                            if (DefaultEpisodeImage==null){
-                                //try to get a TV Thumbnail from Sage
-                                DefaultEpisodeImage = GetDefaultThumbnail(faMediaObject);
-                            }
-                            //Build a imagestring that will be unique for this episode
-                            tImageString = phoenix.media.GetTitle(imediaresource);
-                            IMediaFile mf = phoenix.media.GetMediaFile(faMediaObject);
-                            if (mf!=null){
-                                IMetadata md = mf.getMetadata();
-                                tImageString = tImageString + "-" + FanartUtil.EPISODE_TITLE + "-" + md.getEpisodeName();
-                                if (md.getEpisodeNumber()>0) {
-                                    tImageString = tImageString + "{S" + String.valueOf(md.getSeasonNumber()) + "E" + String.valueOf(md.getEpisodeNumber()) + "}";
-                                }
-                            }
+                            LOG.debug("GetImageKey: Full Episode fanart not found for '" + phoenix.media.GetTitle(imediaresource) + "'");
+                            //TODO:: the following removed as DefaultEpisode fanart is very low resolution and should not be used for full backgrounds
+//                            DefaultEpisodeImage = phoenix.fanart.GetDefaultEpisode(faMediaObject);
+//                            if (DefaultEpisodeImage==null){
+//                                //try to get a TV Thumbnail from Sage
+//                                DefaultEpisodeImage = GetDefaultThumbnail(faMediaObject);
+//                            }
+//                            //Build a imagestring that will be unique for this episode
+//                            tImageString = phoenix.media.GetTitle(imediaresource);
+//                            IMediaFile mf = phoenix.media.GetMediaFile(faMediaObject);
+//                            if (mf!=null){
+//                                IMetadata md = mf.getMetadata();
+//                                tImageString = tImageString + "-" + FanartUtil.EPISODE_TITLE + "-" + md.getEpisodeName();
+//                                if (md.getEpisodeNumber()>0) {
+//                                    tImageString = tImageString + "{S" + String.valueOf(md.getSeasonNumber()) + "E" + String.valueOf(md.getEpisodeNumber()) + "}";
+//                                }
+//                            }
 
                         }else{
                             LOG.debug("GetImageKey: Episode '" + phoenix.media.GetTitle(imediaresource) + "' Fanart found '" + tImageString + "'");
