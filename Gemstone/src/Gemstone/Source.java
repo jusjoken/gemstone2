@@ -291,7 +291,7 @@ public class Source {
         //LOG.debug("FilterAppend: called '" + filters + "' add '" + filter + "'");
         String tFilter = filter;
         //format the filter as a RegEx compatible string
-        tFilter = filter.replaceAll("\\\\","\\\\\\\\");
+        tFilter = filter.replaceAll("\\\\","\\\\\\\\").replaceAll("\\(","\\\\(").replaceAll("\\)","\\\\)");
         //LOG.debug("FilterAppend: after replaceall '" + tFilter + "'");
         if (filters.equals("")){
             filters = tFilter;
