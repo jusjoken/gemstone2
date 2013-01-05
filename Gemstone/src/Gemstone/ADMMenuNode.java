@@ -39,6 +39,8 @@ public class ADMMenuNode {
     private String ActionType = "";
     private String BGImageFile = "";
     private String BGImageFilePath = "";
+    private String CustomIcon = "";
+    private Boolean UseForSwitcher = false;
     private Boolean IsDefault = false;
     private ADMutil.TriState IsActive = ADMutil.TriState.YES;
     private List<String> BlockedSageUsersList = new LinkedList<String>();
@@ -492,6 +494,67 @@ public class ADMMenuNode {
             return "";
         }
     }
+    public static String GetMenuItemCustomIcon(String Name){
+        if (Name==null){
+            return "";
+        }
+        try {
+            return MenuNodeList().get(Name).CustomIcon;
+        }catch (Exception e){
+            return "";
+        }
+    }
+
+    public static void SetMenuItemCustomIcon(String Name, String IconPath){
+        if (Name==null){
+        }else {
+            LOG.debug("GetMenuItemCustomIcon - Name: "+Name);
+            Save(Name,"CustomIcon",IconPath);
+        }
+    }
+
+    public static String GetMenuItemDefaultIcon(String Name){
+        if (Name==null){
+            return "";
+        }
+        try {
+            if(GetMenuItemActionType(Name).equals(ADMAction.GemstoneFlow)){
+                String FlowType = Flow.GetFlowType(GetMenuItemAction(Name));
+                String IconName = "Themes\\Gemstone\\Switcher\\"+FlowType+".png";
+                LOG.debug("GetMenuItemDefaultIcon - Name: "+Name+" FlowType: "+FlowType+" FileName: "+IconName);
+                return IconName;
+            }else{
+                return "";
+            }
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    public static String GetMenuItemIcon(String Name){
+        if (Name==null){
+            return "";
+        }
+        try {
+            String IconFile;
+            IconFile=GetMenuItemCustomIcon(Name);
+            if (IconFile.equals("")){
+                IconFile=GetMenuItemDefaultIcon(Name);
+            }
+            LOG.debug("GetMenuItemIcon - Name: "+Name+" Path:"+IconFile);
+            return IconFile;
+        } catch (Exception e) {
+            return "";
+        }
+    }
+   
+    public static Boolean GetMenuItemHasCustomIcon(String Name){
+        if (Name==null){
+            return false;
+        }
+        String CustomIconPath = MenuNodeList().get(Name).CustomIcon;
+        return !(CustomIconPath.equals("")||CustomIconPath.equals(null));
+    }
     
     public static List<String> GetSageUsersList(){
         //return a list of SageUsers in sorted order with the Administrator removed
@@ -771,6 +834,22 @@ public class ADMMenuNode {
             ValidateSubMenuDefault(OldParent);
             ValidateSubMenuDefault(NewParent);
             LOG.debug("SetMenuItemParent: Parent changed for '" + Name + "' to = '" + NewParent + "'");
+        }
+    }
+    
+    public static void SetMenuItemUseForSwitcher(String Name, Boolean UseForSwitcher) {
+        if (Name==null) {
+        }else{
+            MenuNodeList().get(Name).UseForSwitcher = UseForSwitcher;
+            LOG.debug("SetMenuItemUseForSwitcher: Switcher Use change for: '" + Name + "' to = '" + UseForSwitcher + "'");
+        }
+    }
+    
+    public static Boolean GetMenuItemUseForSwitcher(String Name){
+        if (Name==null) {
+            return null;
+        }else{
+            return MenuNodeList().get(Name).UseForSwitcher;
         }
     }
     
@@ -1390,7 +1469,18 @@ public class ADMMenuNode {
         }
         return MenuList;
     }
-
+    public static List<String> GetMenuItemsForSwitcher(){
+        List<String> MenuItemNodeList = new LinkedList<String>();
+        for (String Node : MenuNodeList().keySet()){
+            if (GetMenuItemUseForSwitcher(Node)){
+                MenuItemNodeList.add(MenuNodeList().get(Node).Name);
+                LOG.debug("GetMenuItemsForSwitcher - Adding: '"+Node+"'");
+            }
+        }
+        LOG.debug("GetMenuItemsForSwitcher - Added "+MenuItemNodeList.size()+" MenuItems.");
+        return MenuItemNodeList;
+    }
+    
     public static Boolean PropertyLoad(PropertiesExt MenuItemProps){
         String PropLocation = "";
         Boolean LoadSuccess = Boolean.FALSE;
@@ -1416,6 +1506,8 @@ public class ADMMenuNode {
                         NewMenuItem.ButtonText = MenuItemProps.getProperty(PropLocation + "/ButtonText", ADMutil.ButtonTextDefault);
                         NewMenuItem.Name = MenuItemProps.getProperty(PropLocation + "/Name", tMenuItemName);
                         NewMenuItem.Parent = MenuItemProps.getProperty(PropLocation + "/Parent", "xTopMenu");
+                        NewMenuItem.UseForSwitcher = MenuItemProps.GetPropertyAsBoolean(PropLocation + "/UseForSwitcher", Boolean.FALSE);
+                        NewMenuItem.CustomIcon = MenuItemProps.getProperty(PropLocation + "/CustomIcon", null);
                         NewMenuItem.setSortKey(MenuItemProps.getProperty(PropLocation + "/SortKey", "0")); 
                         NewMenuItem.SubMenu = MenuItemProps.getProperty(PropLocation + "/SubMenu", null);
                         NewMenuItem.IsDefault = MenuItemProps.GetPropertyAsBoolean(PropLocation + "/IsDefault", Boolean.FALSE);
@@ -1966,6 +2058,8 @@ public class ADMMenuNode {
                     PropertyAdd(MenuItemProps,PropLocation + "/ActionType", GetMenuItemActionType(tName));
                     PropertyAdd(MenuItemProps,PropLocation + "/BGImageFile", GetMenuItemBGImageFile(tName));
                     PropertyAdd(MenuItemProps,PropLocation + "/ButtonText", GetMenuItemButtonText(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/CustomIcon", GetMenuItemCustomIcon(tName));
+                    PropertyAdd(MenuItemProps,PropLocation + "/UseForSwitcher", GetMenuItemUseForSwitcher(tName).toString());
                     PropertyAdd(MenuItemProps,PropLocation + "/Name", tName);
                     PropertyAdd(MenuItemProps,PropLocation + "/Parent", GetMenuItemParent(tName));
                     PropertyAdd(MenuItemProps,PropLocation + "/SortKey", GetMenuItemSortKey(tName).toString());
@@ -2187,6 +2281,8 @@ public class ADMMenuNode {
                 MenuNodeList().get(Name).ActionType = Setting;
             }else if (PropType.equals("BGImageFile")){
                 MenuNodeList().get(Name).BGImageFile = Setting;
+            }else if (PropType.equals("CustomIcon")){
+                MenuNodeList().get(Name).CustomIcon = Setting;
             }else if (PropType.equals("ButtonText")){
                 MenuNodeList().get(Name).ButtonText = Setting;
             }else if (PropType.equals("IsActive")){
@@ -2199,6 +2295,8 @@ public class ADMMenuNode {
                 MenuNodeList().get(Name).IsTemp = Boolean.parseBoolean(Setting);
             }else if (PropType.equals("IsDefault")){
                 MenuNodeList().get(Name).IsDefault = Boolean.parseBoolean(Setting);
+            }else if (PropType.equals("UseForSwitcher")){
+                MenuNodeList().get(Name).UseForSwitcher = Boolean.parseBoolean(Setting);
             }else if (PropType.equals("SortKey")){
                 //included sortKey only so it does not raise an error when called
             }else if (PropType.equals("SubMenu")){
