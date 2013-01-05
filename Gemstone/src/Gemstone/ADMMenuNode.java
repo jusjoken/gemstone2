@@ -553,7 +553,7 @@ public class ADMMenuNode {
             return false;
         }
         String CustomIconPath = MenuNodeList().get(Name).CustomIcon;
-        return !(CustomIconPath.equals("")||CustomIconPath.equals(null));
+        return !(CustomIconPath.equals("")||CustomIconPath == null);
     }
     
     public static List<String> GetSageUsersList(){
