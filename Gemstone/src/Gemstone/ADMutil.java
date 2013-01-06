@@ -57,6 +57,7 @@ public class ADMutil {
     public static final String OptionNotFound = "Option not Found";
     public static final String ActionTypeDefault = "DoNothing";
     public static final String ButtonTextDefault = "<Not defined>";
+    public static final String DefaultIcon = "Themes\\Gemstone\\Switcher\\Default.png";
     public static final String SortStyleDefault = "xNaturalOrder";
     public static Boolean ADMInitComplete = false;
     public static Properties SageBGVariablesProps = new Properties();

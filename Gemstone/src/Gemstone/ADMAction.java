@@ -47,6 +47,7 @@ public class ADMAction {
     public static final String SageTVRecordingViewsTitlePropertyLocation = "sagetv_recordings/view_title/";
     private String Type = "";
     private String ButtonText = "";
+    private String DefaultIcon = "";
     private String Attribute = Blank;
     private String WidgetSymbol = Blank;
     private String FieldTitle = "";
@@ -84,19 +85,28 @@ public class ADMAction {
     
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText){
-        this(Type,AdvancedOnly,ButtonText,"Action",Blank);
+        this(Type,AdvancedOnly,ButtonText,"Action",Blank,Blank);
     }
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle){
-        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank);
+        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank,Blank);
     }
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle, String WidgetSymbol){
+        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank,Blank);
+    }
+    
+    public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle, String WidgetSymbol, String DefaultIcon){
         this.Type = Type;
         this.AdvancedOnly = AdvancedOnly;
         this.ButtonText = ButtonText;
         this.FieldTitle = FieldTitle;
         this.WidgetSymbol = WidgetSymbol;
+        if (!(DefaultIcon.equals(Blank)||DefaultIcon.equals(""))){
+            this.DefaultIcon = DefaultIcon;
+        }else{
+            this.DefaultIcon = "";
+        }
     }
     
     public static void Init(){
@@ -195,6 +205,20 @@ public class ADMAction {
         
     public static String GetButtonText(String Type){
         return ActionList.get(Type).ButtonText;
+    }
+    
+    public static String GetDefaultIcon(String MenuItemName){
+        String IconName = "";
+        String tActionType = ADMMenuNode.GetMenuItemActionType(MenuItemName);
+        String tActionAttribute = ADMMenuNode.GetMenuItemAction(MenuItemName);
+        //LOG.debug("GetDefaultIcon - ActionType = '" + tActionType + "' Action = '" + tActionAttribute + "'");
+        if (!tActionType.equals(ActionTypeDefault)){
+            if (tActionType.equals(StandardMenuAction)){
+                IconName = SageMenuActions.get(tActionAttribute).DefaultIcon;
+            }
+        }
+        //LOG.debug("GetDefaultIcon - MenuItemName: " + MenuItemName + " IconName:" + IconName);
+        return IconName;
     }
     
     public static String GetFieldTitle(String Type){
@@ -764,9 +788,10 @@ public class ADMAction {
                 LOG.debug("LoadStandardActionList: loading '" + tCustomActionName + "' Custom Menu Action");
                 PropLocation = SageADMCustomActionsPropertyLocation + "/" + tCustomActionName;
                 String tButtonText = ADMutil.GetProperty(PropLocation + "/ButtonText", ADMutil.ButtonTextDefault);
+                String tDefaultIcon = ADMutil.GetProperty(PropLocation + "/DefaultIcon", "");
                 String tWidgetSymbol = ADMutil.GetProperty(PropLocation + "/WidgetSymbol", "");
                 String tCopyModeAttributeVar = ADMutil.GetProperty(PropLocation + "/CopyModeAttributeVar", Blank);
-                CustomAction tAction = new CustomAction(tCustomActionName,tButtonText, tWidgetSymbol, tCopyModeAttributeVar);
+                CustomAction tAction = new CustomAction(tCustomActionName,tButtonText, tWidgetSymbol, tCopyModeAttributeVar, tDefaultIcon);
                 SageMenuActions.put(tCustomActionName,tAction);
                 
                 //load any action variables
@@ -983,6 +1008,7 @@ public class ADMAction {
     public static class CustomAction{
         private String Name = "";
         private String ButtonText = "";
+        private String DefaultIcon = "";
         private String WidgetSymbol = "";
         private String CopyModeAttributeVar = Blank;
         private List<ActionVariable> ActionVariables = new LinkedList<ActionVariable>();
@@ -1001,12 +1027,20 @@ public class ADMAction {
 //        }
 //
         public CustomAction(String Name, String ButtonText, String WidgetSymbol){
-            this(Name,ButtonText,WidgetSymbol,Blank);
+            this(Name,ButtonText,WidgetSymbol,Blank,Blank);
         }
 
         public CustomAction(String Name, String ButtonText, String WidgetSymbol, String CopyModeAttributeVar){
+            this(Name,ButtonText,WidgetSymbol,CopyModeAttributeVar,Blank);
+        }
+        public CustomAction(String Name, String ButtonText, String WidgetSymbol, String CopyModeAttributeVar,String DefaultIcon){
             this.Name = Name;
             this.ButtonText = ButtonText;
+            if (!(DefaultIcon.equals(Blank)||DefaultIcon.equals(""))){
+                this.DefaultIcon = DefaultIcon;
+            } else {
+                this.DefaultIcon = ADMutil.DefaultIcon;
+            }
             this.WidgetSymbol = WidgetSymbol;
             this.CopyModeAttributeVar = CopyModeAttributeVar;
             //WidgetSymbols list is used for the copymode function to further refine the item to be copied
@@ -1026,6 +1060,7 @@ public class ADMAction {
         public Boolean HasCategory(String aCategory){
             return ActionCategories.contains(aCategory);
         }
+
         public void Execute(String Attribute){
             //evaluate all the ActionVariables first
             for (ActionVariable ActionVar : ActionVariables){

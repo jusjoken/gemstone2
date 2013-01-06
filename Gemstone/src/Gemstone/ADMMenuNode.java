@@ -499,7 +499,12 @@ public class ADMMenuNode {
             return "";
         }
         try {
-            return MenuNodeList().get(Name).CustomIcon;
+            String IconName = MenuNodeList().get(Name).CustomIcon;
+            if (IconName == null){
+                IconName="";
+            }
+            //LOG.debug("GetMenuItemCustomIcon - Name: "+Name+" FileName: "+IconName);
+            return IconName;
         }catch (Exception e){
             return "";
         }
@@ -508,7 +513,7 @@ public class ADMMenuNode {
     public static void SetMenuItemCustomIcon(String Name, String IconPath){
         if (Name==null){
         }else {
-            LOG.debug("GetMenuItemCustomIcon - Name: "+Name);
+            //LOG.debug("GetMenuItemCustomIcon - Name: "+Name);
             Save(Name,"CustomIcon",IconPath);
         }
     }
@@ -518,14 +523,20 @@ public class ADMMenuNode {
             return "";
         }
         try {
-            if(GetMenuItemActionType(Name).equals(ADMAction.GemstoneFlow)){
+            String ActionType = GetMenuItemActionType(Name);
+            String IconName;
+            if (ActionType.equals(ADMAction.GemstoneFlow)){
                 String FlowType = Flow.GetFlowType(GetMenuItemAction(Name));
-                String IconName = "Themes\\Gemstone\\Switcher\\"+FlowType+".png";
+                IconName = "Themes\\Gemstone\\Switcher\\"+FlowType+".png";
                 LOG.debug("GetMenuItemDefaultIcon - Name: "+Name+" FlowType: "+FlowType+" FileName: "+IconName);
-                return IconName;
             }else{
-                return "";
+                IconName = ADMAction.GetDefaultIcon(Name);
+                LOG.debug("GetMenuItemDefaultIcon - Name: "+Name+" ActionType: "+ActionType+" FileName: "+IconName);
             }
+            if (IconName==""){
+                return ADMutil.DefaultIcon;
+            }
+            return IconName;
         } catch (Exception e) {
             return "";
         }
@@ -538,7 +549,7 @@ public class ADMMenuNode {
         try {
             String IconFile;
             IconFile=GetMenuItemCustomIcon(Name);
-            if (IconFile.equals("")){
+            if (IconFile.equals("")||IconFile==null){
                 IconFile=GetMenuItemDefaultIcon(Name);
             }
             LOG.debug("GetMenuItemIcon - Name: "+Name+" Path:"+IconFile);
