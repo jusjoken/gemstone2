@@ -85,28 +85,19 @@ public class ADMAction {
     
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText){
-        this(Type,AdvancedOnly,ButtonText,"Action",Blank,Blank);
+        this(Type,AdvancedOnly,ButtonText,"Action",Blank);
     }
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle){
-        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank,Blank);
+        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank);
     }
 
     public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle, String WidgetSymbol){
-        this(Type,AdvancedOnly,ButtonText,FieldTitle,Blank,Blank);
-    }
-    
-    public ADMAction(String Type, Boolean AdvancedOnly, String ButtonText, String FieldTitle, String WidgetSymbol, String DefaultIcon){
         this.Type = Type;
         this.AdvancedOnly = AdvancedOnly;
         this.ButtonText = ButtonText;
         this.FieldTitle = FieldTitle;
         this.WidgetSymbol = WidgetSymbol;
-        if (!(DefaultIcon.equals(Blank)||DefaultIcon.equals(""))){
-            this.DefaultIcon = DefaultIcon;
-        }else{
-            this.DefaultIcon = "";
-        }
     }
     
     public static void Init(){
