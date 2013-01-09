@@ -561,10 +561,21 @@ public class ADMMenuNode {
    
     public static Boolean GetMenuItemHasCustomIcon(String Name){
         if (Name==null){
-            return false;
+            return Boolean.FALSE;
         }
-        String CustomIconPath = MenuNodeList().get(Name).CustomIcon;
-        return !(CustomIconPath.equals("")||CustomIconPath == null);
+        try {
+            String CustomIconPath = MenuNodeList().get(Name).CustomIcon;
+            if (CustomIconPath==null){
+                return Boolean.FALSE;
+            }
+            if (CustomIconPath.equals("")){
+                return Boolean.FALSE;
+            }
+            return Boolean.TRUE;
+        } catch (Exception e) {
+            LOG.debug("GetMenuItemHasCustomIcon ERROR: Value not available for '" + Name + "' Exception = '" + e + "'");
+            return Boolean.FALSE;
+        }
     }
     
     public static List<String> GetSageUsersList(){
