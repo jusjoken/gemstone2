@@ -226,6 +226,13 @@ public class Weather {
     public static String GetBackground(int code){
         if (phoenix.weather2.IsConfigured()){
             if (code>-1 && code <48){
+                //use the proper day or night code
+                if (WIcons.IsDaytime()){
+                    code = phoenix.weather2.GetCodeForceDay(code);
+                }else{
+                    code = phoenix.weather2.GetCodeForceNight(code);
+                }
+                
                 //determine which image file to return
                 int BGIndex = GetBackgroundIndex(code);
                 if (GetBackgroundsList(code).size()>BGIndex){
