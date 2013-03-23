@@ -347,7 +347,15 @@ public class util {
     }
     
     public static String GetProperty(String Property, String DefaultValue){
-        String tValue = sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
+        return GetProperty(Property, DefaultValue, Boolean.FALSE);
+    }
+    public static String GetProperty(String Property, String DefaultValue, Boolean serverProp){
+        String tValue = null;
+        if (serverProp){
+            tValue = sagex.api.Configuration.GetServerProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
+        }else{
+            tValue = sagex.api.Configuration.GetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, null);
+        }
         if (tValue==null || tValue.equals(OptionNotFound)){
             return DefaultValue;
         }else{
@@ -462,7 +470,14 @@ public class util {
     }
 
     public static void SetProperty(String Property, String Value){
-        sagex.api.Configuration.SetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, Value);
+        SetProperty(Property, Value, Boolean.FALSE);
+    }
+    public static void SetProperty(String Property, String Value, Boolean serverProp){
+        if (serverProp){
+            sagex.api.Configuration.SetServerProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, Value);
+        }else{
+            sagex.api.Configuration.SetProperty(new UIContext(sagex.api.Global.GetUIContextName()),Property, Value);
+        }
     }
 
     public static void SetPropertyAsTriState(String Property, TriState Value){
@@ -711,39 +726,45 @@ public class util {
         }
     }
     public static void SetListOptionNext(String PropSection, String PropName, String OptionList){
-        SetListOptionNextBase(Boolean.FALSE, PropSection, PropName, OptionList);
+        SetListOptionNextBase(Boolean.FALSE, PropSection, PropName, OptionList,Boolean.FALSE);
     }
-    public static void SetListOptionNextBase(Boolean bFlow, String PropSection, String PropName, String OptionList){
+    public static void SetListOptionNext(String PropSection, String PropName, String OptionList, Boolean serverProp){
+        SetListOptionNextBase(Boolean.FALSE, PropSection, PropName, OptionList, serverProp);
+    }
+    public static void SetListOptionNextBase(Boolean bFlow, String PropSection, String PropName, String OptionList, Boolean serverProp){
         String tProp = "";
         if (bFlow){
             tProp = Flow.GetFlowBaseProp(PropSection) + Const.PropDivider + PropName;
         }else{
             tProp = Const.BaseProp + Const.PropDivider + PropSection + Const.PropDivider + PropName;
         }
-        String CurrentValue = util.GetProperty(tProp, OptionNotFound);
+        String CurrentValue = util.GetProperty(tProp, OptionNotFound, serverProp);
         //LOG.debug("SetListOptionNextBase: currentvalue '" + CurrentValue + "' for '" + tProp + "'");
         List<String> FullList = ConvertStringtoList(OptionList);
         if (CurrentValue.equals(OptionNotFound)){
             //LOG.debug("SetListOptionNextBase: Not Found so setting to 2nd item '" + FullList.get(1) + "' for '" + tProp + "'");
-            util.SetProperty(tProp, FullList.get(1));  //default to the 2nd item
+            util.SetProperty(tProp, FullList.get(1),serverProp);  //default to the 2nd item
         }else{
             Integer pos = FullList.indexOf(CurrentValue);
             //LOG.debug("SetListOptionNextBase: Found - pos = " + pos + "' for '" + tProp + "'");
             if (pos==-1){ //not found
-                util.SetProperty(tProp, FullList.get(0));
+                util.SetProperty(tProp, FullList.get(0),serverProp);
             }else if(pos==FullList.size()-1){ //last item
-                util.SetProperty(tProp, FullList.get(0));
+                util.SetProperty(tProp, FullList.get(0),serverProp);
             }else{ //get next item
-                util.SetProperty(tProp, FullList.get(pos+1));
+                util.SetProperty(tProp, FullList.get(pos+1),serverProp);
             }
         }
     }
     
     //set of functions for generic String based properties
     public static String GetOptionName(String PropSection, String PropName, String DefaultValue){
-        return GetOptionNameBase(Boolean.FALSE, PropSection, PropName, DefaultValue);
+        return GetOptionNameBase(Boolean.FALSE, PropSection, PropName, DefaultValue, Boolean.FALSE);
     }
-    public static String GetOptionNameBase(Boolean bFlow, String PropSection, String PropName, String DefaultValue){
+    public static String GetOptionName(String PropSection, String PropName, String DefaultValue, Boolean serverProp){
+        return GetOptionNameBase(Boolean.FALSE, PropSection, PropName, DefaultValue, serverProp);
+    }
+    public static String GetOptionNameBase(Boolean bFlow, String PropSection, String PropName, String DefaultValue, Boolean serverProp){
         String tProp = "";
         if (bFlow){
             tProp = Flow.GetFlowBaseProp(PropSection) + Const.PropDivider + PropName;
@@ -751,19 +772,22 @@ public class util {
             tProp = Const.BaseProp + Const.PropDivider + PropSection + Const.PropDivider + PropName;
         }
         //LOG.debug("GetOptionNameBase: property '" + tProp + "'");
-        return util.GetProperty(tProp, DefaultValue);
+        return util.GetProperty(tProp, DefaultValue, serverProp);
     }
     public static void SetOption(String PropSection, String PropName, String NewValue){
-        SetOptionBase(Boolean.FALSE, PropSection, PropName, NewValue);
+        SetOptionBase(Boolean.FALSE, PropSection, PropName, NewValue, Boolean.FALSE);
     }
-    public static void SetOptionBase(Boolean bFlow, String PropSection, String PropName, String NewValue){
+    public static void SetOption(String PropSection, String PropName, String NewValue, Boolean serverProp){
+        SetOptionBase(Boolean.FALSE, PropSection, PropName, NewValue, serverProp);
+    }
+    public static void SetOptionBase(Boolean bFlow, String PropSection, String PropName, String NewValue, Boolean serverProp){
         String tProp = "";
         if (bFlow){
             tProp = Flow.GetFlowBaseProp(PropSection) + Const.PropDivider + PropName;
         }else{
             tProp = Const.BaseProp + Const.PropDivider + PropSection + Const.PropDivider + PropName;
         }
-        util.SetProperty(tProp, NewValue);
+        util.SetProperty(tProp, NewValue, serverProp);
     }
 
     //remove an option property

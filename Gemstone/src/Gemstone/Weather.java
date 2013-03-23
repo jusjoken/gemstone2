@@ -19,6 +19,7 @@ import sagex.phoenix.weather.IForecastPeriod;
  *
  * @author jusjoken
  * public Gemstone single Weather instance to use across the app and all extenders
+ * 3/22/2013 - all weather settings (units, impl, location) are now stored at Server Level or Client depending on what called the Init
  */
 public class Weather {
     static private final Logger LOG = Logger.getLogger(Weather.class);
@@ -27,6 +28,7 @@ public class Weather {
     private static final String unitsDefault = "Standard";
     private static boolean LoaderActive = false;
     private static boolean weatherInit = false;
+    private static boolean useServerForProps = false;
 
     public static boolean IsLoaderActive(){
         return LoaderActive;
@@ -37,9 +39,15 @@ public class Weather {
     
     //always call Init first - should be called in the Gemstone Init 
     public static void Init(){
-        LOG.debug("Init: weather init started: " + util.LogInfo());
+        if (util.GetClientType().toLowerCase().equals("local")){
+            useServerForProps = false;
+            LOG.debug("Init: weather init started: using local client settings: " + util.LogInfo());
+        }else{
+            useServerForProps = true;
+            LOG.debug("Init: weather init started: using server settings: " + util.LogInfo());
+        }
         //force phoenix to use the current weather implementation setting
-        String curImpl = util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault);
+        String curImpl = util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault, useServerForProps);
         //check the current phoenix impl and only change it if it's different
         if (!curImpl.equals(phoenix.weather2.GetWeatherImplKey())){
             setImpl(curImpl);
@@ -53,8 +61,8 @@ public class Weather {
     }
     
     public static void SetImplNext(){
-        util.SetListOptionNext(Const.WeatherProp, Const.WeatherImpl, implList);
-        setImpl(util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault));
+        util.SetListOptionNext(Const.WeatherProp, Const.WeatherImpl, implList, useServerForProps);
+        setImpl(util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault, useServerForProps));
         UpdateWeather();
     }
     
@@ -63,8 +71,8 @@ public class Weather {
         phoenix.weather2.SetWeatherImpl(impl);
         if (!impl.equals(phoenix.weather2.GetWeatherImplKey())){
             //the change failed so try changing to the next in the list
-            util.SetListOptionNext(Const.WeatherProp, Const.WeatherImpl, implList);
-            String implNext = util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault);
+            util.SetListOptionNext(Const.WeatherProp, Const.WeatherImpl, implList, useServerForProps);
+            String implNext = util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault, useServerForProps);
             LOG.error("setImpl: failed to set the phoenix weather to '" + impl + "'. Trying '" + implNext + "' instead.");
             phoenix.weather2.SetWeatherImpl(implNext);
             if (!implNext.equals(phoenix.weather2.GetWeatherImplKey())){
@@ -80,12 +88,12 @@ public class Weather {
             setUnits();
             SetLocation();
         }
-        util.SetOption(Const.WeatherProp, Const.WeatherImpl, phoenix.weather2.GetWeatherImplKey());
+        util.SetOption(Const.WeatherProp, Const.WeatherImpl, phoenix.weather2.GetWeatherImplKey(), useServerForProps);
         return success;
     }
 
     private static void setUnits(){
-        String curUnits = util.GetOptionName(Const.WeatherProp, Const.WeatherUnits, unitsDefault);
+        String curUnits = util.GetOptionName(Const.WeatherProp, Const.WeatherUnits, unitsDefault, useServerForProps);
         if (!curUnits.toLowerCase().equals(phoenix.weather2.GetUnits().toLowerCase())){
             //units are different so we need to set them
             phoenix.weather2.SetUnits(curUnits);
@@ -93,7 +101,7 @@ public class Weather {
     }
     
     public static void SetLocation(){
-        String curLoc = util.GetOptionName(Const.WeatherProp, Const.WeatherLoc, util.OptionNotFound);
+        String curLoc = util.GetOptionName(Const.WeatherProp, Const.WeatherLoc, util.OptionNotFound, useServerForProps);
         if (!curLoc.equals(phoenix.weather2.GetLocation())){
             if (curLoc.equals(util.OptionNotFound)){
                 //try setting using the EPG location
@@ -175,7 +183,7 @@ public class Weather {
         }else{
             phoenix.weather2.SetUnits("metric");
         }
-        util.SetOption(Const.WeatherProp, Const.WeatherUnits, phoenix.weather2.GetUnits());
+        util.SetOption(Const.WeatherProp, Const.WeatherUnits, phoenix.weather2.GetUnits(), useServerForProps);
     }
 
     public static String GetNightShortName(IForecastPeriod forecastperiod){

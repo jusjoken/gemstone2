@@ -60,11 +60,11 @@ public class Flow {
     }
     
     public static String GetOptionName(String PropSection, String PropName, String DefaultValue){
-        return util.GetOptionNameBase(Boolean.TRUE, PropSection, PropName, DefaultValue);
+        return util.GetOptionNameBase(Boolean.TRUE, PropSection, PropName, DefaultValue, Boolean.FALSE);
     }
     
     public static void SetOption(String PropSection, String PropName, String NewValue){
-        util.SetOptionBase(Boolean.TRUE, PropSection, PropName, NewValue);
+        util.SetOptionBase(Boolean.TRUE, PropSection, PropName, NewValue, Boolean.FALSE);
     }
     
     public static void RemoveOption(String PropSection, String PropName){
@@ -76,7 +76,7 @@ public class Flow {
     }
     
     public static void SetListOptionNext(String PropSection, String PropName, String OptionList){
-        util.SetListOptionNextBase(Boolean.TRUE, PropSection, PropName, OptionList);
+        util.SetListOptionNextBase(Boolean.TRUE, PropSection, PropName, OptionList, Boolean.FALSE);
     }
 
     public static String PropertyListasString(String PropSection, String PropName){
