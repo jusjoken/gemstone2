@@ -471,8 +471,12 @@ public class MetadataCalls {
     	return (int)(sagex.api.Utility.Time() - sagex.api.AiringAPI.GetRealWatchedStartTime(MediaObject))/(86400*1000);
     }
 
-    //return a consistent Title dependent on the media item and the type
     public static String GetTitle(IMediaResource imediaresource){
+        return GetTitle(imediaresource, true);
+    }
+    
+    //return a consistent Title dependent on the media item and the type
+    public static String GetTitle(IMediaResource imediaresource, boolean IncludeDiscNo){
         if (imediaresource==null){
             LOG.debug("GetTitle: null imediaresource");
             return "";
@@ -503,18 +507,24 @@ public class MetadataCalls {
                 return eTitle;
             }
         }
-        //see if there is a Disc or Part number to append
-        String Disc = sagex.api.MediaFileAPI.GetMediaFileMetadata(imediaresource, "DiscNumber");
-        if (Disc.equals("0") || Disc.isEmpty()){
-            //do not append the Disc/Part
-        }else{
-            tTitle = tTitle + " (" + Disc + ")";
+        if (IncludeDiscNo){
+            //see if there is a Disc or Part number to append
+            int Disc = phoenix.metadata.GetDiscNumber(imediaresource);
+            //LOG.debug("GetTitle: Disc '" + Disc + "' for tTitle '" + tTitle + "'");
+            if (Disc==0){
+                //do not append the Disc/Part
+            }else{
+                tTitle = tTitle + " (" + Disc + ")";
+            }
         }
         LOG.debug("GetTitle: sType '" + specialType + "' non tv type so using default Title '" + tTitle + "'");
         return tTitle;
     }
     public static String GetTitle(Object imediaresource){
-        return GetTitle(Source.ConvertToIMR(imediaresource));
+        return GetTitle(Source.ConvertToIMR(imediaresource), true);
+    }
+    public static String GetTitle(Object imediaresource, boolean IncludeDiscNo){
+        return GetTitle(Source.ConvertToIMR(imediaresource), IncludeDiscNo);
     }
 
     //Series related metadata
