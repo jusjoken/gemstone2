@@ -1,0 +1,72 @@
+<project name="Gemstone2 Build Script" basedir="." default="build">
+	<!-- Load properties -->
+	<property file="build.properties"/>
+	
+	<path id="class.path">
+		<!-- <fileset dir="${lib.dir}" includes="*.jar"/> -->
+		<fileset dir="lib" includes="*.jar" excludes="**-sources**,**-javadoc**"/>
+	</path>	
+	
+	<!-- Set variables for build directories -->
+	<property name="build.dir" value="build"/>
+	<property name="src.dir" value="src"/>
+	<property name="bin.dir" value="bin"/>
+	<property name="version" value="2.0001" />
+	
+	<!-- set variable for external lib directory 
+	(typically set up as external project within project) -->
+	<property name="lib.dir" value="lib"/>
+	
+	<target name="-init" depends="clean">
+           <echo>Creating temporary folders...</echo>
+		<mkdir dir="${build.dir}"/>
+	</target>
+	
+	<target name="clean" description="Clean up">
+           <echo>Cleaning up...</echo>
+	   <delete>
+	      <fileset dir="${build.dir}">
+		 <include name="**/*.class"/>
+	      </fileset>
+	   </delete>
+	</target>
+	
+	<target name="build" depends="-init" description="Build project">
+		<echo>Copying files to build folder...</echo>
+		<javac destdir="${build.dir}" source="1.7" target="1.7" debug="true"
+		      deprecation="false" optimize="false" failonerror="true">
+		      <src path="${src.dir}"/>
+		      <classpath refid="class.path"/>
+		</javac>
+		
+	</target>
+	
+	<target name="build-jar" depends="build">
+	   <jar destfile="${bin.dir}/lib/Gemstone2.jar"
+	      basedir="${build.dir}">
+		<manifest>
+			<attribute name="Built-By" value="${user.name}" />
+			<attribute name="Specification-Title" value="Gemstone2" />
+			<attribute name="Specification-Version" value="${version}  ${TODAY}" />
+			<attribute name="Specification-Vendor" value="Gemstone2" />
+			<attribute name="Implementation-Title" value="Gemstone2" />
+			<attribute name="Implementation-Version" value="${version}" />
+			<attribute name="Implementation-Vendor" value="Gemstone2" />
+		</manifest>
+	   	
+	   </jar>
+	</target>	
+	
+	<target name = "generate-javadoc">
+	   <javadoc packagenames="gemstone2.*" sourcepath="${src.dir}" 
+	      destdir = "doc" version = "true" windowtitle = "Gemstone2">
+	      <doctitle><![CDATA[= Gemstone2 =]]></doctitle>
+
+	      <bottom>
+		 <![CDATA[Copyright 2015. All Rights Reserved.]]>
+	      </bottom>
+	   </javadoc>
+	   <echo message = "java doc has been generated!" />
+	</target>	
+	
+</project>
