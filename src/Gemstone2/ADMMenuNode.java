@@ -527,7 +527,7 @@ public class ADMMenuNode {
             String IconName;
             if (ActionType.equals(ADMAction.GemstoneFlow)){
                 String FlowType = Flow.GetFlowType(GetMenuItemAction(Name));
-                IconName = "Themes\\Gemstone\\Switcher\\"+FlowType+".png";
+                IconName = "Themes\\" + Const.ReleaseName + "\\Switcher\\"+FlowType+".png";
                 LOG.debug("GetMenuItemDefaultIcon - Name: "+Name+" FlowType: "+FlowType+" FileName: "+IconName);
             }else{
                 IconName = ADMAction.GetDefaultIcon(Name);

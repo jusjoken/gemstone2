@@ -1009,33 +1009,33 @@ public class util {
     }      
     
     public static String UserDataLocation(){
-        return GetSageTVRootDir() + File.separator + "userdata" + File.separator + "Gemstone";
+        return GetSageTVRootDir() + File.separator + "userdata" + File.separator + Const.ReleaseName;
     }
     public static String UserDataLocationTemp(){
-        return GetSageTVRootDir() + File.separator + "userdata" + File.separator + "Gemstone" + File.separator + "temp";
+        return GetSageTVRootDir() + File.separator + "userdata" + File.separator + Const.ReleaseName + File.separator + "temp";
     }
     public static String UserDataLocationServer(){
-        return sagex.api.Utility.GetWorkingDirectory() + File.separator + "userdata" + File.separator + "Gemstone";
+        return sagex.api.Utility.GetWorkingDirectory() + File.separator + "userdata" + File.separator + Const.ReleaseName;
     }
 
     public static String DefaultsLocation(){
-        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "defaults";
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + Const.ReleaseName + File.separator + "defaults";
     }
     
     public static String MenusLocation(){
-        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "menus";
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + Const.ReleaseName + File.separator + "menus";
     }
     
     public static String WeatherLocation(){
-        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "Gemstone" + File.separator + "Weather";
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + Const.ReleaseName + File.separator + "Weather";
     }
 
     public static String GemstoneSTVFile(){
-        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + "Gemstone.xml";
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + Const.STVFileName;
     }
     
     public static String ThemeLocation(){
-        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + "Themes" + File.separator + "Gemstone";
+        return GetSageTVRootDir() + File.separator + "STVs" + File.separator + "SageTV7" + File.separator + "Themes" + File.separator + Const.ReleaseName;
     }
 
     public static String GetSageTVRootDir(){
@@ -1100,6 +1100,7 @@ public class util {
         return null;
     }   
     
+    //TODO: can likely remove this as it was only called in the STVI and not the STV - verify and remove
     public static boolean DisableGemstonePlugin(){
         UIContext tUI = new UIContext(sagex.api.Global.GetUIContextName());
         Object thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"DiamondSTVi");
@@ -1236,6 +1237,24 @@ public class util {
         }else{
             LOG.debug("HandleNonCompatiblePlugins: checking for Diamond Legacy - not found");
         }
+        //check for Gemstone 1 as should not be run with Gemstone2
+        //LOG.debug("HandleNonCompatiblePlugins: checking for Gemstone version 1: " + LogInfo());
+        thisPlugin = sagex.api.PluginAPI.GetAvailablePluginForID(tUI,"DiamondSTVi");
+        if (sagex.api.PluginAPI.IsPluginEnabled(tUI, thisPlugin)){
+            if(DisableForConflict){
+                sagex.api.PluginAPI.DisablePlugin(tUI, thisPlugin);
+                String tMessage = "Gemstone version 1 Plugin is NOT compatible with Gemstone2.\n \n* Gemstone version 1 Plugin has been disabled.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelInfo, tMessage);
+                ReloadUI = Boolean.TRUE;
+                LOG.debug("HandleNonCompatiblePlugins: Gemstone version 1 found and disabled");
+            }else{
+                String tMessage = "Gemstone version 1 Plugin is NOT compatible with Gemstone2.\n \n* Please disable the Gemstone version 1 Plugin and reload the UI.";
+                PostSytemMessage(Const.SystemMessagePluginConflictCode, Const.SystemMessagePluginConflictName, Const.SystemMessageAlertLevelError, tMessage);
+                LOG.debug("HandleNonCompatiblePlugins: Gemstone version 1 found and System Error message created");
+            }
+        }else{
+            LOG.debug("HandleNonCompatiblePlugins: checking for Gemstone version 1 - not found");
+        }
         LOG.debug("HandleNonCompatiblePlugins: complete - checking for non-compatible plugins: " + LogInfo());
         return ReloadUI;
     }
@@ -1344,10 +1363,8 @@ public class util {
             return new ArrayList<Object>();
         }
         ArrayList<Object> outMediaFiles = new ArrayList<Object>();
-        int counter = 0;
         for (Object inMediaFile:MediaFiles){
             outMediaFiles.add(phoenix.media.GetSageMediaFile(inMediaFile));
-            counter++;
         }
         LOG.debug("GetSageMediaFiles: converted '" + MediaFiles.size() + "' MediaFiles to SageMediaFiles");
         return outMediaFiles;

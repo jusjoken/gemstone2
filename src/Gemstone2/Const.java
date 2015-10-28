@@ -70,6 +70,8 @@ public class Const {
     public static final String InstantSearchIsNumericListener = "InstantSearchIsNumericListener";
     
     //General Constants
+    public static final String ReleaseName = "Gemstone2";
+    public static final String STVFileName = "Gemstone2.xml";
     public static final String BaseProp = "Gemstone";
     public static final String PropDivider = "/";
     public static final String FlowProp = "Flow";
@@ -103,7 +105,7 @@ public class Const {
     public static final String BaseGenreSource = "BaseGenreSource";
     public static final String BaseRatingsSource = "BaseRatingsSource";
     public static final String LogFileName = "gemstone.log4j.properties";
-    public static final String FontPathGemstone = "STVs" + File.separator + "SageTV7" + File.separator + "Themes" + File.separator + "Gemstone" + File.separator + "Fonts";
+    public static final String FontPathGemstone = "STVs" + File.separator + "SageTV7" + File.separator + "Themes" + File.separator + ReleaseName + File.separator + "Fonts";
     public static final String FontPathSage = "Fonts";
 
     
