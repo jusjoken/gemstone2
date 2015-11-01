@@ -46,7 +46,7 @@ public class Log {
     }
     
     public String GetLevel(){
-        String tLevel = props.getProperty("log4j.logger.Gemstone", "INFO, GEMSTONE");
+        String tLevel = props.getProperty("log4j.logger.Gemstone2", "INFO, GEMSTONE2");
         String parts[] = tLevel.split(",");
         if (LogLevels.contains(parts[0])){
             return parts[0];          
@@ -58,7 +58,7 @@ public class Log {
     public void SetLevel(String Level){
         //check if this is a valid level
         if (LogLevels.contains(Level)){
-            props.setProperty("log4j.logger.Gemstone", Level + ", GEMSTONE");
+            props.setProperty("log4j.logger.Gemstone2", Level + ", GEMSTONE2");
         }
     }
     
@@ -86,7 +86,7 @@ public class Log {
     
     public void SaveSettings(){
         if (IsDirty()){
-            Log4jConfigurator.reconfigure("gemstone", props);
+            Log4jConfigurator.reconfigure("gemstone2", props);
             originalLevel = GetLevel();
             LOG.info("SaveSettings: log settings saved.");
         }
@@ -94,17 +94,17 @@ public class Log {
     
     public void LoadDefaults(){
         props.clear();
-        //make sure these match the gemstone.log4j.properties file imbeded in the JAR
-        props.setProperty("log4j.appender.GEMSTONE", "org.apache.log4j.RollingFileAppender");
-        props.setProperty("log4j.appender.GEMSTONE.MaxFileSize", "10000KB");
-        props.setProperty("log4j.appender.GEMSTONE.MaxBackupIndex", "2");
-        props.setProperty("log4j.appender.GEMSTONE.File", "logs/gemstone.log");
-        props.setProperty("log4j.appender.GEMSTONE.Append", "false");
-        props.setProperty("log4j.appender.GEMSTONE.layout", "org.apache.log4j.PatternLayout");
-        props.setProperty("log4j.appender.GEMSTONE.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
-        props.setProperty("log4j.logger.Gemstone", "INFO, GEMSTONE");
-        props.setProperty("log4j.additivity.Gemstone", "false");
-        Log4jConfigurator.reconfigure("gemstone", props);
+        //make sure these match the gemstone2.log4j.properties file imbeded in the JAR
+        props.setProperty("log4j.appender.GEMSTONE2", "org.apache.log4j.RollingFileAppender");
+        props.setProperty("log4j.appender.GEMSTONE2.MaxFileSize", "10000KB");
+        props.setProperty("log4j.appender.GEMSTONE2.MaxBackupIndex", "2");
+        props.setProperty("log4j.appender.GEMSTONE2.File", "logs/gemstone2.log");
+        props.setProperty("log4j.appender.GEMSTONE2.Append", "false");
+        props.setProperty("log4j.appender.GEMSTONE2.layout", "org.apache.log4j.PatternLayout");
+        props.setProperty("log4j.appender.GEMSTONE2.layout.ConversionPattern", "%d [%t] %-5p %c - %m%n");
+        props.setProperty("log4j.logger.Gemstone2", "INFO, GEMSTONE2");
+        props.setProperty("log4j.additivity.Gemstone2", "false");
+        Log4jConfigurator.reconfigure("gemstone2", props);
         originalLevel = GetLevel();
         //set the SageTV logging to it's default
         if (util.IsClient()){
@@ -136,7 +136,7 @@ public class Log {
             props = getPropsfromJAR();
         }
         //temp output to test this
-        LOG.info("GetLogProps: level = '" + props.getProperty("log4j.logger.Gemstone", "NOT FOUND"));
+        LOG.info("GetLogProps: level = '" + props.getProperty("log4j.logger.Gemstone2", "NOT FOUND"));
         return props;
     }
     

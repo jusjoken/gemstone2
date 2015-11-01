@@ -111,4 +111,9 @@ public class api {
     public static String GetVersion() {
         return Version;
     }
+
+    public static String GetReleaseName(){
+        return Const.ReleaseName ;
+    }
+
 }

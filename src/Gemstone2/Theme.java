@@ -32,6 +32,11 @@ public class Theme {
         return tList;
     }
     
+    //return a relative path to where the Gemstone Highlight sets are located
+    public static String GetHighlightLocation(){
+        return "Themes" + File.separator + Const.ReleaseName + File.separator + "Highlights";
+    }
+
     //stored setting for transparency will be as a percent between 0 and 100
     public static Integer GetTransparencyPercent(String ThemedVariable,String ThemedVariableDefault){
         String tProp = Const.BaseProp + Const.PropDivider + Const.ThemeProp + Const.PropDivider + Const.ThemeTrans + Const.PropDivider + ThemedVariable;

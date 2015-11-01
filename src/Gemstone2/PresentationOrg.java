@@ -4,7 +4,7 @@
  */
 package Gemstone2;
 
-import Gemstone.SourceUI.OrganizerType;
+import Gemstone2.SourceUI.OrganizerType;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.SortedMap;
