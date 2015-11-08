@@ -33,6 +33,7 @@ import sagex.phoenix.metadata.MediaArtifactType;
 import sagex.phoenix.metadata.MediaType;
 import sagex.phoenix.vfs.IMediaFile;
 import sagex.phoenix.vfs.IMediaResource;
+import sagex.phoenix.vfs.MediaResourceType;
 import sagex.phoenix.vfs.views.ViewFolder;
 
 /**
@@ -305,12 +306,15 @@ public class ImageCache {
         IMediaResource childmediaresource = null;
         ViewFolder Folder = (ViewFolder) imediaresource;
         //get a child item (if any) from the Folder
-        if (phoenix.media.GetAllChildren(Folder, 1).size()>0){
+        List<IMediaResource> realList = Source.GetAllRealChildren(Folder); 
+        if (realList.size()>0){
             Integer Element = 0;
             if (UseRandom){
-                Element = phoenix.util.GetRandomNumber(phoenix.media.GetAllChildren(Folder).size());
+                //Element = phoenix.util.GetRandomNumber(phoenix.media.GetAllChildren(Folder).size());
+                Element = phoenix.util.GetRandomNumber(realList.size());
             }
-            childmediaresource = (IMediaResource) phoenix.media.GetAllChildren(Folder).get(Element);
+            childmediaresource = (IMediaResource) realList.get(Element);
+            //childmediaresource = (IMediaResource) phoenix.media.GetAllChildren(Folder).get(Element);
         }
         return childmediaresource;
     }

@@ -51,23 +51,28 @@ public class MetadataCalls {
             return "";
         }
         MediaObject = phoenix.media.GetSageMediaFile(MediaObject);
-        if (GetSeasonNumber(MediaObject)==0 || GetEpisodeNumber(MediaObject)==0){
+        return FormatSeasonEpisode(GetSeasonNumber(MediaObject), GetEpisodeNumber(MediaObject), Property);
+    }
+    
+    // Gemstone_MetadataCalls_FormatSeasonEpisode
+    public static String FormatSeasonEpisode(int iSeason, int iEpisode, String Property) {
+        if (iSeason==0 || iEpisode==0){
             return "";
         }
     	if(Property.equals("S1E01")) {
-    		return "S"+ GetSeasonNumber(MediaObject) + "E" + GetEpisodeNumberPad(MediaObject);
+    		return "S"+ iSeason + "E" + String.format("%02d", iEpisode);
     	} else if(Property.equals("S01E01")) {
-    		return "S"+ GetSeasonNumberPad(MediaObject) + "E" + GetEpisodeNumberPad(MediaObject);
+    		return "S"+ String.format("%02d", iSeason) + "E" + String.format("%02d", iEpisode);
     	} else if(Property.equals("1x01")) {
-    		return GetSeasonNumber(MediaObject) + "x" + GetEpisodeNumberPad(MediaObject);
+    		return iSeason + "x" + String.format("%02d", iEpisode);
     	} else if(Property.equals("E01")) {
-    		return "E" + GetEpisodeNumberPad(MediaObject);
+    		return "E" + String.format("%02d", iEpisode);
     	} else if(Property.equals("1")) {
-    		return "" + GetEpisodeNumber(MediaObject);	
+    		return "" + iEpisode;	
     	}else if(Property.equals("None")) {
     		return "";	
     	} else {
-    		return "S"+ GetSeasonNumber(MediaObject) + "E" + GetEpisodeNumberPad(MediaObject);	
+    		return "S"+ iSeason + "E" + String.format("%02d", iEpisode);	
     	}
     }
     
@@ -507,17 +512,21 @@ public class MetadataCalls {
                 return eTitle;
             }
         }
-        if (IncludeDiscNo){
-            //see if there is a Disc or Part number to append
-            int Disc = phoenix.metadata.GetDiscNumber(imediaresource);
-            //LOG.debug("GetTitle: Disc '" + Disc + "' for tTitle '" + tTitle + "'");
-            if (Disc==0){
-                //do not append the Disc/Part
-            }else{
-                tTitle = tTitle + " (" + Disc + ")";
+        if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+            LOG.debug("GetTitle: sType '" + specialType + "' FOLDER found so using default Title '" + tTitle + "'");
+        }else{
+            if (IncludeDiscNo){
+                //see if there is a Disc or Part number to append
+                int Disc = phoenix.metadata.GetDiscNumber(imediaresource);
+                //LOG.debug("GetTitle: Disc '" + Disc + "' for tTitle '" + tTitle + "'");
+                if (Disc==0){
+                    //do not append the Disc/Part
+                }else{
+                    tTitle = tTitle + " (" + Disc + ")";
+                }
             }
+            LOG.debug("GetTitle: sType '" + specialType + "' non tv type so using default Title '" + tTitle + "'");
         }
-        LOG.debug("GetTitle: sType '" + specialType + "' non tv type so using default Title '" + tTitle + "'");
         return tTitle;
     }
     public static String GetTitle(Object imediaresource){
@@ -538,7 +547,8 @@ public class MetadataCalls {
                 tReturn = sagex.api.AiringAPI.GetAiringTitle(phoenix.media.GetMediaObject(imediaresource));
                 //LOG.debug("GetSeriesTitle: SpecialType '" + Source.GetSpecialType(imediaresource) + "' returned '" + tReturn + "' for '" + imediaresource + "'");
             }else{
-                tReturn = phoenix.series.GetTitle(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
+            	tReturn = phoenix.metadata.GetMediaTitle(imediaresource);
+                //tReturn = phoenix.series.GetTitle(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
                 //LOG.debug("GetSeriesTitle: series.GetTitle returned '" + tReturn + "' for '" + imediaresource + "'");
             }
             if (tReturn==null){
@@ -616,6 +626,7 @@ public class MetadataCalls {
                     return "Aired " + firstYear + " - " + lastYear;
                 }
             }else{
+                //LOG.debug("GetAiredYear: Not a folder so returning getAiredYear(imediaresource)");
                 return "Aired in " + getAiredYear(imediaresource);
             }
         }
@@ -690,7 +701,7 @@ public class MetadataCalls {
         IMediaResource imediaresource = Source.GetTVIMediaResource(IMR);
         if (imediaresource!=null){ 
             String tReturn = phoenix.series.GetDescription(phoenix.media.GetSeriesInfo(phoenix.media.GetMediaFile(imediaresource)));
-            //LOG.debug("GetSeriesDescription: GetDescription returned '" + tReturn + "' for '" + imediaresource + "'");
+            LOG.debug("*****GetSeriesDescription: GetDescription returned '" + tReturn + "' for '" + imediaresource + "'");
             if (tReturn==null || tReturn.isEmpty()){
                 return "";
             }else{

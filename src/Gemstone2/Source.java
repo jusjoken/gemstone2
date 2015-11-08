@@ -5,6 +5,7 @@
 package Gemstone2;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -1059,7 +1060,8 @@ public class Source {
                 }else{
                     Grouping = "tv";
                 }
-                //LOG.debug("GetSpecialType: TV - subtype       FILE '" + phoenix.media.IsMediaType( imediaresource , "FILE" ) + "' for '" + imediaresource.getTitle() + "'");
+                //LOG.debug("GetSpecialType: TV - subtype       IMR  '" + imediaresource);
+                //LOG.debug("              : TV - subtype       FILE '" + phoenix.media.IsMediaType( imediaresource , "FILE" ) + "' for '" + imediaresource.getTitle() + "'");
                 //LOG.debug("              : TV - subtype  RECORDING '" + phoenix.media.IsMediaType( imediaresource , "RECORDING" ) + "' for '" + imediaresource.getTitle() + "'");
                 //LOG.debug("              : TV - subtype EPG_AIRING '" + phoenix.media.IsMediaType( imediaresource , "EPG_AIRING" ) + "' for '" + imediaresource.getTitle() + "'");
             }else if (phoenix.media.IsMediaType( imediaresource , "VIDEO" )){
@@ -1130,7 +1132,7 @@ public class Source {
 
     public static IMediaResource ConvertToIMR(Object imediaresource){
         if (imediaresource == null || imediaresource.toString().isEmpty() || imediaresource.toString().contains("BlankItem")) {
-            //LOG.debug("ConvertToIMR: returning null for '" + imediaresource + "'");
+            LOG.debug("ConvertToIMR: returning null for '" + imediaresource + "'");
             return null;
         }
         //LOG.debug("ConvertToIMR: Convenience method called with Class = '" + imediaresource.getClass() + "'");
@@ -1139,11 +1141,13 @@ public class Source {
             LOG.debug("ConvertToIMR: GetMediaResource failed to convert '" + imediaresource + "'");
             return null; // do nothing
         }
+        //LOG.debug("ConvertToIMR: returning '" + proxy + "'");
         return proxy;
     }
             
     public static IMediaResource GetTVIMediaResource(Object imediaresource){
         if (imediaresource==null){
+            LOG.debug("GetTVIMediaResource: null passed in");
             return null;
         }
         if (imediaresource.toString().contains("BlankItem")){
@@ -1152,8 +1156,10 @@ public class Source {
         IMediaResource IMR = ConvertToIMR(imediaresource);
         String specialType = GetSpecialType(IMR);
         if ("series".equals(specialType) || "season".equals(specialType)){  //only valid for series or season
+            //LOG.debug("GetTVIMediaResource: returning child for type '" + specialType + "'");
             return ImageCache.GetChild(IMR, Boolean.FALSE);
         }else if ("tv".equals(specialType) || "airing".equals(specialType) || "recording".equals(specialType)){
+            //LOG.debug("GetTVIMediaResource: type '" + specialType + "' returning '" + IMR + "'");
             return IMR;
         }
         return null;
@@ -1194,6 +1200,33 @@ public class Source {
             return phoenix.media.GetAllChildren(Folder).size();
         }else{
             return 0;
+        }
+    }
+    public static List<IMediaResource> GetAllRealChildren(IMediaResource imediaresource){
+        if (imediaresource==null){
+            LOG.debug("GetAllRealChildren: null passed in so returning empty list");
+            return Collections.emptyList();
+        }
+        if (phoenix.media.IsMediaType( imediaresource , "FOLDER" )){
+            ViewFolder Folder = (ViewFolder) imediaresource;
+            List<IMediaResource> outList = new ArrayList<IMediaResource>();
+            for (Object imr : phoenix.media.GetAllChildren(Folder)){
+                //LOG.debug("GetAllRealChildren: checking '" + imr + "'");
+            	if (imr instanceof IMediaResource){
+            		IMediaResource tIMR = (IMediaResource) imr;
+            		if (!tIMR.isType(MediaResourceType.DUMMY.value())){
+                        //LOG.debug("GetAllRealChildren: adding '" + tIMR + "'");
+            			outList.add(tIMR);
+            		}else{
+                        //LOG.debug("GetAllRealChildren: skipping as DUMMY '" + tIMR + "'");
+            		}
+            	}else{
+                    //LOG.debug("GetAllRealChildren: skipping as not IMR '" + imr + "'");
+            	}
+            }
+            return outList;
+        }else{
+            return Collections.emptyList();
         }
     }
     

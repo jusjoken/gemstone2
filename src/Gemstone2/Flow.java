@@ -458,7 +458,7 @@ public class Flow {
         IMediaResource IMR = Source.ConvertToIMR(MediaObject);
         String SEFormat = Flow.GetOptionName(Element,"SEFormat","S1E01");
         //LOG.debug("DisplaySeasonEpisodeVFS: Object '" + MediaObject.getClass() + " Media '" + MediaObject + "'" );
-        return MetadataCalls.DisplaySeasonEpisode(phoenix.media.GetMediaObject(IMR), SEFormat);
+        return MetadataCalls.FormatSeasonEpisode(phoenix.metadata.GetSeasonNumber(IMR),phoenix.metadata.GetEpisodeNumber(IMR),SEFormat);
     }
     
 //    public static String DisplaySeasonEpisode(String Element, Object MediaObject) {
