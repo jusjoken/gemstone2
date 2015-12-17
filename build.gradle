@@ -1,0 +1,91 @@
+plugins {
+    id "com.jfrog.bintray" version "1.4"
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar.baseName 'gemstone2'
+group 'gemstone2'
+version '2.0.001'
+def phoenixversion = '2.6.0'
+def uselocalphoenix = 'true'
+def localphoenixpath = 'C:/Projects/sagetv-phoenix-core/build/libs'
+
+archivesBaseName = "gemstone2"
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+configurations {
+    configure
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven {
+        url  "http://dl.bintray.com/opensagetv/maven"
+    }
+    maven {
+        url  "http://dl.bintray.com/stuckless/sagetvphoenix"
+    }
+}
+
+dependencies {
+    // used by the configure target
+    configure 'sagex:sagex.plugin.resolver:1.5'
+    configure 'dom4j:dom4j:1.6.1'
+
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+jar {
+    manifest {
+        attributes(
+                "Implementation-Title": "gemstone2",
+                "Implementation-Version": version
+        )
+    }
+}
+
+clean {
+    delete 'target'
+    delete 'bin'
+}
+
+task configureDependencies << {
+    // remove all dependency jars
+    ant.delete(dir:"lib", includes: "*.*",failonerror:"false")
+
+    ant.taskdef(
+            name: 'sagetvdeps',
+            classname: 'sagex.plugin.resolver.ant.SageDependencies',
+            classpath: configurations.configure.asPath
+    )
+
+    ant.sagetvdeps(
+            downloadsagejar:"true",
+            jardir:"lib",
+            pluginname:"Gemstone2",
+            extrajars:"http://download.sage.tv/plugins/Opus4/GoogleWeather/GoogleWeather_2_0_1.zip",
+            devpluginsxml:"SageTVPluginsDev_phoenix.xml, src/plugins/Gemstone2/Gemstone2.xml, src/plugins/Gemstone2ICONS/Gemstone2ICONS.xml, src/plugins/Gemstone2THEME/Gemstone2THEME.xml"
+    )
+
+    // delete the Gemstone2 jar if it's downloaded as a dependency
+    ant.delete(file:"lib/Gemstone2.jar", failonerror:"false")
+
+    if (uselocalphoenix=='true'){
+        // delete the phoenix.jar that was downloaded as a dependency - likely older than the local copy
+        ant.delete(file:"lib/phoenix.jar", failonerror:"false")
+        //copy and rename the local copy from the location specified above
+        copy {
+            from "${localphoenixpath}/phoenix-${phoenixversion}.jar"
+            into 'lib'
+            rename ("phoenix-${phoenixversion}.jar", "phoenix.jar")
+        }
+    }
+
+}
