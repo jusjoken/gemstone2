@@ -1,0 +1,15 @@
+*.class
+*.war
+*.ear
+.classpath
+/gemstone2.iml
+.project
+.gradle/
+/.idea
+.idea
+build/
+/bin
+/lib
+/target
+/build.properties
+/task.properties

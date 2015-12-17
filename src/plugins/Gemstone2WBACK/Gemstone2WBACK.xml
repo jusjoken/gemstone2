@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SageTVPlugin>
+
+  <Name>Gemstone2 y Optional Weather Backgrounds</Name>
+
+  <Identifier>Gemstone2WBACK</Identifier>
+
+  <Description>Gemstone2 Weather Backgrounds - Optional addon for Gemstone2 if you want to enable weather backgrounds</Description>
+
+  <Author>JOrton, jusjoken</Author>
+
+  <CreationDate>2015.10.31</CreationDate>
+  <ModificationDate>2015.12.16</ModificationDate>
+  <Version>2.0.001</Version>
+  <Desktop>false</Desktop>
+
+  <PluginType>Standard</PluginType>
+
+  <ReleaseNotes>
+    Version 2.0.001 Early test release 
+  </ReleaseNotes> 
+
+  <Package>
+    <PackageType>STV</PackageType>
+    <Location>http://dl.bintray.com/opensagetv/sagetv-plugins/gemstone2/Gemstone2WeatherBG_1_2_0_001.zip</Location>
+    <MD5>bffa978fe1a532df1e1d92d602366917</MD5>
+  </Package>
+
+  <Package>
+    <PackageType>STV</PackageType>
+    <Location>http://dl.bintray.com/opensagetv/sagetv-plugins/gemstone/Gemstone2WeatherBG_2_2_0_001.zip</Location>
+    <MD5>e1fd8b3d22c5b54bb4a33e03e27e239e</MD5>
+  </Package>
+
+</SageTVPlugin>

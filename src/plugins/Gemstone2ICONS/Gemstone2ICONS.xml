@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SageTVPlugin>
+
+  <Name>Gemstone2 z Icon Files</Name>
+
+  <Identifier>Gemstone2ICONS</Identifier>
+
+  <Description>Gemstone2 Icon Files - Do not install directly as this is just a dependency!!</Description>
+
+  <Author>JOrton, jusjoken</Author>
+
+  <CreationDate>2015.10.31</CreationDate>
+  <ModificationDate>2015.12.16</ModificationDate>
+  <Version>2.0.001</Version>
+  <Desktop>false</Desktop>
+
+  <PluginType>Library</PluginType>
+
+  <ReleaseNotes>
+    Version 2.0.001 Early test release
+  </ReleaseNotes> 
+
+  <Package>
+    <PackageType>STV</PackageType>
+    <Location>http://dl.bintray.com/opensagetv/sagetv-plugins/gemstone2/Gemstone2Icons_2_0_001.zip</Location>
+    <MD5>299aeab9918e285fd75b36aacc76573f</MD5>
+  </Package>
+
+</SageTVPlugin>
