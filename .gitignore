@@ -6,6 +6,8 @@
 .project
 .gradle/
 /.idea
+/.idea/vcs.xml
+/.idea/modules.xml
 .idea
 build/
 /bin
