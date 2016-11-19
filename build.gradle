@@ -6,14 +6,14 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-jar.baseName 'gemstone2'
-group 'gemstone2'
-version '2.0.001'
-def phoenixversion = '2.6.0'
+jar.baseName 'gemstone'
+group 'gemstone'
+version '2.0.003'
+def phoenixversion = '3.0.2'
 def uselocalphoenix = 'true'
 def localphoenixpath = 'C:/Projects/sagetv-phoenix-core/build/libs'
 
-archivesBaseName = "gemstone2"
+archivesBaseName = "GemstoneAPI"
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
@@ -45,10 +45,18 @@ dependencies {
 jar {
     manifest {
         attributes(
-                "Implementation-Title": "gemstone2",
+                "Implementation-Title": "gemstone",
                 "Implementation-Version": version
         )
     }
+
+}
+
+task packageApi(type: Zip, dependsOn: jar) {
+    baseName archivesBaseName
+    from "build/libs/"
+    include "gemstone-*.jar"
+    rename("gemstone-${version}.jar","gemstone.jar")
 }
 
 clean {
@@ -69,13 +77,13 @@ task configureDependencies << {
     ant.sagetvdeps(
             downloadsagejar:"true",
             jardir:"lib",
-            pluginname:"Gemstone2",
+            pluginname:"DiamondSTVi",
             extrajars:"http://download.sage.tv/plugins/Opus4/GoogleWeather/GoogleWeather_2_0_1.zip",
-            devpluginsxml:"SageTVPluginsDev_phoenix.xml, src/plugins/Gemstone2/Gemstone2.xml, src/plugins/Gemstone2ICONS/Gemstone2ICONS.xml, src/plugins/Gemstone2THEME/Gemstone2THEME.xml"
+            devpluginsxml:"SageTVPluginsDev_gemstone.xml, src/plugins/DiamondSTVi/DiamondSTVi.xml, src/plugins/gemstone-api/gemstone-api.xml, src/plugins/gemstone-icons/gemstone-icons.xml, src/plugins/gemstone-theme/gemstone-theme.xml"
     )
 
-    // delete the Gemstone2 jar if it's downloaded as a dependency
-    ant.delete(file:"lib/Gemstone2.jar", failonerror:"false")
+    // delete the Gemstone jar if it's downloaded as a dependency
+    ant.delete(file:"lib/Gemstone.jar", failonerror:"false")
 
     if (uselocalphoenix=='true'){
         // delete the phoenix.jar that was downloaded as a dependency - likely older than the local copy

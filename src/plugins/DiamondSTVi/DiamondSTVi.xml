@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SageTVPlugin>
+  <Name>Gemstone for SageTV OS Version 9.x</Name> 
+  <Identifier>DiamondSTVi</Identifier> 
+  <Description>Gemstone release to support the ongoing Open Source releases of SageTV v9 and higher</Description> 
+  <Author>JOrton,jusjoken,Fuzzy</Author> 
+  <CreationDate>2015.10.31</CreationDate> 
+  <ModificationDate>2016.10.20</ModificationDate>
+  <Version>5.0.003</Version>
+
+  <Dependency>
+   <Core/>
+    <MinVersion>9.0.0.0</MinVersion>
+  </Dependency>
+
+  <Dependency>
+    <Plugin>phoenix-core</Plugin>
+    <MinVersion>3.0.2</MinVersion>
+  </Dependency>
+
+  <Dependency>
+   <Plugin>gemstone-api</Plugin> 
+   <MinVersion>2.0.003</MinVersion>
+  </Dependency>
+
+  <Dependency>
+   <Plugin>gemstone-theme</Plugin> 
+   <MinVersion>1.0203</MinVersion> 
+  </Dependency>
+
+  <Dependency>
+   <Plugin>gemstone-icons</Plugin> 
+   <MinVersion>1.013</MinVersion> 
+  </Dependency>
+
+  <PluginType>STV</PluginType> 
+
+  <Package>
+   <PackageType>STV</PackageType> 
+   <Location>http://dl.bintray.com/opensagetv/sagetv-plugins/gemstone2/2.0.002/GemstoneSTV_2_0_002.zip</Location>
+   <MD5>d0f09f7944a3ba592d9ae63f845765bc</MD5>
+  </Package>
+
+  <Package>
+    <PackageType>STV</PackageType> 
+    <Location>http://dl.bintray.com/opensagetv/sagetv-plugins/gemstone2/2.0.002/GemstoneDefaults_2_0_002.zip</Location>
+    <MD5>6398a6eb3c9c1daf497c4984d21eb09e</MD5>
+  </Package>
+
+  <ReleaseNotes>
+    Version 2.0.003 Early test release.
+  </ReleaseNotes> 
+
+</SageTVPlugin>

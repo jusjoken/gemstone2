@@ -1,0 +1,527 @@
+<!DOCTYPE vfs SYSTEM "vfs.dtd">
+<vfs>
+
+	<!-- gemstone vfs -->
+	<!-- ****************************** -->
+	<!--   - 11/12/2015 - move all core phoenix vfs parts to x-vfs.xml -->
+	<!--   - 11/26/2012 - added scraped filter -->
+	<!--   - 11/26/2012 - added gemstone.base.tvforusercats view to specifically handle UserCategories to also include scheduled recordings -->
+	<!--   - 11/26/2012 - gemstone.base.allforcache was missing recorded movies -->
+	<!--   - 11/08/2012 - added dontlike filter, removed gemfirstletter group as no longer in use (replaced) -->
+	<!--   - 11/03/2012 - added some new filters and change the firstletterfilter, fixed the movie views as they were missing recorded movies -->
+	<!--   - 05/01/2012 - updated to hide allforcache view and add some recent activity views -->
+	<!--   - 04/07/2012 - updated to support new Gemstone.jar -->
+
+	<!-- gemstone tags -->
+	<!-- ****************************** -->
+	<!--   - gemstone should be on ALL gemstone views -->
+	<!--   - gemsource should be on gemstone views used as base sources for Flows -->
+	<tags>
+		<tag value="gemstone" label="Gemstone" visible="true"/>
+		<tag value="gemsource" label="gemstone Source" visible="false"/>
+		<tag value="gembasesource" label="gemstone Base Source" visible="false"/>
+	</tags>
+
+	<!-- gemstone views                 -->
+	<!-- ****************************** -->
+	<views>
+
+		<!-- Base views                 -->
+		<!-- ****************************** -->
+		<!--  - used to build views from within gemstone -->
+		<view name="gemstone.base.all" label="Base - All videos" flat="true" visible="true">
+			<description>All Videos used by internal calls and to build from</description>
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+		</view>
+		<view name="gemstone.base.tv" label="Base - TV" flat="true" visible="true">
+			<description>All TV - used to build from</description>
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+		</view>
+		<view name="gemstone.base.movies" label="Base - Movies" flat="true" visible="true">
+			<description>All Movies - used to build from</description>
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+		</view>
+		<view name="gemstone.base.alltvmissingtv" label="Base - TV(+missing)" visible="true">
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+			<source name="tvmediafiles">
+				<option name="combine" value="false"/>
+			</source>
+		</view>
+
+		<view name="gemstone.base.allforcache" label="All Videos for Fanart Cache building" flat="true" visible="false">
+			<description>All Videos - TV and Movies</description>
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="true"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+		</view>
+		<view name="gemstone.base.tvforusercats" label="All TV for UserCategories" flat="true" visible="false">
+			<description>All TV including scheduled recordings for UserCategories</description>
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+			<view-source name="phoenix.view.source.scheduledrecordings"/>
+		</view>
+
+		<view name="gemstone.base.allbyrecent" label="All Videos by recent" flat="true" visible="false">
+			<description>All Videos, sorted by recent,then TV grouped by Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gembasesource"/>
+	                <view-source name="phoenix.view.primary.recordedtvarchived"/>
+                        <view-source name="phoenix.view.primary.recordedtv"/>
+                        <view-source name="phoenix.view.primary.importedtv"/>
+                        <view-source name="phoenix.view.primary.importedmovies"/>
+                        <view-source name="phoenix.view.primary.recordedmovies"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="true"/>
+				</group>
+				    <sort by="recentlywatched">
+				       <option name="sort-order" value="desc"/>
+				       <option name="folders-first" value="false"/>
+				    </sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<sort by="seasonepisode"/>
+			</presentation>
+		</view>
+
+
+		<!-- gemstone specific views        -->
+		<!-- ****************************** -->
+		
+		<view name="gemstone.source.videofolders" label="Video Imports by Folder" flat="false">
+			<option name="children-only" value="true"/>
+			<description>View of All Sage Video Sources</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<source name="sagefilesystem">
+				<option name="content" value="VideosByFolder"/>
+			</source>
+			<presentation>
+				<sort by="title">
+					<option name="folders-first" value="true"/>
+				</sort>
+			</presentation>
+		</view>
+
+		<view name="gemstone.source.allTV" label="TV Shows" flat="true">
+			<description>All TV Shows, Grouped by Show, sorted by title,then grouped by Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Series"/>
+				</group>
+				<sort by="title">
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<sort by="originalairdate" />
+			</presentation>
+		</view>
+
+		<view name="gemstone.source.allTVbyrecent" label="TV Shows by recent" flat="true">
+			<description>All TV Shows, Grouped by Show, sorted by recent,then grouped by Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Series"/>
+				</group>
+	    			<sort by="recentactivity">
+					<option name="sort-order" value="desc"/>
+					<option name="folders-first" value="false"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<sort by="originalairdate" />
+			</presentation>
+		</view>
+
+		<view name="gemstone.source.allTVMissingEpisodes" label="Missing Episodes" flat="true">
+			<description>Missing Episodes, Grouped by Show, sorted by title,then sorted by Season-Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<source name="tvmediafiles">
+				<option name="combine" value="false"/>
+			</source>
+                        <filter by="missingtv" value="true" scope="include"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Series"/>
+				</group>
+				<sort by="title">
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<sort by="seasonepisode"/>
+			</presentation>
+		</view>
+
+		<view name="gemstone.source.allTVseasonsGAP" label="TV Seasons with GAPs" flat="true">
+			<description>All TV Shows, Grouped by Show Then Season Then Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<source name="tvmediafiles">
+				<option name="combine" value="false"/>
+			</source>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Series"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<group by="season">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Season"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>
+
+			<presentation level="3">
+				<sort by="seasonepisode"/>
+			</presentation>
+		</view>		
+
+		<view name="gemstone.source.allTVseasons" label="TV Shows(Seasons)" flat="true">
+			<description>All TV Shows, Grouped by Show Then Season Then Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Series"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<group by="season">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Season"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>
+
+			<presentation level="3">
+				<sort by="seasonepisode"/>
+			</presentation>
+		</view>		
+		
+		<view name="gemstone.source.allTVseasonsbyrecent" label="TV Shows(Seasons) by recent" flat="true">
+			<description>All TV Shows, Grouped by Show, sorted by recent,then grouped by Season Then Episode</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Series"/>
+				</group>
+	    			<sort by="recentactivity">
+					<option name="sort-order" value="desc"/>
+					<option name="folders-first" value="false"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<group by="season">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Season"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>
+
+			<presentation level="3">
+				<sort by="seasonepisode"/>
+			</presentation>
+		</view>		
+
+		<!-- gemstone firstletter view      -->
+		<!-- ****************************** -->
+		<!-- source view and used for internal title selection lists -->
+		<view name="gemstone.source.firstletter" label="All Videos by First Letter" flat="true">
+			<description>All Videos grouped by First Letter and then by Show</description>
+			<tag value="gemstone"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+
+			<presentation level="1">
+				<group by="firstletter2">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Letter"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<group by="show">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Show"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>
+
+		</view>		
+
+		<view name="gemstone.source.allVideos" label="All Videos" flat="true">
+			<description>All Videos - TV and Movies</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+
+			<presentation level="1">
+				<group by="show">
+					<option name="prune-single-item-groups" value="true"/>
+					<option name="empty-foldername" value="No Show"/>
+				</group>
+				<sort by="title">
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>		
+			
+			<presentation level="2">
+				<sort by="originalairdate" />
+			</presentation>
+		</view>
+
+		<view name="gemstone.source.allMovies" label="Movies" flat="true">
+			<description>Movies from all sources</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+
+			<presentation>
+				<sort by="title">
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>
+		</view>
+
+		<view name="gemstone.source.moviecollections" label="Movie Collections" flat="true">
+			<description>Movies grouped by Collection</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<tag value="video"/>
+			<tag value="movie"/>
+			<tag value="default"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+
+			<presentation level="1">
+				<group by="moviecollection">
+					<option name="prune-single-item-groups" value="true"/>
+				</group>
+				<sort by="title">
+					<option name="sort-order" value="asc"/>
+					<option name="folders-first" value="false"/>
+					<option name="ignore-all" value="true"/>
+				</sort>
+			</presentation>
+
+			<presentation level="2">
+		            <sort by="originalairdate"/>
+			</presentation>
+
+		</view>
+
+		<view name="gemstone.widget.recentMovies" label="Recent Movies" flat="true" visible="true">
+			<description>Recent Movies from all sources</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+			<filter by="homevideos" scope="exclude"/>
+
+			<presentation>
+				<sort by="mediafileid">
+					<option name="sort-order" value="desc"/>
+				</sort>
+			</presentation>
+		</view>	
+
+		<view name="gemstone.source.recentlywatched" label="Recently Watched" flat="true">
+			<description>Recently watched vides files</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.recordedmovies"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+			<view-source name="phoenix.view.primary.recordedtvarchived"/>			
+			<view-source name="phoenix.view.primary.recordedtv"/>
+			<view-source name="phoenix.view.primary.importedtv"/>
+			<filter by="filepath" value=".*">
+				<option name="scope" value="include"/>
+				<option name="use-regex-matching" value="true"/>
+			</filter>
+			<presentation>
+				<sort by="recentlywatched">
+					<option name="sort-order" value="desc"/>
+				</sort>
+			</presentation>
+		</view>	
+		
+		<view name="gemstone.source.videosbygenre" label="Videos by Genre">
+			<description>Show Videos grouped by Year/Genre/etc</description>
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.primary.importedmovies"/>
+
+			<presentation>
+				<group by="genre">
+					<option name="prune-single-item-groups" value="false"/>
+					<option name="empty-foldername" value="No Genre"/>
+				</group>
+				<sort by="title">
+					<option name="sort-order" value="asc"/>
+					<option name="folders-first" value="false"/>
+				</sort>
+			</presentation>
+		</view>		
+		
+		
+		<!-- EXAMPLES -->
+		<!-- ****************************** -->
+		<!-- ****************************** -->
+		
+		<!-- Example of how to group by year
+		<view name="videosgroupedbyyear" label="gAll Videos by Year">
+			<description>Show Videos grouped by Year/Genre/etc</description>
+			<tag value="gemstone"/>
+
+			<presentation>
+				<group by="year">
+					<option name="empty-foldername" value="No Year"/>
+				</group>
+				<sort by="title">
+					<option name="sort-order" value="desc"/>
+				</sort>
+			</presentation>
+			
+			<presentation>
+				<sort by="title">
+					<option name="sort-order" value="asc"/>
+				</sort>
+			</presentation>
+		</view>
+		-->
+		<!--  This view is very inefficient - but replicates the
+              functionality in the Sage Folder View when NOT combined
+              This basically gives you a folder with each import source -->
+			  
+		<view name="gemstone.base.scheduledrecordings" label="Scheduled Recordings" visible="false">
+			<tag value="tv" />
+			<tag value="epg" />
+			<tag value="gemstone"/>
+			<source name="expression">
+				<option name="expression">
+					GetScheduledRecordings()
+				</option>
+			</source>
+		</view>		
+			  
+		<view name="gemstone.source.scheduledrecordings" label="Scheduled Recordings" flat="true" visible="true">
+			<tag value="primary"/>
+			<tag value="epg" />
+			<tag value="gemstone"/>
+			<tag value="gemsource"/>
+			<view-source name="phoenix.view.source.scheduledrecordings"/>
+			<filter by="currentlyrecording" scope="exclude"/>
+		</view>
+			  
+		<view name="gemstone.widget.todaysrecordings" label="Todays Recordings" flat="true" visible="false">
+			<description>Recordings sorted by recording date, limited to todays date</description>
+			<view-source name="phoenix.view.primary.scheduledrecordings"/>
+			<filter by="latertoday"/>
+		</view>		
+		
+	</views>
+</vfs>
