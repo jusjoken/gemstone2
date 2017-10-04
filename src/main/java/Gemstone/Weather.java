@@ -19,6 +19,9 @@ import sagex.phoenix.weather.IForecastPeriod;
  *
  * @author jusjoken
  * public Gemstone single Weather instance to use across the app and all extenders
+ * 10/02/2017 - units and location are all also stored at server level
+ *            - changes to default 90210 as epg/zip_code is no longer used in sagetv
+ *            - fix to foce an update when the location is set
  * 3/23/2013 - weather impl now stored at Server Level
  *    Note: made this change as the impl is loaded so early in the server start that the client settings were not being loaded
  *    - units and location are stored at the client level
@@ -26,7 +29,7 @@ import sagex.phoenix.weather.IForecastPeriod;
 public class Weather {
     static private final Logger LOG = Logger.getLogger(Weather.class);
     private static String implList = util.ConvertListtoString(phoenix.weather2.GetWeatherImplKeys());
-    private static final String implDefault = "world";
+    private static final String implDefault = "wunderground";
     private static final String unitsDefault = "Standard";
     private static boolean LoaderActive = false;
     private static boolean weatherInit = false;
@@ -38,8 +41,8 @@ public class Weather {
     public static void SetLoaderActive(boolean value){
         LoaderActive = value;
     }
-    
-    //always call Init first - should be called in the Gemstone Init 
+
+    //always call Init first - should be called in the Gemstone Init
     public static void Init(){
         LOG.debug("Init: weather init started: using server settings: " + util.LogInfo());
         //force phoenix to use the current weather implementation setting
@@ -55,13 +58,13 @@ public class Weather {
         weatherInit = true;
         LOG.debug("Init: weather init completed: " + util.LogInfo());
     }
-    
+
     public static void SetImplNext(){
         util.SetListOptionNext(Const.WeatherProp, Const.WeatherImpl, implList, useServerForProps);
         setImpl(util.GetOptionName(Const.WeatherProp, Const.WeatherImpl, implDefault, useServerForProps));
         UpdateWeather();
     }
-    
+
     private static boolean setImpl(String impl){
         boolean success = true;
         phoenix.weather2.SetWeatherImpl(impl);
@@ -95,7 +98,7 @@ public class Weather {
             phoenix.weather2.SetUnits(curUnits);
         }
     }
-    
+
     public static void SetUnitsNext(){
         if (phoenix.weather2.GetUnits().toLowerCase().equals("metric")){
             phoenix.weather2.SetUnits("standard");
@@ -106,24 +109,32 @@ public class Weather {
     }
 
     public static void SetLocation(){
+    	SetLocation(false);
+    }
+    public static void SetLocation(Boolean forced){
         String curLoc = util.GetOptionName(Const.WeatherProp, Const.WeatherLoc, util.OptionNotFound, useServerForProps);
-        if (!curLoc.equals(phoenix.weather2.GetLocation())){
+        if (!curLoc.equals(phoenix.weather2.GetLocation()) || forced){
             if (curLoc.equals(util.OptionNotFound)){
-                //try setting using the EPG location
-                curLoc = util.GetServerProperty("epg/zip_code", util.OptionNotFound);
-                if (curLoc.equals(util.OptionNotFound)){
-                    //we have no location so clear any existing location so the user can set it in the UI
-                    phoenix.weather2.RemoveLocation();
-                    LOG.debug("setLoc: no vaild location so clearing location. Will need to be set in the UI.");
-                }else{
-                    phoenix.weather2.SetLocation(curLoc);
-                }
+                //try setting using a default zip code
+                curLoc = "90210";
+                phoenix.weather2.SetLocation(curLoc);
+                LOG.debug("setLoc: no vaild location so setting to default 90210");
             }else{
                 phoenix.weather2.SetLocation(curLoc);
+                LOG.debug("setLoc: setting location to '" + curLoc + "'");
+            }
+            //as the location has changed then as long as we are not in the init then update needs to be run
+            if (weatherInit){
+            	//force the update by switching the units twice - it works
+            	//:TODO - add function in phoenix weather to force an update
+            	SetUnitsNext();
+            	SetUnitsNext();
+            	//force an update
+                UpdateWeather();
             }
         }
     }
-    
+
     public static void UpdateWeather(){
         if (!weatherInit){
             Init();
@@ -140,7 +151,7 @@ public class Weather {
             }
         }
     }
-    
+
     private static void RefreshAllClients(){
         //based on the Sage Menu that is displayed - refresh the screen
         //do this for the current context as well as each connected client
@@ -153,7 +164,7 @@ public class Weather {
             RefreshWeatherScreens(client);
         }
     }
-    
+
     private static void RefreshWeatherScreens(String Context){
         if (Context==null){
             LOG.debug("RefreshWeatherScreens: called with null Context");
@@ -181,7 +192,7 @@ public class Weather {
             LOG.debug("RefreshWeatherScreens: refreshed header for UI '" + Context + "'");
         }
     }
-    
+
     public static String GetNightShortName(IForecastPeriod forecastperiod){
         String tName = "";
         if (phoenix.weather2.IsDay(forecastperiod)){
@@ -194,7 +205,7 @@ public class Weather {
             }
         }
     }
-    
+
     public static String GetLocationTitle(){
         if (!phoenix.weather2.IsConfigured()){
             return "Not Configured";
@@ -207,14 +218,14 @@ public class Weather {
             return tName;
         }
     }
-    
+
     private static boolean isValidZIP(String ZIPCode){
         //String regex = "^\\d{5}(-\\d{4})?$"; //extended zip
         String regex = "^\\d{5}";  //5 digit zip
         //LOG.debug("isValidZIP: checking for ZIP '" + ZIPCode + "'");
         return Pattern.matches(regex, ZIPCode);
     }
-    
+
     public static String GetBackground(){
         IForecastPeriod current = phoenix.weather2.GetCurrentWeather();
         return GetBackground(current);
@@ -236,7 +247,7 @@ public class Weather {
                 }else{
                     code = phoenix.weather2.GetCodeForceNight(code);
                 }
-                
+
                 //determine which image file to return
                 int BGIndex = GetBackgroundIndex(code);
                 if (GetBackgroundsList(code).size()>BGIndex){
@@ -279,7 +290,7 @@ public class Weather {
             return new ArrayList<String>();
         }
     }
-    
+
     public static String GetBackgroundsPath(int code){
         return util.WeatherLocation() + File.separator + "Backgrounds" + File.separator + code + File.separator;
     }
@@ -287,7 +298,7 @@ public class Weather {
     private static String getBGPropLocation(int code){
         return Const.Weather + Const.PropDivider + Const.WeatherBGIndex + Const.PropDivider + code;
     }
-    
+
     public static int GetBackgroundIndex(int code){
         return util.GetPropertyAsInteger(getBGPropLocation(code), 0);
     }
@@ -298,7 +309,7 @@ public class Weather {
     public static void SetBackgroundIndex(int code, int newIndex){
         util.SetProperty(getBGPropLocation(code), newIndex + "");
     }
-    
+
     public static String GetIconImage(IForecastPeriod iforecastperiod){
         if (phoenix.weather2.GetCode(iforecastperiod)==-1){
             return WIcons.GetWeatherIconByNumber("na");
@@ -341,7 +352,7 @@ public class Weather {
         }else{
             return false;
         }
-        
+
     }
     public static int GetForecastColumns(boolean ForecastExpandFocused){
         if (HasDescription()){
@@ -360,7 +371,7 @@ public class Weather {
             }
         }
     }
-    
+
     public static double GetForecastWidth(boolean Focused, boolean ForecastExpandFocused, IForecastPeriod NightPeriod){
         if (HasDescription()){
             if (Focused){
@@ -394,7 +405,7 @@ public class Weather {
             }
         }
     }
-    
+
     public static boolean UseSplitForecast(boolean Focused, boolean ForecastExpandFocused){
         if (HasDescription()){
             if (Focused){
@@ -420,5 +431,5 @@ public class Weather {
             }
         }
     }
-    
+
 }

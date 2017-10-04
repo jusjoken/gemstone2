@@ -34,6 +34,7 @@ import sagex.phoenix.vfs.views.ViewFolder;
 import java.util.Timer;
 import java.util.TimerTask;
 import sagex.api.PluginAPI;
+import org.apache.commons.io.FilenameUtils;
 
 
 /**
@@ -189,6 +190,7 @@ public class util {
         return StringNumberFormat(Input, DecimalPlaces, DecimalPlaces);
     }
     public static String StringNumberFormat(String Input, Integer MinDecimalPlaces, Integer MaxDecimalPlaces){
+        if (Input.isEmpty()) return Input;
         float a = 0;
         try {
             a = Float.parseFloat(Input);
@@ -1433,6 +1435,28 @@ public class util {
             return tStr;
         }
     }
-    
+
+    public static String SeparatorsToSystem(String path){
+        if (path==null){
+            LOG.debug("SeparatorsToSystem: original path was null.");
+            return "";
+        }
+        LOG.debug("SeparatorsToSystem: original path = '" + path + "'");
+        if (path.isEmpty()){
+            return "";
+        }
+        String retPath = "";
+        UIContext uic = new UIContext(sagex.api.Global.GetUIContextName());
+        if (sagex.api.Global.IsLinuxOS(uic)){
+            retPath = FilenameUtils.separatorsToUnix(path);
+            LOG.debug("SeparatorsToSystem: returned path for Linux system = '" + retPath + "'");
+        }else{
+            retPath = FilenameUtils.separatorsToWindows(path);
+            LOG.debug("SeparatorsToSystem: returned path for Windows system = '" + retPath + "'");
+        }
+        return retPath;
+    }
+
+
 }
 

@@ -12,8 +12,10 @@ import java.util.TimerTask;
 import org.apache.log4j.Logger;
 import sagex.UIContext;
 import sagex.api.Global;
+import sagex.phoenix.Phoenix;
 import sagex.phoenix.stv.DownloadUtil;
-import sagex.phoenix.util.TimerUtil;
+
+import static java.lang.Thread.sleep;
 
 /**
  *
@@ -410,7 +412,8 @@ public class Export {
                     LOG.debug("Execute: CopyExporttoServer success = '" + success + "' filename '" + tFileName + "' source '" + this.ServerCopySourcePath + "' dest '" + this.ServerCopyDestPath + "'");
                     if ((Boolean) success){
                         //start a background process to try and delete the source file after the copy is complete
-                        TimerUtil.runOnce(0, new TimerTask() {
+                        //TimerUtil.runOnce(0, new TimerTask() {
+                        Phoenix.getInstance().getTaskManager().submit(new Runnable() {
                             @Override
                             public void run() {
                                 try {
@@ -442,7 +445,11 @@ public class Export {
                                             error = true;
                                             break;
                                         }
-                                        TimerUtil.sleep(300);
+                                        try {
+                                            sleep(300);
+                                        } catch (InterruptedException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
 
                                     if (error)

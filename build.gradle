@@ -8,7 +8,7 @@ apply plugin: 'idea'
 
 jar.baseName 'gemstone'
 group 'gemstone'
-version '2.0.003'
+version '2.0.004'
 def phoenixversion = '3.0.2'
 def uselocalphoenix = 'true'
 def localphoenixpath = 'C:/Projects/sagetv-phoenix-core/build/libs'

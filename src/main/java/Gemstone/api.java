@@ -22,7 +22,7 @@ public class api {
 
     public static Logger LOG=Logger.getLogger(api.class);
 
-    public static String Version = "2.0.003" + "";
+    public static String Version = "2.0.004" + "";
     private static boolean STVAppStarted = false;
     private static boolean LoadCompleted = false;
     

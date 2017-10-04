@@ -70,13 +70,22 @@ public class Import {
         if (FilePath==null){
             LOG.debug("Import: null FilePath passed.");
             KeepProcessing = Boolean.FALSE;
+            this.Description = "Import failed. FilePath was null.";
         }else{
             //read the properties from the properties file
+            LOG.debug("Import: FilePath passed '" + FilePath + "'");
             if (FromServer){
-                String ServerImportProps = sagex.api.Utility.GetFileAsString(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(FilePath));
-                Props.load(ServerImportProps);
-                LOG.debug("Import: loaded '" + Props.size() + "' properties from the server");
-                //KeepProcessing = Boolean.FALSE;
+                //fails larger than 65535 bytes will fail so need to catch the error
+                String ServerImportProps = "";
+                try {
+                    ServerImportProps = sagex.api.Utility.GetFileAsString(UIContext.SAGETV_PROCESS_LOCAL_UI, new File(FilePath));
+                    Props.load(ServerImportProps);
+                    LOG.debug("Import: loaded '" + Props.size() + "' properties from the server");
+                } catch (Exception e) {
+                    LOG.debug("Import: GetFileAsString Failed - check server logs for error details.");
+                    this.Description = "";
+                    KeepProcessing = Boolean.FALSE;
+                }
             }else{
                 try {
                     FileInputStream in = new FileInputStream(FilePath);
@@ -88,6 +97,7 @@ public class Import {
                 } catch (Exception ex) {
                     LOG.debug("Import: file not found inporting properties " + util.class.getName() + ex);
                     KeepProcessing = Boolean.FALSE;
+                    this.Description = "";
                 }
             }
         }
@@ -115,7 +125,9 @@ public class Import {
         }else{
             IsValid = Boolean.FALSE;
             this.Name = "Failed";
-            this.Description = "Import failed. Check the logs for more details.";
+            if(this.Description==""){
+                this.Description = "Import failed. Check the logs for more details.";
+            }
         }
     }
 

@@ -265,13 +265,13 @@ public class Source {
     
     public static Map GetAllFolderRestrictions(String ViewName) {
         String ExclusionFolders = Flow.GetOptionName(ViewName, Const.FlowPathFilters, "");
-        //LOG.debug("GetAllFolderRestrictions: = '" + ExclusionFolders + "'");
+        LOG.debug("GetAllFolderRestrictions: = '" + ExclusionFolders + "'");
         Map rest = new HashMap<String, Boolean>();
         if (!ExclusionFolders.equals("")) {
             String[] AllValues = ExclusionFolders.split(";");
             for (String curr : AllValues) {
                 String[] currv = curr.split("&&");
-                rest.put(currv[0], Boolean.parseBoolean(currv[1]));
+                rest.put(util.SeparatorsToSystem(currv[0]), Boolean.parseBoolean(currv[1]));
             }
         }
         return rest;
